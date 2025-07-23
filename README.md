@@ -2,8 +2,8 @@
 
 `Sky Apartments` is a web application designed to help apartment owner manage and showcase their properties and allow users to book apartments through a friendly and filtered interface. The application will support user roles such as guests, registered users, and administrators, offering different functionalities tailored to each profile.
 
-![Home Page Wireframe](docs\images\wireframes\homePage_wireframe.png)
-![Apartment Page Wireframe](docs\images\wireframes\apartment_wireframe.png)
+![Home Page Wireframe](docs/images/wireframes/homePage_wireframe.png)
+![Apartment Page Wireframe](docs/images/wireframes/apartment_wireframe.png)
 
 ---
 
@@ -128,16 +128,16 @@ The project will follow an iterative and incremental development model with the 
 
 ### 🧱 Wireframes & Navigation
 
-![Wireframe - Home Page](docs\images\wireframes\homePage_wireframe.png)
-![Wireframe - Book Page](docs\images\wireframes\book_wireframe.png)
-![Wireframe - Apartments Page](docs\images\wireframes\apartments_wireframe.png)
-![Wireframe - Apartment Page](docs\images\wireframes\apartment_wireframe.png)
-![Wireframe - Confirm booking Page](docs\images\wireframes\bookingConfirmation_wireframe.png)
-![Wireframe - Registered user Page](docs\images\wireframes\registeredUser_wireframe.png)
-![Wireframe - Admin Page](docs\images\wireframes\admin_wireframe.png)
-![Wireframe - Log in/Sign up Page](docs\images\wireframes\loginSignup_wireframe.png)
-![Wireframe - Editing/new apartment Page](docs\images\wireframes\editingNewApartment_wireframe.png)
-![Navigation between wireframes](docs\images\wireframes\all_wireframe.png)
+![Wireframe - Home Page](docs/images/wireframes/homePage_wireframe.png)
+![Wireframe - Book Page](docs/images/wireframes/book_wireframe.png)
+![Wireframe - Apartments Page](docs/images/wireframes/apartments_wireframe.png)
+![Wireframe - Apartment Page](docs/images/wireframes/apartment_wireframe.png)
+![Wireframe - Confirm booking Page](docs/images/wireframes/bookingConfirmation_wireframe.png)
+![Wireframe - Registered user Page](docs/images/wireframes/registeredUser_wireframe.png)
+![Wireframe - Admin Page](docs/images/wireframes/admin_wireframe.png)
+![Wireframe - Log in/Sign up Page](docs/images/wireframes/loginSignup_wireframe.png)
+![Wireframe - Editing/new apartment Page](docs/images/wireframes/editingNewApartment_wireframe.png)
+![Navigation between wireframes](docs/images/wireframes/all_wireframe.png)
 
 > 📁 *The wireframes are available in the folder `/docs/images/wireframes`.*
 
@@ -145,7 +145,7 @@ The project will follow an iterative and incremental development model with the 
 
 ### 🔹 Entities & Relations
 
-![Entity diagram](docs\images\entity_diagram.png)
+![Entity diagram](docs/images/entity_diagram.png)
 
 ### 🔐 Permissions
 
