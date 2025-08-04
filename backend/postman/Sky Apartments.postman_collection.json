@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "bb77a6bc-cf6a-4356-b3ba-dad5c414d6f2",
+		"_postman_id": "eabebc7a-3925-494f-b958-9231bd214b0b",
 		"name": "Sky Apartments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39879168",
-		"_collection_link": "https://fb5555.postman.co/workspace/Cognite~4eda5167-7c4d-4007-8e59-72fea7804591/collection/39879168-bb77a6bc-cf6a-4356-b3ba-dad5c414d6f2?action=share&source=collection_link&creator=39879168"
+		"_collection_link": "https://fb5555.postman.co/workspace/Cognite~4eda5167-7c4d-4007-8e59-72fea7804591/collection/39879168-eabebc7a-3925-494f-b958-9231bd214b0b?action=share&source=collection_link&creator=39879168"
 	},
 	"item": [
 		{
@@ -23,6 +23,25 @@
 							"path": [
 								"api",
 								"apartments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Apartment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/apartments/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"apartments",
+								"2"
 							]
 						}
 					},

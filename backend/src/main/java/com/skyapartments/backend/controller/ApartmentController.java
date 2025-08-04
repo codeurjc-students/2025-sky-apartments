@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/apartments")
@@ -30,6 +31,13 @@ public class ApartmentController {
         }
 
         return ResponseEntity.ok(apartments);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApartmentDTO> getApartments(@PathVariable Long id) {
+        return apartmentService.getApartmentById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
     
 }
