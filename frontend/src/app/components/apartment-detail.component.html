@@ -1,0 +1,9 @@
+<div *ngIf="apartment; else notFound">
+  <h2>{{ apartment.name }}</h2>
+  <p><strong>Descripción:</strong> {{ apartment.description }}</p>
+  <p><strong>Dirección:</strong> {{ apartment.address }}</p>
+</div>
+
+<ng-template #notFound>
+  <p>No se encontró el apartamento.</p>
+</ng-template>

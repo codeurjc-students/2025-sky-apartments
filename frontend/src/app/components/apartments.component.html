@@ -1,0 +1,12 @@
+<h2>Listado de apartamentos</h2>
+<ul *ngIf="apartments.length > 0; else noApartments">
+  <li *ngFor="let apartment of apartments">
+    <a [routerLink]="['/apartments', apartment.id]">
+      {{ apartment.name }}
+    </a>
+  </li>
+</ul>
+
+<ng-template #noApartments>
+  <p>No hay apartamentos disponibles.</p>
+</ng-template>
