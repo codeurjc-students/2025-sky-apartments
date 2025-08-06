@@ -59,7 +59,7 @@ public class ApartmentApiTest {
     public void shouldReturnListOfApartments() {
         given()
         .when()
-            .get("/api/apartments")
+            .get("/api/apartments/")
         .then()
             .statusCode(200)
             .body("size()", equalTo(1))
@@ -75,7 +75,7 @@ public class ApartmentApiTest {
         
         given()
         .when()
-            .get("/api/apartments")
+            .get("/api/apartments/")
         .then()
             .statusCode(204);
     }

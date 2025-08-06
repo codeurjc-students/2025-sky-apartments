@@ -22,7 +22,8 @@ public class ApartmentController {
         this.apartmentService = apartmentService;
     }
 
-    @GetMapping
+
+    @GetMapping("/")
     public ResponseEntity<List<ApartmentDTO>> getAllApartments() {
         List<ApartmentDTO> apartments = apartmentService.getAllApartments();
 
@@ -39,5 +40,3 @@ public class ApartmentController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
-    
-}
