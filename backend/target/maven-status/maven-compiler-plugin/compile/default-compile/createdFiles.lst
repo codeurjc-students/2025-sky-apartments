@@ -1,0 +1,6 @@
+com\skyapartments\backend\controller\ApartmentController.class
+com\skyapartments\backend\dto\ApartmentDTO.class
+com\skyapartments\backend\model\Apartment.class
+com\skyapartments\backend\repository\ApartmentRepository.class
+com\skyapartments\backend\BackendApplication.class
+com\skyapartments\backend\service\ApartmentService.class
