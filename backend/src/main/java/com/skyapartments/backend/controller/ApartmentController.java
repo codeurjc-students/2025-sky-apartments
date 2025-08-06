@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/apartments")
+@RequestMapping("/api/apartments/")
 public class ApartmentController {
     
     private final ApartmentService apartmentService;
