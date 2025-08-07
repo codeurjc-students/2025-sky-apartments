@@ -7,7 +7,6 @@ import com.skyapartments.backend.service.ApartmentService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,5 +63,5 @@ public class ApartmentServiceTest {
         Optional<ApartmentDTO> result = apartmentService.getApartmentById(1L);
         assertThat(result).isNotPresent();
     }
-    
+
 }
