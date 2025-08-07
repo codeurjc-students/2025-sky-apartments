@@ -1,4 +1,4 @@
-package com.skyapartments.backend;
+package com.skyapartments.backend.e2e;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
