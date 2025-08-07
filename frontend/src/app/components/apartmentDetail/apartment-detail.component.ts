@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApartmentService } from '../services/apartment.service';
-import { ApartmentDTO } from '../dtos/apartment.dto';
+import { ApartmentDTO } from '../../dtos/apartment.dto';
+import { ApartmentService } from '../../services/apartment.service';
+
 
 @Component({
   imports: [CommonModule],
