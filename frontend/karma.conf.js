@@ -14,6 +14,9 @@ module.exports = function (config) {
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'], //ChromeHeadless for non-GUI environments
-    restartOnFileChange: true
+    restartOnFileChange: true,
+    proxies: {
+      '/api/': 'http://localhost:8080/api/'
+    },
   });
 };

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ApartmentDTO } from '../dtos/apartment.dto';
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 import { catchError, Observable, throwError } from 'rxjs';
 
 const BASE_URL = "/api/apartments/";
@@ -13,7 +13,7 @@ export class ApartmentService {
   public getApartments(): Observable<ApartmentDTO[]> {
     return this.http.get<ApartmentDTO[]>(BASE_URL);
   }
-  
+
   public getApartmentById(id: number | string): Observable<ApartmentDTO> {
     return this.http.get<ApartmentDTO>(BASE_URL + id);
   }

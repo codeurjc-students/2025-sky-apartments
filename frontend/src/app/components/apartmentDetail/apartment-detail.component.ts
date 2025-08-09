@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
-import { ApartmentService } from '../../services/apartment.service';
+import { ApartmentService } from '../../services/apartment/apartment.service';
 
 
 @Component({
