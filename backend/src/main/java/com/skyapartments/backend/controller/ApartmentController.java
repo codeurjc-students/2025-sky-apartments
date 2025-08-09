@@ -40,3 +40,4 @@ public class ApartmentController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+}
