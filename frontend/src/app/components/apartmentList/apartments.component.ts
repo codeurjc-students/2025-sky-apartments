@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { ApartmentDTO } from "../dtos/apartment.dto";
-import { ApartmentService } from "../services/apartment.service";
+import { ApartmentDTO } from "../../dtos/apartment.dto";
+import { ApartmentService } from "../../services/apartment.service";
 import { NgForOf, NgIf } from "@angular/common";
 import { RouterModule } from "@angular/router"
 
