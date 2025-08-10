@@ -13,14 +13,15 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ApartmentServiceTest {
+
+public class ApartmentServiceUnitTest {
     
     private ApartmentService apartmentService;
     private ApartmentRepository apartmentRepository = mock(ApartmentRepository.class);
 
-    public ApartmentServiceTest() {
+    public ApartmentServiceUnitTest() {
         apartmentService = new ApartmentService(apartmentRepository);
     }
 
