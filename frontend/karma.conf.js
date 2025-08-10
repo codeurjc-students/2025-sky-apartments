@@ -13,7 +13,7 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['Chrome'], //ChromeHeadless for non-GUI environments
+    browsers: ['ChromeHeadless'], //ChromeHeadless for non-GUI environments
     restartOnFileChange: true,
     proxies: {
       '/api/': 'http://localhost:8080/api/'
