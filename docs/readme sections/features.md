@@ -43,3 +43,6 @@
 
 - Intelligent search algorithm: Prioritizes apartments with better reviews and optimal availability based on selected dates.
 - Dynamic pricing: The price per night will vary depending on the day of the week, season (low, medium, or high), occupancy, and proximity to the booking date (last-minute reservations, etc.).
+
+---
+[👉 Go back](/README.md)

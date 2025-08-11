@@ -29,4 +29,7 @@ The project will follow an iterative and incremental development model with the 
 | 6     | 15-04-2026 | 15-05-2026 |
 | 7     | 15-05-2026 | 15-06-2026 |
 
-![Gantt chart for project`s phases](docs/images/gantt_chart.png)
+![Gantt chart for project`s phases](../images/gantt_chart.png)
+
+---
+[👉 Go back](/README.md)

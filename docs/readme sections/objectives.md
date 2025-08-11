@@ -25,3 +25,6 @@ The project will be developed using modern web technologies, ensuring scalabilit
 - RESTful API structure
 - JWT-based authentication
 - End-to-end testing with Selenium
+
+---
+[👉 Go back](/README.md)
