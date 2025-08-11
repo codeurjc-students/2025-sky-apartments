@@ -5,6 +5,8 @@ on:
         branches:
             - feature/**
             - fix/**
+            - testing/**
+            - ci/**
     workflow_dispatch:
 
 jobs:
