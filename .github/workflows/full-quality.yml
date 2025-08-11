@@ -1,0 +1,144 @@
+name: Full Quality Check
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    backend-full:
+        name: Backend Full Quality Check
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./backend
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '17'
+                distribution: 'temurin'
+
+            - name: Run Backend Unit Tests
+              run: mvn test -Dtest='*UnitTest'
+
+            - name: Run Backend Integration Tests
+              run: mvn test -Dtest='*IntegrationTest'
+            
+            - name: Run Backend e2e Tests
+              run: mvn test -Dtest='*e2eTest'
+
+    frontend-integration:
+        name: Frontend Integration Quality Check
+        runs-on: ubuntu-latest
+        services:
+          mysql:
+            image: mysql:8
+            env:
+              MYSQL_ROOT_PASSWORD: root
+              MYSQL_DATABASE: skyapartments
+              MYSQL_USER: user
+              MYSQL_PASSWORD: pass
+            ports:
+              - 3306:3306
+            options: >-
+              --health-cmd="mysqladmin ping --silent"
+        
+        steps:
+          - uses: actions/checkout@v4
+          
+          # Backend
+          - name: Set up JDK
+            uses: actions/setup-java@v4
+            with:
+              java-version: 17
+              distribution: temurin
+
+          - name: Build backend
+            working-directory: backend
+            run: mvn clean package -DskipTests
+
+          - name: Wait for MySQL
+            run: |
+                echo "Waiting for MySQL to be ready..."
+                for i in {1..30}; do
+                if mysql -h 127.0.0.1 -uuser -ppass -e "SHOW DATABASES;" > /dev/null 2>&1; then
+                    echo "MySQL is ready!"
+                    break
+                fi
+                echo "MySQL not ready yet..."
+                sleep 2
+                done
+
+          - name: Run backend
+            working-directory: backend
+            env:
+                SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/skyapartments
+                SPRING_DATASOURCE_USERNAME: user
+                SPRING_DATASOURCE_PASSWORD: pass
+            run: nohup java -jar target/backend-0.0.1-SNAPSHOT.jar &
+
+          - name: Wait for backend
+            run: |
+              echo "Waiting for backend to start..."
+              for i in {1..30}; do
+                if nc -z localhost 8080; then
+                  echo "Backend is up!"
+                  break
+                fi
+                echo "Backend not ready yet..."
+                sleep 2
+              done
+          
+          # Frontend
+          - name: Set up Node
+            uses: actions/setup-node@v4
+            with:
+              node-version: 20
+
+          - name: Install frontend dependencies
+            working-directory: frontend
+            run: npm ci
+
+          - name: Run integration tests
+            working-directory: frontend
+            run: npm run test:integration
+
+    frontend-unit-e2e:
+        name: Frontend Unit and E2E Quality Check
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./frontend
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Run Frontend Unit Tests
+              run: npm run test:unit
+
+            - name: Install Playwright Browsers
+              run: npx playwright install
+
+            - name: Start Frontend Server
+              run: npm run start &
+              
+            - name: Wait for server to be ready
+              run: |
+                npx wait-on http://localhost:4200  
+
+            - name: Run Frontend E2E Tests
+              run: npm run test:e2e
