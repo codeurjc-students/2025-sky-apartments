@@ -93,7 +93,30 @@ The following tools and IDEs are used to develop the application. Only the ones 
 
 ## 🏗️ Architecture
 
+### **Deployment Architecture**
 
+The application follows a **monolithic** architecture with two main components deployed as separate processes:
+
+1. **Frontend (Angular 19 SPA)**  
+   - Runs in a Node.js-based development server during development and is built into static files for production.
+   - Communicates exclusively with the backend via **HTTP** using a REST API.
+
+2. **Backend (Spring Boot)**  
+   - Runs as a standalone Java process (JAR) or within a servlet container.
+   - Connects to a **MySQL** database for persistent data storage.
+   - Exposes its functionality through a **REST API**.
+
+**Communication Protocols:**
+
+- **Frontend → Backend:** HTTP REST calls in JSON format.
+- **Backend → Database:** JDBC protocol using the MySQL Connector/J driver.
+
+### **REST API**
+
+The backend REST API is defined using **OpenAPI** specification.  
+A generated **HTML version** of the documentation is available for direct viewing on GitHub without executing the application:
+
+📄 **[View REST API Documentation](/docs/api/api-docs.html)**
 
 ---
 
