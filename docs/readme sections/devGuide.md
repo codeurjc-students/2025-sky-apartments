@@ -42,7 +42,7 @@ Communication between client and server occurs **exclusively** via **REST API** 
 | **Architecture**   | Monolithic (client, server, DB)    |
 | **Communication**  | REST API (HTTP/JSON)                |
 | **Deployment Env** | Docker containers (if applicable)  |
-| **Quality Control**| Unit, integration and E2E tests; static code analysis |
+| **Quality Control**| Unit, integration and E2E tests |
 | **Development Process** | Iterative and incremental, version control with Git and CI/CD with GitHub Actions |
 
 ---
@@ -120,15 +120,57 @@ A generated **HTML version** of the documentation is available for direct viewin
 
 ---
 
-### ✅ Quality Assurance
+## ✅ Quality Assurance
+
+### 🧪 Backend
+
+The backend has undergone several layers of automated testing to ensure reliability, maintainability, and correctness of the implemented features.
+
+#### **Types of Test**
+
+- **Unit Tests** — Validating the logic of individual service classes in isolation.  
+  - Example: `ApartmentService` tested using **Mockito** to mock the repository layer.
+- **Integration Tests** — Testing service behavior with a real database connection.  
+  - Example: `ApartmentService` tested using **Testcontainers** with a **MySQL** container.
+- **End-to-End (E2E) Tests** — Validating the full API functionality from request to database.  
+  - Example: API tested using **Testcontainers** with **MySQL** for persistence.
+
+#### **Test Execution Metrics**
+
+The following table summarizes the coverage report for the backend (generated using **JaCoCo**):
+
+| Metric                | Value         |
+|-----------------------|--------------|
+| **Line Coverage**     | 73% (55/210 instructions missed) |
+| **Branch Coverage**   | 100% (0/2 branches missed)        |
+| **Number of Classes** | 6            |
+| **Number of Methods** | 33 total, 11 missed              |
+
+#### **Coverage by Package**
+
+| Package | Line Coverage | Branch Coverage |
+|---------|--------------|----------------|
+| `com.skyapartments.backend.dto`        | 47% | N/A |
+| `com.skyapartments.backend.model`      | 62% | N/A |
+| `com.skyapartments.backend`            | 37% | N/A |
+| `com.skyapartments.backend.service`    | 100%| N/A |
+| `com.skyapartments.backend.controller` | 100%| 100% |
+
+#### **Coverage Report Screenshot**
+
+![Backend Coverage Report](/docs/coverage-report/backend.jpg)
+
+
+
+
 
 ---
 
-### 🔄 Development Process
+## 🔄 Development Process
 
 ---
 
-### ▶️ Code Execution and Environment Setup
+## ▶️ Code Execution and Environment Setup
 
 ---
 [👉 Go back](/README.md)
