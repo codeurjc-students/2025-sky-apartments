@@ -160,9 +160,56 @@ The following table summarizes the coverage report for the backend (generated us
 
 ![Backend Coverage Report](/docs/coverage-report/backend.jpg)
 
+### 🧪 Frontend
 
+It has been tested at three different levels: **unit testing**, **integration testing**, and **end-to-end (E2E) testing**.  
+The goal of these tests is to ensure the correct functionality of individual components, service integration, and the overall user flow.
 
+#### **Types of Test**
 
+- **Unit Tests** — Validating the logic of individual components in isolation using a virtual DOM and mocked services.  
+  - Example: Testing `ApartmentListComponent` with mocked `ApartmentService` using **Jasmine** and **Karma**.  
+- **Integration Tests** — Testing component and service interactions using **TestBed** with a real database connection.  
+  - Example: Testing `BookingComponent` with **TestBed** against a real **MySQL** instance.  
+- **End-to-End (E2E) Tests** — Validating the complete user flow in the browser.  
+  - Example: Booking flow tested using **Playwright** from UI actions to backend responses.  
+
+#### **Coverage Metrics - Unit & Integration Tests**
+
+Frontend test coverage is generated using **Karma + Istanbul** with the command:
+
+```bash
+ng test --code-coverage
+```
+
+This generates a coverage report in `frontend/coverage/frontend` folder.
+
+##### **Coverage Sumary**
+
+|Type      |Coverage|
+|----------|--------|
+|Lines     | 100%   |
+|Functions | 100%   |
+|Branches  | 100%   |
+|Statements| 100%   |
+
+![Frontend Coverage Report](/docs/coverage-report/frontend_Unit_Integration.jpg)
+
+#### **Ent-to-End (E2E) Tests**
+
+Executed with:
+
+``` bash
+npx playwright test
+```
+
+To open the interactive report:
+
+```bash
+npx playwright show-report
+```
+
+![📸 Playwright report screenshot](/docs/coverage-report/frontend_e2e.jpg)
 
 ---
 
