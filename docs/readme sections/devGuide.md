@@ -88,6 +88,7 @@ The following tools and IDEs are used to develop the application. Only the ones 
 - **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** — A containerization platform used to run MySQL databases locally for development and testing. It also supports running backend services in containers if needed.
 - **[Git](https://git-scm.com/)** — A distributed version control system for tracking changes in the source code and enabling collaboration between developers.
 - **[GitHub](https://github.com/)** — A cloud-based platform for hosting the Git repository, managing code versions, and integrating Continuous Integration (CI) workflows.
+- **[JaCoCo](https://www.jacoco.org/jacoco/)** — A Java code coverage library used to measure how much of the backend code is exercised by automated tests. It helps monitor testing quality and identify untested parts of the application.
 
 ---
 
@@ -315,6 +316,94 @@ flowchart TD
 ---
 
 ## ▶️ Code Execution and Environment Setup
+
+## 1. Repository Setup
+
+To clone the repository, use the following command:
+
+```bash
+git clone https://github.com/codeurjc-students/2025-sky-apartments.git
+cd 2025-sky-apartments
+```
+
+## 2. Prerequisites
+
+- **Java:** 17  
+- **Node.js:** 20.18.0  
+- **MySQL:** 8.0 (via Docker)  
+- **Maven Wrapper** (included in the repository, so no need to install Maven globally).
+
+## 3. Database Setup
+
+Run the following Docker command to start the MySQL container:
+
+```bash
+docker run --name mysql-skyapartments   -e MYSQL_ROOT_PASSWORD=root   -e MYSQL_DATABASE=skyapartments   -e MYSQL_USER=user   -e MYSQL_PASSWORD=password   -p 3306:3306   -d mysql:8.0
+```
+
+## 4. Backend Execution
+
+Navigate to the backend folder and start the Spring Boot server:
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+The backend will run on: **http://localhost:8080**  
+API base URL: **http://localhost:8080/api/apartments/**
+
+## 5. Frontend Execution
+
+Navigate to the frontend folder and start Angular:
+
+```bash
+cd frontend
+npm install
+npm start
+# or
+ng serve
+```
+
+The frontend will be available at: **http://localhost:4200**
+
+A proxy configuration is used to forward `/api` requests to the backend.
+
+## 6. Running Tests
+
+### Backend Tests
+
+```bash
+cd backend
+mvn test
+```
+
+### Frontend Unit & Integration Tests
+
+```bash
+cd frontend
+npm run test
+npm run test:integration  # backend must be running
+```
+
+### End-to-End Tests (Playwright)
+
+```bash
+cd frontend
+npm run test:e2e  # backend and frontend must be running
+```
+
+To view the Playwright report:
+
+```bash
+npx playwright show-report
+```
+
+## 7. Creating a Release
+
+Releases are created manually via **GitHub Releases**.
+
+Go to the repository’s **Releases** section, draft a new release, tag it, and publish.
 
 ---
 [👉 Go back](/README.md)
