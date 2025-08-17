@@ -215,6 +215,103 @@ npx playwright show-report
 
 ## 🔄 Development Process
 
+The development of the application followed an **iterative and incremental process**, inspired by the **Agile Manifesto** principles.
+
+Although the project does not strictly follow Scrum or Kanban, some **Extreme Programming (XP)** practices were applied, such as continuous integration, automated testing, and short development iterations.
+
+---
+
+## 1. Task Management
+
+Task management was handled using **GitHub Issues** and **GitHub Projects**, supported by a **visual Kanban board**.  
+This allowed clear tracking of requirements, prioritization of tasks, and progress monitoring.
+
+- **GitHub Issues** → Used to register bugs, enhancements, and new features.  
+- **GitHub Projects (Kanban board)** → Provided a visual workflow with columns such as *To Do*, *In Progress*, and *Done*.  
+
+📸 *Example of GitHub Project board:*  
+![GitHub Project Board](/docs/images/github_project.jpg)
+
+---
+
+## 2. Git Workflow
+
+Version control was managed using **Git** with a **branching strategy** based on *feature branches*, *fix branches*, and *main branch protection*.
+
+- **`main` branch** → Stable branch, always deployable.  
+- **Feature branches** (`feature/*`) → Created for each new functionality.  
+- **Fix branches** (`fix/*`) → Created for bug resolution.  
+- **Other branches** (`testing/*`, `ci/*`, `docs/*`) → Used for upload documentation, testing, or workflow configuration.  
+- **Pull Requests** → Enforced code reviews and CI execution before merging.
+
+---
+
+## 3. Continuous Integration (CI)
+
+The project used **GitHub Actions** for continuous integration.  
+Two workflows were defined:
+
+### 🔹 Basic Quality Check
+
+- Triggered on pushes to `feature/*`, `fix/*`, `testing/*`, and `ci/*`.
+- Runs **basic unit tests** for both backend and frontend.  
+
+**Jobs:**
+
+- `backend-basic` → Executes backend unit tests (`mvn test -Dtest='*UnitTest'`).
+- `frontend-basic` → Installs dependencies and runs frontend unit tests (`npm run test:unit`).  
+
+---
+
+### 🔹 Full Quality Check
+
+- Triggered on pull requests to `main`.  
+- Executes **all test types** for both backend and frontend.  
+
+**Jobs:**
+
+- `backend-full`  
+  - Runs **unit tests**, **integration tests**, and **end-to-end (E2E)** tests in Spring Boot.  
+
+- `frontend-integration`  
+  - Spins up a **MySQL container** and the backend.  
+  - Runs **frontend integration tests** with a live database and backend.  
+
+- `frontend-unit-e2e`  
+  - Runs **frontend unit tests**.  
+  - Starts the frontend server.  
+  - Executes **Playwright E2E tests** in a real browser.  
+
+---
+
+## 4. Workflow Diagram
+
+```mermaid
+flowchart TD
+
+    A[GitHub Issue Created] --> B[Branch Created]
+    B -->|feature/* or fix/*| C[Push to Branch]
+    C --> D[Basic Quality Check]
+    D --> E[Pull Request to main]
+    E --> F[Full Quality Check]
+    F -->|All tests pass| G[Merge to main]
+    F -->|Failure| H[Fix Issues and Repeat]
+```
+
+## 5. Summary
+
+- The development process was **iterative and incremental**, adopting lightweight Agile practices.
+
+- Task management relied on **GitHub Issues and Projects**, ensuring transparency.
+
+- A clear **Git branching strategy** was applied, including `feature/*` and `fix/*`.
+
+- **Continuous Integration** was implemented via **GitHub Actions**, with two workflows:
+
+  - `Basic Quality Check` (on branch pushes).
+
+  - `Full Quality Check` (on pull requests to `main`).
+
 ---
 
 ## ▶️ Code Execution and Environment Setup
