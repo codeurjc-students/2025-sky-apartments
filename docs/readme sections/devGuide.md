@@ -369,7 +369,16 @@ The frontend will be available at: **http://localhost:4200**
 
 A proxy configuration is used to forward `/api` requests to the backend.
 
-## 6. Running Tests
+## 6. Development Tools
+
+- **IDE:** Any Java-compatible IDE (e.g., IntelliJ IDEA, VS Code, Eclipse) for backend, and VS Code for frontend.  
+- **Postman:** Used to interact with the backend REST API.  
+  - The Postman collection is provided in the repository:  
+    `backend/postman/Sky Apartments.postman_collection.json`
+
+This file includes example requests for all REST API operations with sample data.
+
+## 7. Running Tests
 
 ### Backend Tests
 
@@ -399,7 +408,7 @@ To view the Playwright report:
 npx playwright show-report
 ```
 
-## 7. Creating a Release
+## 8. Creating a Release
 
 Releases are created manually via **GitHub Releases**.
 
