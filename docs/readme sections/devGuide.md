@@ -117,7 +117,7 @@ The application follows a **monolithic** architecture with two main components d
 The backend REST API is defined using **OpenAPI** specification.  
 A generated **HTML version** of the documentation is available for direct viewing on GitHub without executing the application:
 
-📄 **[View REST API Documentation](/docs/api/api-docs.html)**
+📄 **[View REST API Documentation](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/14d3b8216f39521555db9dc96a4bed471fdeaf7b/docs/api/api-docs.html)**
 
 ---
 
