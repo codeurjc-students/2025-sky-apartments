@@ -1,65 +1,63 @@
 package com.skyapartments.apartment.dto;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+
 import com.skyapartments.apartment.model.Apartment;
 
 public class ApartmentDTO {
-    
+
     private Long id;
-    
+
     private String name;
 
     private String description;
 
-    private String address;
+    private BigDecimal price;
 
-    public ApartmentDTO () {
+    private Set<String> services;
 
-    }
+    private int capacity;
 
-    public ApartmentDTO(Long id, String name, String description, String address) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.address = address;
-    }
+    private List<String> imageUrls; 
 
-    public ApartmentDTO(Apartment apto) {
-        this.id = apto.getId();
-        this.name = apto.getName();
-        this.description = apto.getDescription();
-        this.address = apto.getAddress();
+    public ApartmentDTO(Apartment apartment) {
+        this.id = apartment.getId();
+        this.name = apartment.getName();
+        this.description = apartment.getDescription();
+        this.price = apartment.getPrice();
+        this.capacity = apartment.getCapacity();
+        this.services = apartment.getServices();
+        this.imageUrls = apartment.getImageUrls();
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public String getAddress() {
-        return address;
+    public Set<String> getServices() {
+        return services;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
 }

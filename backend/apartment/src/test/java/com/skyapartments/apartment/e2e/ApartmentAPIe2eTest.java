@@ -21,6 +21,9 @@ import io.restassured.RestAssured;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class ApartmentAPIe2eTest {
@@ -52,7 +55,13 @@ public class ApartmentAPIe2eTest {
         RestAssured.port = port;
 
         apartmentRepository.deleteAll();
-        savedApartment = apartmentRepository.save(new Apartment("Test Apartment", "Nice view", "123 Fake St"));
+        savedApartment = apartmentRepository.save(new Apartment(
+            "Test Apartment", 
+            "Nice view", 
+            BigDecimal.valueOf(100.0), 
+            Set.of("WiFi", "Parking"), 
+            4
+        ));
     }
 
     @Test
@@ -65,7 +74,9 @@ public class ApartmentAPIe2eTest {
             .body("size()", equalTo(1))
             .body("[0].name", equalTo("Test Apartment"))
             .body("[0].description", equalTo("Nice view"))
-            .body("[0].address", equalTo("123 Fake St"));
+            .body("[0].price", equalTo(100.0f))
+            .body("[0].capacity", equalTo(4))
+            .body("[0].services", hasItems("WiFi", "Parking"));
     }
 
     @Test
@@ -89,7 +100,9 @@ public class ApartmentAPIe2eTest {
             .statusCode(200)
             .body("name", equalTo("Test Apartment"))
             .body("description", equalTo("Nice view"))
-            .body("address", equalTo("123 Fake St"));
+            .body("price", equalTo(100.0f))
+            .body("capacity", equalTo(4))
+            .body("services", hasItems("WiFi", "Parking"));
     }
 
     @Test
