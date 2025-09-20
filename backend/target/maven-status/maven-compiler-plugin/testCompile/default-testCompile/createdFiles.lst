@@ -1,4 +1,0 @@
-com\skyapartments\backend\testutils\AbstractMySQLTest.class
-com\skyapartments\backend\unit\ApartmentServiceUnitTest.class
-com\skyapartments\backend\integration\ApartmentServiceIntegrationTest.class
-com\skyapartments\backend\e2e\ApartmentAPIe2eTest.class
