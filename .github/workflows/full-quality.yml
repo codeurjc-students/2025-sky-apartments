@@ -73,13 +73,13 @@ jobs:
                 sleep 2
                 done
 
-          - name: Run backend
-            working-directory: backend
+          - name: Run apartment
+            working-directory: backend/apartment
             env:
                 SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/skyapartments
                 SPRING_DATASOURCE_USERNAME: user
                 SPRING_DATASOURCE_PASSWORD: pass
-            run: nohup java -jar target/backend-0.0.1-SNAPSHOT.jar &
+            run: nohup java -jar target/apartment-0.0.1-SNAPSHOT.jar &
 
           - name: Wait for backend
             run: |
