@@ -30,7 +30,6 @@ public class ApartmentRequestDTO {
     private int capacity;
 
     @NotNull(message = "At least one image is required")
-    @Size(min = 1, message = "At least one image is required")
     private MultipartFile image;
 
     public String getName() {
