@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.skyapartments.apartment.dto.ApartmentRequestDTO;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -33,12 +35,9 @@ public class Apartment {
 
     private BigDecimal price;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "apartment_images", joinColumns = @JoinColumn(name = "apartment_id"))
     @Column(name = "image_url")
-    private List<String> imageUrls = new ArrayList<>();
+    private String imageUrl;
 
-   
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> services;
 
@@ -55,6 +54,14 @@ public class Apartment {
         this.capacity = capacity;
     }
 
+    public Apartment (ApartmentRequestDTO apartmentRequestDTO) {
+        this.name = apartmentRequestDTO.getName();
+        this.description = apartmentRequestDTO.getDescription();
+        this.price = apartmentRequestDTO.getPrice();
+        this.services = apartmentRequestDTO.getServices();
+        this.capacity = apartmentRequestDTO.getCapacity();
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -63,19 +70,12 @@ public class Apartment {
         this.price = price;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void addImageUrl(String imageUrl) {
-        if (this.imageUrls == null) {
-            this.imageUrls = new ArrayList<>();
-        }
-        this.imageUrls.add(imageUrl);
-    }
-
-    public void setImagesUrl (List<String> imagesUrl) {
-        this.imageUrls = imagesUrl;
+    public void setImageUrl (String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Set<String> getServices() {
@@ -118,7 +118,5 @@ public class Apartment {
         this.capacity = capacity;
     }
 
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
-    }
 }
+

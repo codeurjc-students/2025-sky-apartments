@@ -20,7 +20,7 @@ public class ApartmentDTO {
 
     private int capacity;
 
-    private List<String> imageUrls; 
+    private String imageUrl; 
 
     public ApartmentDTO(Apartment apartment) {
         this.id = apartment.getId();
@@ -29,7 +29,7 @@ public class ApartmentDTO {
         this.price = apartment.getPrice();
         this.capacity = apartment.getCapacity();
         this.services = apartment.getServices();
-        this.imageUrls = apartment.getImageUrls();
+        this.imageUrl = apartment.getImageUrl();
     }
 
     public Long getId() {
@@ -56,8 +56,8 @@ public class ApartmentDTO {
         return capacity;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
 }
