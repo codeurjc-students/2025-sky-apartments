@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -29,8 +30,12 @@ public class ApartmentRequestDTO {
     @Min(value = 1, message = "Capacity must be at least 1")
     private int capacity;
 
-    @NotNull(message = "At least one image is required")
     private MultipartFile image;
+
+    @AssertTrue(message = "At least one image is required")
+    public boolean isImagePresent() {
+        return image != null && !image.isEmpty();
+    }
 
     public String getName() {
         return name;

@@ -66,6 +66,12 @@ public class ApartmentService {
 
         Apartment apartment = apartmentRepository.findById(id)
             .orElseThrow(() -> new BusinessValidationException("Apartment not found with id " + id));
+            
+        apartmentRepository.findByNameAndIdNot(apartmentRequestDTO.getName(), id)
+        .ifPresent(a -> {
+            throw new BusinessValidationException("Apartment name already exists: " + apartmentRequestDTO.getName());
+        });
+
 
         apartment.setName(apartmentRequestDTO.getName());
         apartment.setDescription(apartmentRequestDTO.getDescription());
@@ -78,7 +84,7 @@ public class ApartmentService {
     
         apartment.setImageUrl(null);
 
-        // Upload new images
+        // Upload new image
         if (apartmentRequestDTO.getImage() != null) {
             try {
                 String imageUrl = imageService.saveImage(apartmentRequestDTO.getImage(), apartment.getId());

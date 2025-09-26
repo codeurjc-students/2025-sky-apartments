@@ -1,5 +1,6 @@
 package com.skyapartments.apartment.repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +41,7 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long>{
     Page<Apartment> findAll (Pageable pageable);
 
     boolean existsByName(String name);
+
+    Optional<Apartment> findByNameAndIdNot(String name, Long id);
+
 }
