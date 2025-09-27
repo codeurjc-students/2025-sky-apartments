@@ -2,6 +2,7 @@ package com.skyapartments.apartment.service;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -79,10 +80,15 @@ public class DataBaseInitializer {
 
     private void addImageToApartment(Long apartmentId, String resourcePath) throws Exception {
         ClassPathResource resource = new ClassPathResource(resourcePath);
+        String contentType = Files.probeContentType(Path.of(resource.getFilename()));
+        if (contentType == null) {
+            contentType = "image/jpeg";
+        }
+
         MultipartFile multipartFile = new MockMultipartFile(
                 resource.getFilename(),
                 resource.getFilename(),
-                Files.probeContentType(resource.getFile().toPath()),
+                contentType,
                 resource.getInputStream()
         );
 
@@ -92,5 +98,6 @@ public class DataBaseInitializer {
         apartment.setImageUrl(url);
         apartmentRepository.save(apartment);
     }
+
 }
 

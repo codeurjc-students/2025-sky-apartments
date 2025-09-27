@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  mysql-apartments:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: apartmentsdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3303:3306"
+    networks:
+      - apartments-network
+    volumes:
+      - mysql_apartments_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - apartments-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+  mc:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5 &&
+        mc alias set local http://minio:9000 minioadmin minioadmin &&
+        mc mb -p local/apartments-images || true &&
+        mc anonymous set public local/apartments-images
+        tail -f /dev/null
+      "
+    networks:
+      - apartments-network
+  
+  apartment:
+    build:
+      context: ./backend
+      dockerfile: apartment/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-apartments:3306/apartmentsdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      MINIO_URL: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: apartments-images
+      JWT_SECRET: Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
+      EUREKA_CLIENT_SERVICE_URL: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-apartments:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    networks:
+      - apartments-network
+  
+volumes:
+  mysql_apartments_data:
+  minio_data:
+
+networks:
+  apartments-network:
+    driver: bridge

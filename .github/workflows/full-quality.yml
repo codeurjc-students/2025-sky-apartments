@@ -7,8 +7,8 @@ on:
     workflow_dispatch:
 
 jobs:
-    backend-full:
-        name: Backend Full Quality Check
+    backend-unit-integration:
+        name: Backend Unit & Integration Check
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -28,64 +28,74 @@ jobs:
             - name: Run Backend Integration Tests
               run: mvn test -Dtest='*IntegrationTest'
             
-            - name: Start services for E2E tests
-              run: |
-                cd ..  # Volver al directorio raíz donde está el docker-compose.yml
-                docker-compose up -d
+    backend-e2e:
+      name: Backend e2e Check
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: ./backend
+      steps:
+        - uses: actions/checkout@v4
+        - name: Set up Java
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+            distribution: 'temurin'
+            cache: maven
                 
-            - name: Wait for services to be ready
-              run: |
-                cd ..
-                # Esperar a que MySQL esté listo
-                echo "Esperando a MySQL..."
-                timeout 120 bash -c 'until docker exec apartments-mysql mysqladmin ping -h"127.0.0.1" --silent; do sleep 2; done'
+        - name: Build backend application
+          run: mvn clean package -DskipTests
+            
+        - name: Start all services with Docker Compose
+          run: |
+            cd ..
+            docker-compose up -d
                 
-                # Esperar a que MinIO esté listo
-                echo "Esperando a MinIO..."
-                timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live; do sleep 2; done'
+        - name: Wait for all services to be ready
+          run: |
+            cd ..
+            echo "Waiting for MySQL..."
+            timeout 120 bash -c 'until docker exec $(docker ps -q -f name=mysql-apartments) mysqladmin ping -h"127.0.0.1" -uuser -ppassword --silent; do sleep 2; done'
+      
+            echo "Waiting for MinIO..."
+            timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live; do sleep 2; done'
+            
+            echo "Checking bucket of MinIO..."
+            timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists"; do sleep 2; done'
+            
+            echo "Waiting for backend..."
+            timeout 180 bash -c 'until curl -f http://localhost:8083/actuator/health 2>/dev/null; do sleep 3; done'
                 
-                # Verificar que el bucket se haya creado correctamente
-                echo "Verificando bucket de MinIO..."
-                sleep 5
-                
-            - name: Set E2E environment variables
-              run: |
-                echo "DATABASE_URL=jdbc:mysql://localhost:3303/apartmentsdb" >> $GITHUB_ENV
-                echo "DATABASE_USERNAME=user" >> $GITHUB_ENV
-                echo "DATABASE_PASSWORD=password" >> $GITHUB_ENV
-                echo "MINIO_URL=http://localhost:9000" >> $GITHUB_ENV
-                echo "MINIO_ACCESS_KEY=minioadmin" >> $GITHUB_ENV
-                echo "MINIO_SECRET_KEY=minioadmin" >> $GITHUB_ENV
-                echo "MINIO_BUCKET=apartments-images" >> $GITHUB_ENV
-                
-            - name: Run Backend E2E Tests
-              run: mvn test -Dtest='*e2eTest'
-              env:
-                SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
-                SPRING_DATASOURCE_USERNAME: user
-                SPRING_DATASOURCE_PASSWORD: password
-                MINIO_URL: http://localhost:9000
-                MINIO_ACCESS_KEY: minioadmin
-                MINIO_SECRET_KEY: minioadmin
-                MINIO_BUCKET_NAME: apartments-images
-                
-            - name: Show service logs on failure
-              if: failure()
-              run: |
-                cd ..
-                echo "=== MySQL logs ==="
-                docker logs apartments-mysql
-                echo "=== MinIO logs ==="
-                docker logs apartments-minio
-                echo "=== MinIO init logs ==="
-                docker logs apartments-minio-init
-                
-            - name: Stop services
-              if: always()
-              run: |
-                cd ..
-                docker-compose down -v
-
+        - name: Run Backend E2E Tests against deployed services
+          run: mvn test -Dtest='*e2eTest'
+          env:
+            BACKEND_BASE_URL: http://localhost:8083
+            SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
+            SPRING_DATASOURCE_USERNAME: user
+            SPRING_DATASOURCE_PASSWORD: password
+            MINIO_URL: http://localhost:9000
+            MINIO_ACCESS_KEY: minioadmin
+            MINIO_SECRET_KEY: minioadmin
+            MINIO_BUCKET_NAME: apartments-images
+            
+        - name: Show service logs on failure
+          if: failure()
+          run: |
+            cd ..
+            echo "=== MySQL logs ==="
+            docker logs $(docker ps -q -f name=mysql-apartments)
+            echo "=== MinIO logs ==="
+            docker logs $(docker ps -q -f name=minio)
+            echo "=== MinIO MC logs ==="
+            docker logs $(docker ps -q -f name=mc)
+            echo "=== Backend Application logs ==="
+            docker logs $(docker ps -q -f name=apartment)
+            
+        - name: Stop services
+          if: always()
+          run: |
+            cd ..
+            docker-compose down -v
 
     frontend-integration:
         name: Frontend Integration Quality Check
@@ -107,47 +117,52 @@ jobs:
           - uses: actions/checkout@v4
           
           # Backend
-          - name: Set up JDK
+          - uses: actions/checkout@v4
+          - name: Set up Java
             uses: actions/setup-java@v4
             with:
-              java-version: 17
-              distribution: temurin
-
-          - name: Build backend
-            working-directory: backend
+              java-version: '17'
+              distribution: 'temurin'
+              cache: maven
+                  
+          - name: Build backend application
             run: mvn clean package -DskipTests
-
-          - name: Wait for MySQL
+              
+          - name: Start all services with Docker Compose
             run: |
-                echo "Waiting for MySQL to be ready..."
-                for i in {1..30}; do
-                if mysql -h 127.0.0.1 -uuser -ppass -e "SHOW DATABASES;" > /dev/null 2>&1; then
-                    echo "MySQL is ready!"
-                    break
-                fi
-                echo "MySQL not ready yet..."
-                sleep 2
-                done
-
-          - name: Run apartment
-            working-directory: backend/apartment
+              cd ..  # Volver al directorio raíz donde está el docker-compose.yml
+              docker-compose up -d
+                  
+          - name: Wait for all services to be ready
+            run: |
+              cd ..
+              # Esperar a que MySQL esté listo
+              echo "Esperando a MySQL..."
+              timeout 120 bash -c 'until docker exec $(docker ps -q -f name=mysql-apartments) mysqladmin ping -h"127.0.0.1" -uuser -ppassword --silent; do sleep 2; done'
+              
+              # Esperar a que MinIO esté listo
+              echo "Esperando a MinIO..."
+              timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live; do sleep 2; done'
+              
+              # Esperar a que el bucket se haya creado
+              echo "Verificando bucket de MinIO..."
+              timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists"; do sleep 2; done'
+              
+              # Esperar a que la aplicación backend esté lista
+              echo "Esperando a la aplicación backend..."
+              timeout 180 bash -c 'until curl -f http://localhost:8083/actuator/health 2>/dev/null; do sleep 3; done'
+                  
+          - name: Run Backend E2E Tests against deployed services
+            run: mvn test -Dtest='*e2eTest'
             env:
-                SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/skyapartments
-                SPRING_DATASOURCE_USERNAME: user
-                SPRING_DATASOURCE_PASSWORD: pass
-            run: nohup java -jar target/apartment-0.0.1-SNAPSHOT.jar &
-
-          - name: Wait for backend
-            run: |
-              echo "Waiting for backend to start..."
-              for i in {1..30}; do
-                if nc -z localhost 8080; then
-                  echo "Backend is up!"
-                  break
-                fi
-                echo "Backend not ready yet..."
-                sleep 2
-              done
+              BACKEND_BASE_URL: http://localhost:8083
+              SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
+              SPRING_DATASOURCE_USERNAME: user
+              SPRING_DATASOURCE_PASSWORD: password
+              MINIO_URL: http://localhost:9000
+              MINIO_ACCESS_KEY: minioadmin
+              MINIO_SECRET_KEY: minioadmin
+              MINIO_BUCKET_NAME: apartments-images
           
           # Frontend
           - name: Set up Node
@@ -162,6 +177,25 @@ jobs:
           - name: Run integration tests
             working-directory: frontend
             run: npm run test:integration
+          
+          - name: Show service logs on failure
+            if: failure()
+            run: |
+              cd ..
+              echo "=== MySQL logs ==="
+              docker logs $(docker ps -q -f name=mysql-apartments)
+              echo "=== MinIO logs ==="
+              docker logs $(docker ps -q -f name=minio)
+              echo "=== MinIO MC logs ==="
+              docker logs $(docker ps -q -f name=mc)
+              echo "=== Backend Application logs ==="
+              docker logs $(docker ps -q -f name=apartment)
+              
+          - name: Stop services
+            if: always()
+            run: |
+              cd ..
+              docker-compose down -v
 
     frontend-unit-e2e:
         name: Frontend Unit and E2E Quality Check
