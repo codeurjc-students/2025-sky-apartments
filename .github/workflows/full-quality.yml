@@ -7,80 +7,84 @@ on:
     workflow_dispatch:
 
 jobs:
-    backend-unit-integration:
-        name: Backend Unit and Integration Check
+    backend-full:
+        name: Backend Full Quality Check
         runs-on: ubuntu-latest
         defaults:
             run:
                 working-directory: ./backend
         steps:
             - uses: actions/checkout@v4
-
             - name: Set up Java
               uses: actions/setup-java@v4
               with:
                 java-version: '17'
                 distribution: 'temurin'
-
+                cache: maven
+                
             - name: Run Backend Unit Tests
               run: mvn test -Dtest='*UnitTest'
-
+              
             - name: Run Backend Integration Tests
               run: mvn test -Dtest='*IntegrationTest'
             
-    backend-e2e:
-      runs-on: ubuntu-latest
-      defaults:
-        run:
-          working-directory: ./backend
-      services:
-        mysql:
-          image: mysql:8.0
-          env:
-            MYSQL_DATABASE: apartmentsdb
-            MYSQL_USER: user
-            MYSQL_PASSWORD: password
-            MYSQL_ROOT_PASSWORD: rootpassword
-          ports:
-            - 3303:3306
-          options: >-
-            --health-cmd="mysqladmin ping -h localhost -uuser -ppassword"
-            --health-interval=10s
-            --health-timeout=5s
-            --health-retries=5
-
-      steps:
-        - uses: actions/checkout@v4
-
-        - name: Set up Java
-          uses: actions/setup-java@v4
-          with:
-            java-version: '17'
-            distribution: 'temurin'
-
-        - name: Start MinIO
-          run: |
-            docker run -d --name apartments-minio -p 9000:9000 -p 9001:9001 \
-              -e MINIO_ROOT_USER=minioadmin \
-              -e MINIO_ROOT_PASSWORD=minioadmin \
-              quay.io/minio/minio server /data --console-address ":9001"
-            # Espera a que esté listo
-            until curl -f http://localhost:9000/minio/health/live; do
-              echo "Esperando a MinIO..."
-              sleep 2
-            done
-
-        - name: Init MinIO bucket
-          run: |
-            docker run --rm --network host minio/mc:latest \
-              alias set myminio http://127.0.0.1:9000 minioadmin minioadmin
-            docker run --rm --network host minio/mc:latest \
-              mb -p myminio/apartments-images || true
-            docker run --rm --network host minio/mc:latest \
-              anonymous set public myminio/apartments-images
-
-        - name: Run Backend e2e Tests
-          run: mvn test -Dtest='*e2eTest'
+            - name: Start services for E2E tests
+              run: |
+                cd ..  # Volver al directorio raíz donde está el docker-compose.yml
+                docker-compose up -d
+                
+            - name: Wait for services to be ready
+              run: |
+                cd ..
+                # Esperar a que MySQL esté listo
+                echo "Esperando a MySQL..."
+                timeout 120 bash -c 'until docker exec apartments-mysql mysqladmin ping -h"127.0.0.1" --silent; do sleep 2; done'
+                
+                # Esperar a que MinIO esté listo
+                echo "Esperando a MinIO..."
+                timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live; do sleep 2; done'
+                
+                # Verificar que el bucket se haya creado correctamente
+                echo "Verificando bucket de MinIO..."
+                sleep 5
+                
+            - name: Set E2E environment variables
+              run: |
+                echo "DATABASE_URL=jdbc:mysql://localhost:3303/apartmentsdb" >> $GITHUB_ENV
+                echo "DATABASE_USERNAME=user" >> $GITHUB_ENV
+                echo "DATABASE_PASSWORD=password" >> $GITHUB_ENV
+                echo "MINIO_URL=http://localhost:9000" >> $GITHUB_ENV
+                echo "MINIO_ACCESS_KEY=minioadmin" >> $GITHUB_ENV
+                echo "MINIO_SECRET_KEY=minioadmin" >> $GITHUB_ENV
+                echo "MINIO_BUCKET=apartments-images" >> $GITHUB_ENV
+                
+            - name: Run Backend E2E Tests
+              run: mvn test -Dtest='*e2eTest'
+              env:
+                SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
+                SPRING_DATASOURCE_USERNAME: user
+                SPRING_DATASOURCE_PASSWORD: password
+                MINIO_URL: http://localhost:9000
+                MINIO_ACCESS_KEY: minioadmin
+                MINIO_SECRET_KEY: minioadmin
+                MINIO_BUCKET_NAME: apartments-images
+                
+            - name: Show service logs on failure
+              if: failure()
+              run: |
+                cd ..
+                echo "=== MySQL logs ==="
+                docker logs apartments-mysql
+                echo "=== MinIO logs ==="
+                docker logs apartments-minio
+                echo "=== MinIO init logs ==="
+                docker logs apartments-minio-init
+                
+            - name: Stop services
+              if: always()
+              run: |
+                cd ..
+                docker-compose down -v
 
 
     frontend-integration:
