@@ -8,7 +8,7 @@ on:
 
 jobs:
     backend-unit-integration:
-        name: Backend Full Quality Check
+        name: Backend Unit and Integration Check
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -72,12 +72,12 @@ jobs:
 
         - name: Init MinIO bucket
           run: |
-            docker run --network host --rm minio/mc:latest \
-              sh -c "
-                mc alias set myminio http://127.0.0.1:9000 minioadmin minioadmin && \
-                mc mb -p myminio/apartments-images || true && \
-                mc anonymous set public myminio/apartments-images
-              "
+            docker run --rm --network host minio/mc:latest \
+              alias set myminio http://127.0.0.1:9000 minioadmin minioadmin
+            docker run --rm --network host minio/mc:latest \
+              mb -p myminio/apartments-images || true
+            docker run --rm --network host minio/mc:latest \
+              anonymous set public myminio/apartments-images
 
         - name: Run Backend e2e Tests
           run: mvn test -Dtest='*e2eTest'
