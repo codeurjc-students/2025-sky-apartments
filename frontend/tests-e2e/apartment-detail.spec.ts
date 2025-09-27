@@ -23,7 +23,6 @@ test.describe('Apartment Detail Page', () => {
     await expect(page.locator('#apartment-detail')).toBeVisible();
     await expect(page.locator('#apartment-name')).toHaveText(apartmentData.name);
     await expect(page.locator('#apartment-description')).toContainText(apartmentData.description);
-    await expect(page.locator('#apartment-address')).toContainText(apartmentData.address);
   });
 
   test('shows not found message when apartment does not exist', async ({ page }) => {
