@@ -7,7 +7,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    backend-full:
+    backend-unit-integration:
         name: Backend Full Quality Check
         runs-on: ubuntu-latest
         defaults:
@@ -28,8 +28,61 @@ jobs:
             - name: Run Backend Integration Tests
               run: mvn test -Dtest='*IntegrationTest'
             
-            - name: Run Backend e2e Tests
-              run: mvn test -Dtest='*e2eTest'
+    backend-e2e:
+      name: Backend E2E Tests
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: ./backend
+      needs: backend-unit-integration
+      services:
+        mysql:
+          image: mysql:8.0
+          env:
+            MYSQL_DATABASE: apartmentsdb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: rootpassword
+          ports:
+            - 3303:3306
+          options: >-
+            --health-cmd="mysqladmin ping -h localhost -uuser -ppassword"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=5
+
+        minio:
+          image: minio/minio:latest
+          env:
+            MINIO_ROOT_USER: minioadmin
+            MINIO_ROOT_PASSWORD: minioadmin
+          ports:
+            - 9000:9000
+            - 9001:9001
+          options: >-
+            --health-cmd="curl -f http://localhost:9000/minio/health/live || exit 1"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=5
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Java
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+            distribution: 'temurin'
+
+        - name: Init Minio bucket
+          run: |
+            docker run --network host --rm minio/mc:latest \
+              sh -c "
+                mc alias set myminio http://127.0.0.1:9000 minioadmin minioadmin && \
+                mc mb -p myminio/apartments-images || true && \
+                mc anonymous set public myminio/apartments-images
+              "
+        - name: Run Backend e2e Tests
+          run: mvn test -Dtest='*e2eTest'
 
     frontend-integration:
         name: Frontend Integration Quality Check
