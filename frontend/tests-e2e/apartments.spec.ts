@@ -19,7 +19,7 @@ test.describe('Apartment list', () => {
   
   test('show apartment list when there are', async ({ page }) => {
     // Mock with predefined apartments data
-    await page.route('**/api/apartments/', async route => {
+    await page.route('**/api/v1/apartments/', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -42,7 +42,7 @@ test.describe('Apartment list', () => {
 
   test('show 204 message when there are not apartments', async ({ page }) => {
     // Mock with 204 No Content response
-    await page.route('**/api/apartments/', async route => {
+    await page.route('**/api/v1/apartments/', async route => {
       await route.fulfill({
         status: 204,
         contentType: 'application/json',

@@ -10,7 +10,7 @@ const apartmentData = {
 test.describe('Apartment Detail Page', () => {
   
   test('displays apartment details when apartment exists', async ({ page }) => {
-    await page.route('**/api/apartments/1', async route => {
+    await page.route('**/api/v1/apartments/1', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -27,7 +27,7 @@ test.describe('Apartment Detail Page', () => {
   });
 
   test('shows not found message when apartment does not exist', async ({ page }) => {
-    await page.route('**/api/apartments/999', async route => {
+    await page.route('**/api/v1/apartments/999', async route => {
       await route.fulfill({
         status: 404,
         contentType: 'application/json',
