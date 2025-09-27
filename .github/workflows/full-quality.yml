@@ -29,12 +29,10 @@ jobs:
               run: mvn test -Dtest='*IntegrationTest'
             
     backend-e2e:
-      name: Backend E2E Tests
       runs-on: ubuntu-latest
       defaults:
         run:
           working-directory: ./backend
-      needs: backend-unit-integration
       services:
         mysql:
           image: mysql:8.0
@@ -51,19 +49,6 @@ jobs:
             --health-timeout=5s
             --health-retries=5
 
-        minio:
-          image: minio/minio:latest
-          env:
-            MINIO_ROOT_USER: minioadmin
-            MINIO_ROOT_PASSWORD: minioadmin
-          ports:
-            - 9000:9000
-            - 9001:9001
-          options: >-
-            --health-cmd="curl -f http://localhost:9000/minio/health/live || exit 1"
-            --health-interval=10s
-            --health-timeout=5s
-            --health-retries=5
       steps:
         - uses: actions/checkout@v4
 
@@ -73,7 +58,19 @@ jobs:
             java-version: '17'
             distribution: 'temurin'
 
-        - name: Init Minio bucket
+        - name: Start MinIO
+          run: |
+            docker run -d --name apartments-minio -p 9000:9000 -p 9001:9001 \
+              -e MINIO_ROOT_USER=minioadmin \
+              -e MINIO_ROOT_PASSWORD=minioadmin \
+              quay.io/minio/minio server /data --console-address ":9001"
+            # Espera a que esté listo
+            until curl -f http://localhost:9000/minio/health/live; do
+              echo "Esperando a MinIO..."
+              sleep 2
+            done
+
+        - name: Init MinIO bucket
           run: |
             docker run --network host --rm minio/mc:latest \
               sh -c "
@@ -81,8 +78,10 @@ jobs:
                 mc mb -p myminio/apartments-images || true && \
                 mc anonymous set public myminio/apartments-images
               "
+
         - name: Run Backend e2e Tests
           run: mvn test -Dtest='*e2eTest'
+
 
     frontend-integration:
         name: Frontend Integration Quality Check
