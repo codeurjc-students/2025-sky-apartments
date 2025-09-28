@@ -16,9 +16,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/apartments/?page=0&pageSize=10",
+							"raw": "{{baseUrlApartment}}/api/v1/apartments/?page=0&pageSize=10",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUrlApartment}}"
 							],
 							"path": [
 								"api",
@@ -46,9 +46,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/apartments/search?services=wifi&services=piscina&minCapacity=7&startDate=2025-08-25&endDate=2025-08-25",
+							"raw": "{{baseUrlApartment}}/api/v1/apartments/search?services=wifi&services=piscina&minCapacity=7&startDate=2025-08-25&endDate=2025-08-25",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUrlApartment}}"
 							],
 							"path": [
 								"api",
@@ -88,9 +88,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/apartments/1",
+							"raw": "{{baseUrlApartment}}/api/v1/apartments/1",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUrlApartment}}"
 							],
 							"path": [
 								"api",
@@ -108,12 +108,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/apartments/services",
+							"raw": "{{baseUrlApartment}}/api/v1/apartments/services",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUrlApartment}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"apartments",
 								"services"
 							]
@@ -219,16 +220,16 @@
 									"type": "text"
 								},
 								{
-									"key": "images",
+									"key": "image",
 									"type": "file",
-									"src": "/C:/Users/eloys/Downloads/IMG_32024.JPEG"
+									"src": "/C:/Users/eloys/Downloads/entity_diagram.png"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/apartments/1",
+							"raw": "{{baseUrlApartment}}/api/v1/apartments/1",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUrlApartment}}"
 							],
 							"path": [
 								"api",
@@ -273,9 +274,9 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/apartments/9/availability?startDate=2025-08-27&endDate=2025-09-10",
+							"raw": "{{baseUrlApartment}}/api/v1/apartments/9/availability?startDate=2025-08-27&endDate=2025-09-10",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseUrlApartment}}"
 							],
 							"path": [
 								"api",
@@ -299,6 +300,217 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "New User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test\",\r\n  \"surname\": \"User\",\r\n  \"email\": \"test@example.com\",\r\n  \"phoneNumber\": \"123456789\",\r\n  \"password\": \"Password@1234\",\r\n  \"repeatPassword\": \"Password@1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"carlos.fernandez@example.com\",\r\n  \"password\": \"Password@1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"carlos.fernandez@example.com\",\r\n  \"password\": \"Password@1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrlUser}}/api/v1/auth/refresh",
+							"host": [
+								"{{baseUrlUser}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log Out",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"carlos.fernandez@example.com\",\r\n  \"password\": \"Password@1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrlUser}}/api/v1/auth/logout",
+							"host": [
+								"{{baseUrlUser}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlUser}}/api/v1/users/1",
+							"host": [
+								"{{baseUrlUser}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Carlooos\",\r\n  \"surname\": \"Fernandez\",\r\n  \"email\": \"carlos.fernandez@example.com\",\r\n  \"phoneNumber\": \"612345678\",\r\n  \"password\": \"Password@124\",\r\n  \"repeatPassword\": \"Password@1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrlUser}}/api/v1/users/1",
+							"host": [
+								"{{baseUrlUser}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Carlos\",\r\n  \"surname\": \"Fernandez\",\r\n  \"email\": \"carlos.fernandez@example.com\",\r\n  \"phoneNumber\": \"612345678\",\r\n  \"password\": \"Password@1234\",\r\n  \"repeatPassword\": \"Password@1234\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{baseUrlUser}}/api/v1/users/1",
+							"host": [
+								"{{baseUrlUser}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlUser}}/api/v1/users/me",
+							"host": [
+								"{{baseUrlUser}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -307,6 +519,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -317,6 +530,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -325,9 +539,12 @@
 	],
 	"variable": [
 		{
-			"key": "baseUrl",
-			"value": "http://localhost:8080",
-			"type": "string"
+			"key": "baseUrlApartment",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "baseUrlUser",
+			"value": ""
 		}
 	]
 }

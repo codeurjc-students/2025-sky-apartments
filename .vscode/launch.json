@@ -9,6 +9,16 @@
             "projectName": "apartment",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UserApplication<user>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.skyapartments.user.UserApplication",
+            "projectName": "user",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
