@@ -47,12 +47,12 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandlerJwt))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET, "/api/users/email").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/users/private/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/email").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/private/*").permitAll()
                 // PRIVATE ENDPOINTS
-                .requestMatchers(HttpMethod.GET, "/api/users/*").hasAnyRole("USER","ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/users/*").hasAnyRole("USER","ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/users/*").hasAnyRole("USER","ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/*").hasAnyRole("USER","ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/users/*").hasAnyRole("USER","ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/users/*").hasAnyRole("USER","ADMIN")
                 // PUBLIC ENDPOINTS
                 
                 .anyRequest().permitAll()
