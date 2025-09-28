@@ -16,6 +16,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>apartment</module>
+		<module>user</module>
 	</modules>
 
 
