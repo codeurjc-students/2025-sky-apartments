@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ApartmentApplication<apartment>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.skyapartments.apartment.ApartmentApplication",
+            "projectName": "apartment",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

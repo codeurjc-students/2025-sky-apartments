@@ -12,20 +12,13 @@
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>backend</name>
-	<description>Demo project for Spring Boot</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+
+	<packaging>pom</packaging>
+	<modules>
+		<module>apartment</module>
+	</modules>
+
+
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -98,6 +91,12 @@
 			<version>2.8.9</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -108,12 +107,11 @@
 			</plugin>
 
 
-			<!-- Plugin to export REST API doc to files -->
+			<!-- Plugin to export REST API doc to files 
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!-- Change if error with used port-->
 					<jmxPort>9009</jmxPort>
 				</configuration>
 				<executions>
@@ -185,7 +183,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			-->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

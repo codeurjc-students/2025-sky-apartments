@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "eabebc7a-3925-494f-b958-9231bd214b0b",
+		"_postman_id": "15541366-8d9c-462b-a7df-18b3f8762b13",
 		"name": "Sky Apartments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39879168",
-		"_collection_link": "https://fb5555.postman.co/workspace/Cognite~4eda5167-7c4d-4007-8e59-72fea7804591/collection/39879168-eabebc7a-3925-494f-b958-9231bd214b0b?action=share&source=collection_link&creator=39879168"
+		"_collection_link": "https://fb5555.postman.co/workspace/Cognite~4eda5167-7c4d-4007-8e59-72fea7804591/collection/39879168-15541366-8d9c-462b-a7df-18b3f8762b13?action=share&source=collection_link&creator=39879168"
 	},
 	"item": [
 		{
@@ -16,13 +16,67 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/apartments",
+							"raw": "{{baseUrl}}/api/v1/apartments/?page=0&pageSize=10",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"apartments"
+								"v1",
+								"apartments",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search apartments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/apartments/search?services=wifi&services=piscina&minCapacity=7&startDate=2025-08-25&endDate=2025-08-25",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"apartments",
+								"search"
+							],
+							"query": [
+								{
+									"key": "services",
+									"value": "wifi"
+								},
+								{
+									"key": "services",
+									"value": "piscina"
+								},
+								{
+									"key": "minCapacity",
+									"value": "7"
+								},
+								{
+									"key": "startDate",
+									"value": "2025-08-25"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-08-25"
+								}
 							]
 						}
 					},
@@ -34,14 +88,211 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/apartments/2",
+							"raw": "{{baseUrl}}/api/v1/apartments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"apartments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Available Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/apartments/services",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"apartments",
-								"2"
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Apartment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Prueba",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Frente al mar",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "150.0",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "services",
+									"value": "wifi",
+									"type": "text"
+								},
+								{
+									"key": "services",
+									"value": "piscina",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/apartments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"apartments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update apartment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Pruebaaaaa",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Frente al mar",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "150.0",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "7",
+									"type": "text"
+								},
+								{
+									"key": "services",
+									"value": "wifi",
+									"type": "text"
+								},
+								{
+									"key": "services",
+									"value": "piscina",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/eloys/Downloads/IMG_32024.JPEG"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/apartments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"apartments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Apartment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/apartments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"apartments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Availability",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/apartments/9/availability?startDate=2025-08-27&endDate=2025-09-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"apartments",
+								"9",
+								"availability"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-08-27"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-09-10"
+								}
 							]
 						}
 					},
