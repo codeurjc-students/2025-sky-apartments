@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
 import { catchError, Observable, throwError } from 'rxjs';
 
-const BASE_URL = "/api/apartments/";
+const BASE_URL = "/api/v1/apartments/";
 
 @Injectable({ providedIn: 'root' })
 export class ApartmentService {

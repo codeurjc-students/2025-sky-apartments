@@ -16,7 +16,7 @@ module.exports = function (config) {
     browsers: ['ChromeHeadless'], //ChromeHeadless for non-GUI environments
     restartOnFileChange: true,
     proxies: {
-      '/api/': 'http://localhost:8080/api/'
+      '/api/': 'http://localhost:8083/api/'
     },
   });
 };

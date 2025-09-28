@@ -12,9 +12,26 @@ describe('ApartmentsComponent', () => {
   let mockApartmentService: jasmine.SpyObj<ApartmentService>;
 
   const mockApartments: ApartmentDTO[] = [
-    { id: 1, name: "City Center Loft", description: "Modern apartment in the heart of the city", address: "123 Main St, Madrid" },
-    { id: 2, name: "Beach House", description: "Relaxing house near the beach", address: "456 Ocean Drive, Valencia" }
+    {
+      id: 1,
+      name: "City Center Loft",
+      description: "Modern apartment in the heart of the city",
+      price: 120,
+      services: new Set(["WiFi", "Air Conditioning", "Kitchen"]),
+      capacity: 2,
+      imageUrl: "https://example.com/images/loft.jpg"
+    },
+    {
+      id: 2,
+      name: "Beach House",
+      description: "Relaxing house near the beach",
+      price: 200,
+      services: new Set(["WiFi", "Pool", "Parking"]),
+      capacity: 6,
+      imageUrl: "https://example.com/images/beach-house.jpg"
+    }
   ];
+
 
   beforeEach(async () => {
     // Create a mock for ApartmentService

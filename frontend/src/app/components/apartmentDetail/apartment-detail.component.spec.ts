@@ -15,7 +15,10 @@ describe('ApartmentDetailComponent', () => {
     id: 1,
     name: 'Test Apartment',
     description: 'A nice place',
-    address: '123 Fake Street'
+    price: 120,
+    services: new Set(["WiFi", "Air Conditioning", "Kitchen"]),
+    capacity: 2,
+    imageUrl: "https://example.com/images/loft.jpg"
   };
 
   beforeEach(async () => {
@@ -51,11 +54,9 @@ describe('ApartmentDetailComponent', () => {
 
     const nameEl = fixture.debugElement.query(By.css('#apartment-name')).nativeElement;
     const descriptionEl = fixture.debugElement.query(By.css('#apartment-description')).nativeElement;
-    const addressEl = fixture.debugElement.query(By.css('#apartment-address')).nativeElement;
 
     expect(nameEl.textContent).toContain(mockApartment.name);
     expect(descriptionEl.textContent).toContain(mockApartment.description);
-    expect(addressEl.textContent).toContain(mockApartment.address);
   });
 
   it('should display "not found" message if apartment is not available', () => {
