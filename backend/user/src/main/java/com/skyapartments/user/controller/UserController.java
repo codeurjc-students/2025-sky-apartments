@@ -32,7 +32,7 @@ import com.skyapartments.user.exception.ResourceNotFoundException;
 import com.skyapartments.user.service.UserService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
