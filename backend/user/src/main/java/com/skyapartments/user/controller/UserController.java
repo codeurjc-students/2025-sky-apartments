@@ -53,8 +53,13 @@ public class UserController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(
-            @Parameter(description = "ID of the user to retrieve") @PathVariable Long id) {
-    
+            @Parameter(description = "ID of the user to retrieve") @PathVariable Long id,
+            HttpServletRequest request) {
+
+        String email = request.getUserPrincipal().getName();
+        if (userService.getUserByEmail(email).getId() != id && !request.isUserInRole("ROLE_ADMIN")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         UserDTO user = userService.getUserById(id);
         return ResponseEntity.ok(user);
         
@@ -133,8 +138,13 @@ public class UserController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
-            @Parameter(description = "ID of the user to delete") @PathVariable Long id) {
+            @Parameter(description = "ID of the user to delete") @PathVariable Long id,
+            HttpServletRequest request) {
 
+        String email = request.getUserPrincipal().getName();
+        if (userService.getUserByEmail(email).getId() != id && !request.isUserInRole("ROLE_ADMIN")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

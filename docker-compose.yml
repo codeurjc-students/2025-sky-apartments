@@ -1,6 +1,28 @@
 version: "3.9"
 
 services:
+
+  mysql-users:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: usersdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3305:3306"
+    volumes:
+      - mysql_users_data:/var/lib/mysql
+    networks:
+      - apartments-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   mysql-apartments:
     image: mysql:8.0
     restart: always
@@ -71,7 +93,6 @@ services:
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET: apartments-images
       JWT_SECRET: Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
-      EUREKA_CLIENT_SERVICE_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-apartments:
         condition: service_healthy
@@ -81,8 +102,26 @@ services:
       - "8083:8083"
     networks:
       - apartments-network
+
+  user:
+    build:
+      context: ./backend
+      dockerfile: user/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-users:3306/usersdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      mysql-users:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - apartments-network
+
   
 volumes:
+  mysql_users_data:
   mysql_apartments_data:
   minio_data:
 
