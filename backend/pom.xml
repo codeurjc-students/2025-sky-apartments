@@ -17,6 +17,7 @@
 	<modules>
 		<module>apartment</module>
 		<module>user</module>
+		<module>booking</module>
 	</modules>
 
 
