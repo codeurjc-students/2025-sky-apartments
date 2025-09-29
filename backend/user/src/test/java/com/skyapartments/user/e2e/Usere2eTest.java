@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.skyapartments.user.dto.UserRequestDTO;
@@ -35,9 +36,11 @@ public class Usere2eTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @LocalServerPort
+    private int port;
+
     private User savedUser;
     private User normalUser;
-    private static String gatewayUrl;
     
     private Map<String, String> adminCookies;
     private Map<String, String> userCookies;
@@ -45,14 +48,13 @@ public class Usere2eTest {
     @BeforeAll
     public static void init() {
         useRelaxedHTTPSValidation();
-        
-        gatewayUrl = "http://localhost:8080";
-        RestAssured.baseURI = gatewayUrl;
-        RestAssured.port = 8080;
     }
 
     @BeforeEach
     void setUp() {
+
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
         
         userRepository.deleteAll();
         

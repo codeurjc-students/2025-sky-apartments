@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 
 import com.skyapartments.apartment.model.Apartment;
@@ -29,21 +30,25 @@ public class ApartmentAPIe2eTest {
     @Autowired
     private ApartmentRepository apartmentRepository;
 
+    @LocalServerPort
+    private int port;
+
     private Apartment savedApartment;
     private static String gatewayUrl;
 
     @BeforeAll
     public static void init() {
         useRelaxedHTTPSValidation();
-        gatewayUrl = "http://" + "localhost" + ":" + 8083;
-        RestAssured.baseURI = gatewayUrl;
-        RestAssured.port = 8443;
-        System.out.println("🚀 Gateway URL: " + gatewayUrl);
+        
     }
 
     @BeforeEach
     void setUp() {
-        RestAssured.baseURI = gatewayUrl;
+
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+
+        //RestAssured.baseURI = gatewayUrl;
         
         apartmentRepository.deleteAll();
 
