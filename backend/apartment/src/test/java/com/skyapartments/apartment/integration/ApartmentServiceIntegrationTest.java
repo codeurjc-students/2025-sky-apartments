@@ -33,6 +33,7 @@ import com.skyapartments.apartment.exception.BusinessValidationException;
 import com.skyapartments.apartment.exception.ResourceNotFoundException;
 import com.skyapartments.apartment.model.Apartment;
 import com.skyapartments.apartment.repository.ApartmentRepository;
+import com.skyapartments.apartment.repository.BookingClient;
 import com.skyapartments.apartment.service.ApartmentService;
 import com.skyapartments.apartment.service.ImageService;
 
@@ -80,6 +81,8 @@ public class ApartmentServiceIntegrationTest {
     @Autowired
     private ImageService imageService;
 
+    private BookingClient bookingClient = mock(BookingClient.class);
+
     private Apartment apt1;
     private ApartmentRequestDTO request;
     private MockMultipartFile imageFile;
@@ -87,7 +90,7 @@ public class ApartmentServiceIntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         apartmentRepository.deleteAll();
-        apartmentService = new ApartmentService(apartmentRepository, imageService);
+        apartmentService = new ApartmentService(apartmentRepository, imageService, bookingClient);
         apt1 = new Apartment("Test Apartment 1", "Nice view", BigDecimal.valueOf(100.00), Set.of("WiFi", "Parking"), 4);
         apt1 = apartmentRepository.save(apt1);
         imageFile = new MockMultipartFile(
@@ -297,6 +300,28 @@ public class ApartmentServiceIntegrationTest {
         assertThat(results.getContent().get(0).getCapacity()).isGreaterThanOrEqualTo(3);
         assertThat(results.getContent().get(0).getServices()).contains("WiFi");
     }
+    
+    @Test
+    public void searchApartments_ShouldReturnApartmentsAvailableInDateRange() throws Exception {
+        // Arrange
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        // Simulate booking to block apt1
+        when(bookingClient.getUnavailableApartments(today, tomorrow)).thenReturn(Set.of(apt1.getId()));
+
+        Pageable pageable = PageRequest.of(0, 10);
+        // Act: Search for apartments available on the same date
+        Page<ApartmentDTO> results = apartmentService.searchApartments(
+                Set.of("WiFi"),
+                3,
+                today,
+                tomorrow,
+                pageable
+        );
+
+        // Assert: apt1 is booked -> should not show
+        assertThat(results).isEmpty();
+    }
 
     @Test
     public void searchApartments_ShouldReturnAllApartments_WhenNoFilters() throws Exception {
@@ -331,6 +356,21 @@ public class ApartmentServiceIntegrationTest {
         assertThat(available).isTrue();
     }
 
+    @Test
+    public void shouldReturnFalseWhenApartmentIsBooked() {
+
+        // Simulate booking to block apt1
+        when(bookingClient.getUnavailableApartments(LocalDate.now().plusDays(3), LocalDate.now().plusDays(5)))
+            .thenReturn(Set.of(apt1.getId()));
+        LocalDate start = LocalDate.now().plusDays(3); // overlaps with booking
+        LocalDate end = LocalDate.now().plusDays(5);
+
+        // Act
+        Boolean available = apartmentService.checkAvailability(apt1.getId(), start, end);
+
+        // Assert
+        assertThat(available).isFalse();
+    }
 
     @Test
     public void shouldThrowExceptionWhenApartmentNotFound() {

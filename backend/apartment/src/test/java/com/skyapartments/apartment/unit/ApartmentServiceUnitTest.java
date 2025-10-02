@@ -6,6 +6,7 @@ import com.skyapartments.apartment.exception.BusinessValidationException;
 import com.skyapartments.apartment.exception.ResourceNotFoundException;
 import com.skyapartments.apartment.model.Apartment;
 import com.skyapartments.apartment.repository.ApartmentRepository;
+import com.skyapartments.apartment.repository.BookingClient;
 import com.skyapartments.apartment.service.ApartmentService;
 import com.skyapartments.apartment.service.ImageService;
 
@@ -44,8 +45,9 @@ public class ApartmentServiceUnitTest {
     private ApartmentService apartmentService;
     private ApartmentRepository apartmentRepository = mock(ApartmentRepository.class);
     private ImageService imageService = mock(ImageService.class);
+    private BookingClient bookingClient = mock(BookingClient.class);
     public ApartmentServiceUnitTest() {
-        apartmentService = new ApartmentService(apartmentRepository, imageService);
+        apartmentService = new ApartmentService(apartmentRepository, imageService, bookingClient);
     }
 
     @Test
@@ -561,5 +563,26 @@ public class ApartmentServiceUnitTest {
         verify(apartmentRepository, times(1)).findById(apartmentId);
     }
 
+    @Test
+    void checkAvailability_ShouldReturnFalse_WhenApartmentIsUnavailable() {
+        // given
+        Long apartmentId = 1L;
+        LocalDate start = LocalDate.of(2025, 9, 1);
+        LocalDate end = LocalDate.of(2025, 9, 10);
+
+        Apartment apartment = new Apartment();
+        apartment.setId(apartmentId);
+
+        when(apartmentRepository.findById(apartmentId)).thenReturn(Optional.of(apartment));
+        when(bookingClient.getUnavailableApartments(start, end)).thenReturn(Set.of(1L, 2L));
+
+        // when
+        Boolean available = apartmentService.checkAvailability(apartmentId, start, end);
+
+        // then
+        assertThat(available).isFalse();
+        verify(apartmentRepository, times(1)).findById(apartmentId);
+        verify(bookingClient, times(1)).getUnavailableApartments(start, end);
+    }
     
 }
