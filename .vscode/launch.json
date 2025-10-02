@@ -19,6 +19,16 @@
             "projectName": "user",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-BookingApplication<booking>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.skyapartments.booking.BookingApplication",
+            "projectName": "booking",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
