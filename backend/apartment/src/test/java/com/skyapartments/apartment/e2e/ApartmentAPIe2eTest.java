@@ -128,7 +128,7 @@ public class ApartmentAPIe2eTest {
             .get("/api/v1/apartments/{id}", 'a')
         .then()
             .statusCode(400)
-            .body("message", equalTo("El parámetro 'id' debe ser de tipo Long. Valor recibido: 'a'"));
+            .body("message", equalTo("The 'id' parameter must be of type Long. Value received: 'a'"));
     }
 
     @Test

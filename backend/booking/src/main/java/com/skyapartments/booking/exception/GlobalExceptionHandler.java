@@ -1,4 +1,4 @@
-package com.skyapartments.apartment.exception;
+package com.skyapartments.booking.exception;
 
 
 import org.springframework.http.HttpStatus;
@@ -100,3 +100,4 @@ public class GlobalExceptionHandler {
     }
 
 }
+
