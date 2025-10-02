@@ -8,13 +8,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.skyapartments.booking.dto.ApartmentDTO;
 import com.skyapartments.booking.dto.BookingDTO;
 import com.skyapartments.booking.dto.BookingRequestDTO;
 import com.skyapartments.booking.exception.BusinessValidationException;
 import com.skyapartments.booking.exception.ResourceNotFoundException;
 import com.skyapartments.booking.model.Booking;
 import com.skyapartments.booking.model.BookingState;
+import com.skyapartments.booking.repository.ApartmentClient;
 import com.skyapartments.booking.repository.BookingRepository;
+import com.skyapartments.booking.repository.UserClient;
 
 import jakarta.transaction.Transactional;
 
@@ -22,21 +25,39 @@ import jakarta.transaction.Transactional;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+    private final UserClient userClient;
+    private final ApartmentClient apartmentClient;
 
-    public BookingService(BookingRepository bookingRepository){
+    public BookingService(BookingRepository bookingRepository, UserClient userClient, ApartmentClient apartmentClient){
         this.bookingRepository = bookingRepository;
+        this.userClient = userClient;
+        this.apartmentClient = apartmentClient;
     } 
 
     public Page<BookingDTO> getBookingsByUserId(Long userId, Pageable pageable, String userEmail) {
+        Long userIdFromEmail = userClient.getUserIdByEmail(userEmail);
+        if (!userIdFromEmail.equals(userId)) {
+            throw new SecurityException("User email does not match user ID");
+        }
         return bookingRepository.findByUserIdOrderByStartDateDesc(userId, pageable).map(booking -> new BookingDTO(booking));
     }
 
     public Page<BookingDTO> getBookingsByApartmentId(Long apartmentId, Pageable pageable) {
+        if (apartmentClient.getApartment(apartmentId) == null) {
+            throw new ResourceNotFoundException("User not found");
+        }
         return bookingRepository.findByApartmentIdOrderByStartDateDesc(apartmentId, pageable).map(booking -> new BookingDTO(booking));
     }
 
     public BookingDTO createBooking (BookingRequestDTO request, String userEmail) {
-        
+        Long userId = userClient.getUserIdByEmail(userEmail);
+        if (!request.getUserId().equals(userId)) {
+            throw new SecurityException("User email does not match user ID");
+        }
+        ApartmentDTO apartment = apartmentClient.getApartment(request.getApartmentId());
+        if (apartment == null) {
+            throw new ResourceNotFoundException("Apartment not found");
+        }
 
         Booking booking = new Booking();
         booking.setUserId(request.getUserId());
@@ -44,10 +65,8 @@ public class BookingService {
         booking.setStartDate(request.getStartDate());
         booking.setEndDate(request.getEndDate());
         booking.setState(BookingState.CONFIRMED);
+        booking.setCost(calculateCost(apartment, request.getStartDate(), request.getEndDate()));
         booking.setGuests(request.getGuests());
-
-        //TODO: booking.setCost();
-        booking.setCost(BigDecimal.valueOf(100));   //Delete when conection to Apartment MS
         return new BookingDTO(bookingRepository.save(booking));
     }
 
@@ -55,6 +74,10 @@ public class BookingService {
     public BookingDTO cancelBooking(Long bookingId, String userEmail) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+        Long userId = userClient.getUserIdByEmail(userEmail);
+        if (!booking.getUserId().equals(userId)) {
+            throw new SecurityException("User email does not match booking owner");
+        }
 
         if (booking.getState() == BookingState.CANCELLED) {
             throw new BusinessValidationException("Booking is already cancelled");
@@ -66,11 +89,20 @@ public class BookingService {
         return new BookingDTO(booking);
     }
 
+    private BigDecimal calculateCost(ApartmentDTO apartment, LocalDate startDate, LocalDate endDate) {
+        long days = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        return apartment.getPrice().multiply(BigDecimal.valueOf(days));
+    }
+
     @Transactional
     public BookingDTO updateBookingDates(Long bookingId, LocalDate newStartDate, LocalDate newEndDate, String userEmail) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
+        Long userId = userClient.getUserIdByEmail(userEmail);
+        if (!booking.getUserId().equals(userId)) {
+            throw new SecurityException("User email does not match booking owner");
+        }
         if (booking.getState() == BookingState.CANCELLED) {
             throw new BusinessValidationException("Cannot modify a cancelled booking");
         }
@@ -79,7 +111,12 @@ public class BookingService {
             throw new BusinessValidationException("End date must be after start date");
         }
 
-        // (Optional) Check availability for the apartment again before updating
+        ApartmentDTO apartment = apartmentClient.getApartment(booking.getApartmentId());
+        if (apartment == null) {
+            throw new ResourceNotFoundException("Apartment not found");
+        }
+
+        // Check availability for the apartment again before updating
         boolean overlaps = bookingRepository.findByApartmentIdAndStateNot(
                         booking.getApartmentId(), BookingState.CANCELLED)
                 .stream()
@@ -92,10 +129,7 @@ public class BookingService {
 
         booking.setStartDate(newStartDate);
         booking.setEndDate(newEndDate);
-        
-        //TODO: booking.setCost();
-        booking.setCost(BigDecimal.valueOf(100));   //Delete when conection to Apartment MS
-
+        booking.setCost(calculateCost(apartment, newStartDate, newEndDate));
         bookingRepository.save(booking);
 
         return new BookingDTO(booking);
@@ -105,4 +139,3 @@ public class BookingService {
         return bookingRepository.findUnavailableApartments(startDate, endDate);
     }
 }
-
