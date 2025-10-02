@@ -44,6 +44,27 @@ services:
       retries: 5
       start_period: 30s
 
+  mysql-bookings:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bookingsdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3302:3306"
+    networks:
+      - apartments-network
+    volumes:
+      - mysql_bookings_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   minio:
     image: minio/minio
     command: server /data --console-address ":9001"
@@ -119,10 +140,26 @@ services:
     networks:
       - apartments-network
 
+  booking:
+    build:
+      context: ./backend
+      dockerfile: booking/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-bookings:3306/bookingsdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      mysql-bookings:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    networks:
+      - apartments-network
   
 volumes:
   mysql_users_data:
   mysql_apartments_data:
+  mysql_bookings_data:
   minio_data:
 
 networks:
