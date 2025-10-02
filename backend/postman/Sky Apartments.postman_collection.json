@@ -511,6 +511,130 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "Bookings by user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlBooking}}/api/bookings/user/1",
+							"host": [
+								"{{baseUrlBooking}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bookings by apartment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlBooking}}/api/v1/bookings/apartment/1",
+							"host": [
+								"{{baseUrlBooking}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"apartment",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": 1,\r\n  \"apartmentId\": 10,\r\n  \"guests\": 2,\r\n  \"startDate\": \"2025-09-20\",\r\n  \"endDate\": \"2025-09-25\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrlBooking}}/api/v1/bookings",
+							"host": [
+								"{{baseUrlBooking}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel booking",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/bookings/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify Booking",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlBooking}}/api/v1/bookings/1/dates?startDate=2025-09-01&endDate=2025-09-01",
+							"host": [
+								"{{baseUrlBooking}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"1",
+								"dates"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-09-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-09-01"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -544,6 +668,10 @@
 		},
 		{
 			"key": "baseUrlUser",
+			"value": ""
+		},
+		{
+			"key": "baseUrlBooking",
 			"value": ""
 		}
 	]
