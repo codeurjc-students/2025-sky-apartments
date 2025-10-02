@@ -12,6 +12,7 @@ import com.skyapartments.apartment.exception.BusinessValidationException;
 import com.skyapartments.apartment.exception.ResourceNotFoundException;
 import com.skyapartments.apartment.model.Apartment;
 import com.skyapartments.apartment.repository.ApartmentRepository;
+import com.skyapartments.apartment.repository.BookingClient;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,12 @@ public class ApartmentService {
     
     private final ApartmentRepository apartmentRepository;
     private final ImageService imageService;
+    private final BookingClient bookingClient;
 
-    public ApartmentService (ApartmentRepository apartmentRepository, ImageService imageService) {
+    public ApartmentService (ApartmentRepository apartmentRepository, ImageService imageService, BookingClient bookingClient) {
         this.apartmentRepository = apartmentRepository;
         this.imageService = imageService;
+        this.bookingClient = bookingClient;
     }
 
     public Page<ApartmentDTO> getAllApartments(Pageable pageable) {
@@ -119,7 +122,7 @@ public class ApartmentService {
         throw new BusinessValidationException("End date must be after start date");
         }
         if (startDate != null && endDate != null) {
-            //TODO. Conect to Booking MS to get the apartments that are unavailable in that dates
+            unavailable = bookingClient.getUnavailableApartments(startDate, endDate);
         }
 
         int serviceCount = (services != null) ? services.size() : 0;
@@ -142,8 +145,7 @@ public class ApartmentService {
         Apartment apartment = apartmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Apartment not found"));
 
-        Set<Long> unavailable = Collections.emptySet();
-        //TODO. Conect to Booking MS to get the apartments that are unavailable in that dates
+        Set<Long> unavailable = bookingClient.getUnavailableApartments(startDate, endDate);
         return !unavailable.contains(id);
     }
 

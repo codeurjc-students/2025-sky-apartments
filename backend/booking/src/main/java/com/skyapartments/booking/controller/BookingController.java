@@ -2,6 +2,7 @@ package com.skyapartments.booking.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import com.skyapartments.booking.dto.BookingDTO;
 import com.skyapartments.booking.dto.BookingRequestDTO;
 import com.skyapartments.booking.service.BookingService;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -93,6 +95,15 @@ public class BookingController {
         String userEmail = request.getUserPrincipal().getName();
         BookingDTO updatedBooking = bookingService.updateBookingDates(bookingId, startDate, endDate, userEmail);
         return ResponseEntity.ok(updatedBooking);
+    }
+
+    @GetMapping("/unavailable")
+    @Hidden
+    public Set<Long> findUnavailableApartments(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        return bookingService.getUnavailableApartments(startDate, endDate);
     }
 
 }
