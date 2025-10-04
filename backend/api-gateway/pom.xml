@@ -9,9 +9,9 @@
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 	<groupId>com.skyapartments</groupId>
-	<artifactId>user</artifactId>
+	<artifactId>api-gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>user</name>
+	<name>api-gateway</name>
 
 	<packaging>jar</packaging>
 	<dependencies>
