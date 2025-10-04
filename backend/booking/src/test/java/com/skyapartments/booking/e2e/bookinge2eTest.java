@@ -34,8 +34,6 @@ public class bookinge2eTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-
-
     private Booking savedBooking;
     private static String gatewayUrl;
     
@@ -52,10 +50,9 @@ public class bookinge2eTest {
     public static void init() {
         useRelaxedHTTPSValidation();
         
-        // URL del Gateway
-        gatewayUrl = "http://" + "localhost" + ":" + 8082;
+        gatewayUrl = "https://" + "localhost" + ":" + 8443;
         RestAssured.baseURI = gatewayUrl;
-        RestAssured.port = 8082;
+        RestAssured.port = 8443;
     }
 
     @BeforeEach
@@ -93,7 +90,7 @@ public class bookinge2eTest {
             .contentType(ContentType.JSON)
             .body(loginRequest)
         .when()
-            .post("http://localhost:8080/api/v1/auth/login")
+            .post("/api/v1/auth/login")
         .then()
             .statusCode(200)
             .body("status", equalTo("SUCCESS"))
@@ -109,7 +106,7 @@ public class bookinge2eTest {
         Response userInfoResponse = given()
             .cookies(cookies)
         .when()
-            .get("http://localhost:8080/api/v1/users/me")
+            .get("/api/v1/users/me")
         .then()
             .statusCode(200)
             .body("id", notNullValue())

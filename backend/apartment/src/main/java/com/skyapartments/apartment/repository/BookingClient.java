@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-
-@FeignClient(name = "booking", url = "http://localhost:8082/api/v1/bookings")
+@FeignClient(name = "booking", path = "/api/v1/bookings")
 public interface BookingClient {
 
     @GetMapping("/unavailable")

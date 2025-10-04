@@ -33,28 +33,28 @@ public class ApartmentAPIe2eTest {
     @Autowired
     private ApartmentRepository apartmentRepository;
 
-    @LocalServerPort
-    private int port;
-
     private Apartment savedApartment;
     private static String gatewayUrl;
 
     private Map<String, String> adminCookies;
     private Map<String, String> userCookies;
 
+    @LocalServerPort
+    private int port;
+
     @BeforeAll
     public static void init() {
         useRelaxedHTTPSValidation();
         
+        gatewayUrl = "https://" + "localhost" + ":" + 8443;
+        RestAssured.baseURI = gatewayUrl;
+        RestAssured.port = 8443;
     }
 
     @BeforeEach
     void setUp() {
 
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-
-        //RestAssured.baseURI = gatewayUrl;
+        RestAssured.baseURI = gatewayUrl;
         
         apartmentRepository.deleteAll();
 
@@ -83,7 +83,7 @@ public class ApartmentAPIe2eTest {
             .contentType(ContentType.JSON)
             .body(loginRequest)
         .when()
-            .post("http://localhost:8080/api/v1/auth/login")
+            .post("/api/v1/auth/login")
         .then()
             .statusCode(200)
             .body("status", equalTo("SUCCESS"))

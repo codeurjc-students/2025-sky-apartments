@@ -36,26 +36,31 @@ public class Usere2eTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @LocalServerPort
-    private int port;
-
     private User savedUser;
     private User normalUser;
     
     private Map<String, String> adminCookies;
     private Map<String, String> userCookies;
 
+    @LocalServerPort
+    private int port;
+
+    private static String gatewayUrl;
+
     @BeforeAll
     public static void init() {
         useRelaxedHTTPSValidation();
+        
+        gatewayUrl = "https://" + "localhost" + ":" + 8443;
+        RestAssured.baseURI = gatewayUrl;
+        RestAssured.port = 8443;
     }
 
     @BeforeEach
     void setUp() {
 
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-        
+        RestAssured.baseURI = gatewayUrl;
+
         userRepository.deleteAll();
         
         // Create admin user
