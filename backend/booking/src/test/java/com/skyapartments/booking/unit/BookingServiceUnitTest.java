@@ -447,9 +447,6 @@ public class BookingServiceUnitTest {
         booking.setApartmentId(1L);
         booking.setUserId(1L);
 
-        LocalDate newStart = LocalDate.now().plusDays(2);
-        LocalDate newEnd = LocalDate.now().plusDays(4);
-
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.findByApartmentIdAndStateNot(booking.getApartmentId(), BookingState.CANCELLED))
                 .thenReturn(List.of(booking));
