@@ -99,7 +99,18 @@ services:
       "
     networks:
       - apartments-network
-  
+
+  eureka-server:
+    build:
+      context: ./backend
+      dockerfile: eureka-server/Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - apartments-network
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+      EUREKA_CLIENT_SERVICE_URL: http://eureka-server:8761/eureka/  
   apartment:
     build:
       context: ./backend
@@ -114,6 +125,7 @@ services:
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET: apartments-images
       JWT_SECRET: Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
+      EUREKA_CLIENT_SERVICE_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-apartments:
         condition: service_healthy
