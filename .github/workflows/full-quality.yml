@@ -62,7 +62,7 @@ jobs:
                 timeout 180 bash -c 'until curl -f https://localhost:8443/actuator/health 2>/dev/null || nc -z localhost 8083; do sleep 3; done'
                 
             - name: Run Booking E2E Tests
-              working-directory: ./backend
+              working-directory: ./backend/booking
               run: mvn test -Dtest='*Booking*e2eTest'
               env:
                 BACKEND_BASE_URL: https://localhost:8443
@@ -75,7 +75,7 @@ jobs:
                 MINIO_BUCKET_NAME: apartments-images
                 
             - name: Run Apartment E2E Tests
-              working-directory: ./backend
+              working-directory: ./backend/apartment
               run: mvn test -Dtest='*Apartment*e2eTest'
               env:
                 BACKEND_BASE_URL: https://localhost:8443
@@ -88,7 +88,7 @@ jobs:
                 MINIO_BUCKET_NAME: apartments-images
                 
             - name: Run User E2E Tests
-              working-directory: ./backend
+              working-directory: ./backend/user
               run: mvn test -Dtest='*User*e2eTest'
               env:
                 BACKEND_BASE_URL: https://localhost:8443
