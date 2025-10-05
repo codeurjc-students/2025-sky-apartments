@@ -84,6 +84,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 20s
+
   mc:
     image: minio/mc:latest
     depends_on:
@@ -110,6 +111,12 @@ services:
       - apartments-network
     environment:
       EUREKA_INSTANCE_HOSTNAME: eureka-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
       
   api-gateway:
     build:
@@ -121,6 +128,15 @@ services:
       - "8443:8443"
     networks:
       - apartments-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:8443/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   apartment:
     build:
@@ -142,10 +158,18 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     ports:
       - "8083:8083"
     networks:
       - apartments-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   user:
     build:
@@ -159,10 +183,18 @@ services:
     depends_on:
       mysql-users:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     ports:
       - "8080:8080"
     networks:
       - apartments-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   booking:
     build:
@@ -176,10 +208,18 @@ services:
     depends_on:
       mysql-bookings:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     ports:
       - "8082:8082"
     networks:
       - apartments-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
   
 volumes:
   mysql_users_data:
