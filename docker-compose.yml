@@ -110,7 +110,18 @@ services:
       - apartments-network
     environment:
       EUREKA_INSTANCE_HOSTNAME: eureka-server
-      EUREKA_CLIENT_SERVICE_URL: http://eureka-server:8761/eureka/  
+      
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: api-gateway/Dockerfile
+    environment:
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+    ports:
+      - "8443:8443"
+    networks:
+      - apartments-network
+
   apartment:
     build:
       context: ./backend
@@ -125,7 +136,7 @@ services:
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET: apartments-images
       JWT_SECRET: Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
-      EUREKA_CLIENT_SERVICE_URL: http://eureka-server:8761/eureka/
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-apartments:
         condition: service_healthy
@@ -144,6 +155,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-users:3306/usersdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-users:
         condition: service_healthy
@@ -160,6 +172,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-bookings:3306/bookingsdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-bookings:
         condition: service_healthy

@@ -59,13 +59,39 @@ jobs:
                 timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists\|already exists"; do sleep 2; done'
 
                 echo "Waiting for backend application..."
-                timeout 180 bash -c 'until curl -f http://localhost:8083/actuator/health 2>/dev/null || nc -z localhost 8083; do sleep 3; done'
+                timeout 180 bash -c 'until curl -f https://localhost:8443/actuator/health 2>/dev/null || nc -z localhost 8083; do sleep 3; done'
                 
-            - name: Run Backend E2E Tests against deployed services
+            - name: Run Booking E2E Tests
               working-directory: ./backend
-              run: mvn test -Dtest='*e2eTest'
+              run: mvn test -Dtest='*Booking*e2eTest'
               env:
-                BACKEND_BASE_URL: http://localhost:8083
+                BACKEND_BASE_URL: https://localhost:8443
+                SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
+                SPRING_DATASOURCE_USERNAME: user
+                SPRING_DATASOURCE_PASSWORD: password
+                MINIO_URL: http://localhost:9000
+                MINIO_ACCESS_KEY: minioadmin
+                MINIO_SECRET_KEY: minioadmin
+                MINIO_BUCKET_NAME: apartments-images
+                
+            - name: Run Apartment E2E Tests
+              working-directory: ./backend
+              run: mvn test -Dtest='*Apartment*e2eTest'
+              env:
+                BACKEND_BASE_URL: https://localhost:8443
+                SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
+                SPRING_DATASOURCE_USERNAME: user
+                SPRING_DATASOURCE_PASSWORD: password
+                MINIO_URL: http://localhost:9000
+                MINIO_ACCESS_KEY: minioadmin
+                MINIO_SECRET_KEY: minioadmin
+                MINIO_BUCKET_NAME: apartments-images
+                
+            - name: Run User E2E Tests
+              working-directory: ./backend
+              run: mvn test -Dtest='*User*e2eTest'
+              env:
+                BACKEND_BASE_URL: https://localhost:8443
                 SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
                 SPRING_DATASOURCE_USERNAME: user
                 SPRING_DATASOURCE_PASSWORD: password
