@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.s;
 
 import com.skyapartments.booking.dto.BookingRequestDTO;
 import com.skyapartments.booking.model.Booking;
@@ -143,7 +144,7 @@ public class Bookinge2eTest {
             .statusCode(200)
             .body("size()", greaterThan(0))
             .body("[0].userId", equalTo(regularUserId.intValue()))
-            .body("[0].apartmentId", equalTo(1))
+            .body("[0].apartmentId", equalTo(savedBooking.getApartmentId().intValue()))
             .body("[0].state", equalTo("CONFIRMED"));
     }
 

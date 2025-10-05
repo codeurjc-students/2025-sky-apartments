@@ -146,7 +146,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-apartments:3306/apartmentsdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       MINIO_URL: http://minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
@@ -179,6 +179,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-users:3306/usersdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-users:
@@ -204,6 +205,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-bookings:3306/bookingsdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
     depends_on:
       mysql-bookings:
