@@ -29,7 +29,7 @@ import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(OrderAnnotation.class)
-public class bookinge2eTest {
+public class Bookinge2eTest {
 
     @Autowired
     private BookingRepository bookingRepository;
