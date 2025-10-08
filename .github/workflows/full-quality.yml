@@ -85,42 +85,15 @@ jobs:
           - name: Run Booking E2E Tests
             working-directory: ./backend/booking
             run: mvn test -Dtest='*Booking*e2eTest'
-            env:
-              BACKEND_BASE_URL: https://localhost:8443
-              SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
-              SPRING_DATASOURCE_USERNAME: user
-              SPRING_DATASOURCE_PASSWORD: password
-              MINIO_URL: http://localhost:9000
-              MINIO_ACCESS_KEY: minioadmin
-              MINIO_SECRET_KEY: minioadmin
-              MINIO_BUCKET_NAME: apartments-images
               
           - name: Run Apartment E2E Tests
             working-directory: ./backend/apartment
             run: mvn test -Dtest='*Apartment*e2eTest'
-            env:
-              BACKEND_BASE_URL: https://localhost:8443
-              SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
-              SPRING_DATASOURCE_USERNAME: user
-              SPRING_DATASOURCE_PASSWORD: password
-              MINIO_URL: http://localhost:9000
-              MINIO_ACCESS_KEY: minioadmin
-              MINIO_SECRET_KEY: minioadmin
-              MINIO_BUCKET_NAME: apartments-images
               
           - name: Run User E2E Tests
             working-directory: ./backend/user
             run: mvn test -Dtest='*User*e2eTest'
-            env:
-              BACKEND_BASE_URL: https://localhost:8443
-              SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
-              SPRING_DATASOURCE_USERNAME: user
-              SPRING_DATASOURCE_PASSWORD: password
-              MINIO_URL: http://localhost:9000
-              MINIO_ACCESS_KEY: minioadmin
-              MINIO_SECRET_KEY: minioadmin
-              MINIO_BUCKET_NAME: apartments-images
-              
+
           - name: Show service logs on failure
             if: failure()
             run: |

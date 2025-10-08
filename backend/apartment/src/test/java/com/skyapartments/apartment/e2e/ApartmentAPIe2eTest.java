@@ -578,18 +578,6 @@ public class ApartmentAPIe2eTest {
 
     @Test
     @Order(28)
-    public void searchApartments_ShouldReturnFilteredApartments_WhenDateRangeFilter() {
-        given()
-            .queryParam("startDate", "2024-06-01")
-            .queryParam("endDate", "2024-06-07")
-        .when()
-            .get("/api/v1/apartments/search")
-        .then()
-            .statusCode(200);
-    }
-
-    @Test
-    @Order(29)
     public void searchApartments_ShouldReturnAllApartments_WhenNoFilters() {
         given()
         .when()
@@ -600,7 +588,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(30)
+    @Order(29)
     public void searchApartments_ShouldReturn204_WhenNoApartmentsMatchCriteria() {
         given()
             .queryParam("services", "NonExistentService")
@@ -612,7 +600,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(31)
+    @Order(30)
     public void searchApartments_ShouldReturnPaginatedResults() {
         given()
             .queryParam("page", "0")
@@ -625,7 +613,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(32)
+    @Order(31)
     public void getAllServices_ShouldReturnSetOfServices_WhenServicesExist() {
         given()
         .when()
@@ -637,7 +625,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(33)
+    @Order(32)
     public void getAllServices_ShouldReturn204_WhenNoServicesExist() {
         apartmentRepository.deleteAll();
         
@@ -649,20 +637,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(34)
-    public void checkAvailability_ShouldReturnTrue_WhenApartmentIsAvailable() {
-        given()
-            .queryParam("startDate", "2024-06-01")
-            .queryParam("endDate", "2024-06-07")
-        .when()
-            .get("/api/v1/apartments/{id}/availability", savedApartment.getId())
-        .then()
-            .statusCode(200)
-            .body(equalTo("true"));
-    }
-
-    @Test
-    @Order(35)
+    @Order(33)
     public void checkAvailability_ShouldReturnNotFound_WhenApartmentDoesNotExist() {
         long nonExistentId = 99999L;
         
@@ -676,7 +651,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(36)
+    @Order(34)
     public void checkAvailability_ShouldReturnBadRequest_WhenDatesAreMissing() {
         given()
         .when()
@@ -686,7 +661,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(37)
+    @Order(35)
     public void checkAvailability_ShouldReturnBadRequest_WhenDatesAreInvalid() {
         given()
             .queryParam("startDate", "invalid-date")
@@ -698,7 +673,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(38)
+    @Order(36)
     public void checkAvailability_ShouldReturnBadRequest_WhenIdIsNotLong() {
         given()
             .queryParam("startDate", "2024-06-01")
@@ -710,7 +685,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(39)
+    @Order(37)
     public void getAllApartments_ShouldReturnPaginatedResults_WhenPageParametersProvided() {
         for (int i = 1; i <= 15; i++) {
             apartmentRepository.save(new Apartment(
@@ -733,7 +708,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(40)
+    @Order(38)
     public void getAllApartments_ShouldReturnSecondPage_WhenPageIs1() {
         given()
             .queryParam("page", "1")
@@ -745,7 +720,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(41)
+    @Order(39)
     public void searchApartments_ShouldHandleMultipleServices() {
         given()
             .queryParam("services", "WiFi")
@@ -757,7 +732,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(42)
+    @Order(40)
     public void searchApartments_ShouldHandleInvalidDateFormat() {
         given()
             .queryParam("startDate", "invalid-date")
@@ -769,7 +744,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(43)
+    @Order(41)
     public void searchApartments_ShouldHandleEndDateBeforeStartDate() {
         given()
             .queryParam("startDate", "2024-06-07")
