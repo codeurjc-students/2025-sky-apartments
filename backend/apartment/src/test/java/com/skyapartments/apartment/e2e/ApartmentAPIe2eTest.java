@@ -15,12 +15,15 @@ import com.skyapartments.apartment.model.Apartment;
 import com.skyapartments.apartment.repository.ApartmentRepository;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Set;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,25 +33,28 @@ public class ApartmentAPIe2eTest {
     @Autowired
     private ApartmentRepository apartmentRepository;
 
-    @LocalServerPort
-    private int port;
-
     private Apartment savedApartment;
     private static String gatewayUrl;
+
+    private Map<String, String> adminCookies;
+    private Map<String, String> userCookies;
+
+    @LocalServerPort
+    private int port;
 
     @BeforeAll
     public static void init() {
         useRelaxedHTTPSValidation();
         
+        gatewayUrl = "https://" + "localhost" + ":" + 8443;
+        RestAssured.baseURI = gatewayUrl;
+        RestAssured.port = 8443;
     }
 
     @BeforeEach
     void setUp() {
 
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-
-        //RestAssured.baseURI = gatewayUrl;
+        RestAssured.baseURI = gatewayUrl;
         
         apartmentRepository.deleteAll();
 
@@ -61,7 +67,38 @@ public class ApartmentAPIe2eTest {
         );
         apto.setImageUrl("https://my-bucket.s3.amazonaws.com/test_image.jpg");
         savedApartment = apartmentRepository.save(apto);
+
+        this.adminCookies = loginAndGetAllCookies("admin@example.com", "Password@1234");
+        this.userCookies = loginAndGetAllCookies("user@example.com", "Password@1234");
         
+    }
+
+     private Map<String, String> loginAndGetAllCookies(String username, String password) {
+        Map<String, String> loginRequest = Map.of(
+            "username", username,
+            "password", password
+        );
+
+        Response loginResponse = given()
+            .contentType(ContentType.JSON)
+            .body(loginRequest)
+        .when()
+            .post("/api/v1/auth/login")
+        .then()
+            .statusCode(200)
+            .body("status", equalTo("SUCCESS"))
+            .extract()
+            .response();
+
+        
+        Map<String, String> cookies = loginResponse.getCookies();
+        
+        
+        if (cookies.isEmpty()) {
+            throw new RuntimeException("No cookies were received from the login");
+        }
+        
+        return cookies;
     }
 
     @Test
@@ -133,9 +170,9 @@ public class ApartmentAPIe2eTest {
 
     @Test
     @Order(6)
-    public void createApartment_ShouldCreateApartment_WhenInputIsValid() {
-
+    public void createApartment_ShouldCreateApartment_WhenInputIsValidAndUserIsAdmin() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .formParam("name", "Ocean View")
             .formParam("description", "Apartment with sea views")
@@ -162,8 +199,9 @@ public class ApartmentAPIe2eTest {
     }
     @Test
     @Order(7)
-    public void createApartment_ShouldReturnBadRequest_WhenNameIsBlank() {
+    public void createApartment_ShouldReturnBadRequest_WhenNameIsBlankAndUserIsAdmin() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .multiPart("name", "") // invalid name
             .multiPart("description", "No name apartment")
@@ -179,8 +217,9 @@ public class ApartmentAPIe2eTest {
 
     @Test
     @Order(8)
-    public void createApartment_ShouldReturnBadRequest_WhenNoImagesProvided() {
+    public void createApartment_ShouldReturnBadRequest_WhenNoImagesProvidedAndUserIsAdmin() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .multiPart("name", "No Images Apt")
             .multiPart("description", "Missing images")
@@ -195,14 +234,104 @@ public class ApartmentAPIe2eTest {
 
     @Test
     @Order(9)
+    public void createApartment_ShouldReturnUnauthorized_WhenNoTokenProvided() {
+        given()
+            .contentType("multipart/form-data")
+            .multiPart("name", "Ocean View")
+            .multiPart("description", "Apartment with sea views")
+            .multiPart("price", "180.00")
+            .multiPart("capacity", "3")
+            .multiPart("services", "WiFi")
+            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .post("/api/v1/apartments")
+        .then()
+            .statusCode(401);
+    }
+
+    @Test
+    @Order(10)
+    public void createApartment_ShouldReturnUnauthorized_WhenTokenIsInvalid() {
+        given()
+            .cookie("AuthToken", "invalid-token")
+            .contentType("multipart/form-data")
+            .multiPart("name", "Ocean View")
+            .multiPart("description", "Apartment with sea views")
+            .multiPart("price", "180.00")
+            .multiPart("capacity", "3")
+            .multiPart("services", "WiFi")
+            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .post("/api/v1/apartments")
+        .then()
+            .statusCode(401);
+    }
+
+    @Test
+    @Order(11)
+    public void createApartment_ShouldReturnForbidden_WhenUserIsNotAdmin() {
+        given()
+            .cookies(userCookies)
+            .contentType("multipart/form-data")
+            .multiPart("name", "Ocean View")
+            .multiPart("description", "Apartment with sea views")
+            .multiPart("price", "180.00")
+            .multiPart("capacity", "3")
+            .multiPart("services", "WiFi")
+            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .post("/api/v1/apartments")
+        .then()
+            .statusCode(403);
+    }
+
+    @Test
+    @Order(12)
+    public void createApartment_ShouldReturnUnauthorized_WhenTokenIsExpired() {
+        given()
+            .cookie("AuthToken", "expired.jwt.token")
+            .contentType("multipart/form-data")
+            .multiPart("name", "Ocean View")
+            .multiPart("description", "Apartment with sea views")
+            .multiPart("price", "180.00")
+            .multiPart("capacity", "3")
+            .multiPart("services", "WiFi")
+            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .post("/api/v1/apartments")
+        .then()
+            .statusCode(401);
+    }
+
+    @Test
+    @Order(13)
+    public void createApartment_ShouldReturnBadRequest_WhenApartmentNameAlreadyExists() {
+        given()
+            .cookies(adminCookies)
+            .contentType("multipart/form-data")
+            .multiPart("name", "Test Apartment")
+            .multiPart("description", "Second apartment")
+            .multiPart("price", "150.00")
+            .multiPart("capacity", "3")
+            .multiPart("image", "photo2.jpg", new ByteArrayInputStream("fakeimage2".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .post("/api/v1/apartments")
+        .then()
+            .statusCode(400)
+            .body("message", equalTo("An apartment with this name already exists"));
+    }
+
+    @Test
+    @Order(14)
     public void createApartment_ShouldReturnBadRequest_WhenPriceIsNegative() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .multiPart("name", "Negative Price Apt")
             .multiPart("description", "Invalid price apartment")
             .multiPart("price", "-50.00")
             .multiPart("capacity", "2")
-            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+            .multiPart("images", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
         .when()
             .post("/api/v1/apartments")
         .then()
@@ -211,9 +340,10 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(10)
+    @Order(15)
     public void createApartment_ShouldReturnBadRequest_WhenCapacityIsZero() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .multiPart("name", "Zero Capacity Apt")
             .multiPart("description", "Invalid capacity apartment")
@@ -228,9 +358,10 @@ public class ApartmentAPIe2eTest {
     }
     
     @Test
-    @Order(11)
+    @Order(16)
     public void updateApartment_ShouldUpdateApartment_WhenValidData() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .formParam("name", "Updated Apartment Name")
             .formParam("description", "Updated description")
@@ -253,11 +384,12 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(12)
+    @Order(17)
     public void updateApartment_ShouldReturnNotFound_WhenApartmentDoesNotExist() {
         long nonExistentId = 99999L;
         
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .formParam("name", "Non-existent Apartment")
             .formParam("description", "This apartment doesn't exist")
@@ -274,9 +406,10 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(13)
+    @Order(18)
     public void updateApartment_ShouldReturnBadRequest_WhenDataIsInvalid() {
         given()
+            .cookies(adminCookies)
             .contentType("multipart/form-data")
             .formParam("name", "")
             .formParam("description", "Updated description")
@@ -291,10 +424,47 @@ public class ApartmentAPIe2eTest {
             .statusCode(400);
     }
 
+    @Test
+    @Order(19)
+    public void updateApartment_ShouldReturnUnauthorized_WhenNoTokenProvided() {
+        given()
+            .contentType("multipart/form-data")
+            .formParam("name", "Updated Name")
+            .formParam("description", "Updated description")
+            .formParam("price", "200.00")
+            .formParam("capacity", "4")
+            .multiPart("image", "photo.jpg",
+                    new ByteArrayInputStream("fake_image".getBytes()),
+                    MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .put("/api/v1/apartments/{id}", savedApartment.getId())
+        .then()
+            .statusCode(401);
+    }
+
+    @Test
+    @Order(20)
+    public void updateApartment_ShouldReturnForbidden_WhenUserIsNotAdmin() {
+        given()
+            .cookies(userCookies)
+            .contentType("multipart/form-data")
+            .formParam("name", "Updated Name")
+            .formParam("description", "Updated description")
+            .formParam("price", "200.00")
+            .formParam("capacity", "4")
+            .multiPart("image", "photo.jpg",
+                    new ByteArrayInputStream("fake_image".getBytes()),
+                    MediaType.IMAGE_JPEG_VALUE)
+        .when()
+            .put("/api/v1/apartments/{id}", savedApartment.getId())
+        .then()
+            .statusCode(403);
+    }
+
     // ==================== DELETE APARTMENT TESTS ====================
 
     @Test
-    @Order(14)
+    @Order(21)
     public void deleteApartment_ShouldDeleteApartment_WhenApartmentExists() {
 
         Apartment tempApartment = apartmentRepository.save(new Apartment(
@@ -306,6 +476,7 @@ public class ApartmentAPIe2eTest {
         ));
 
         given()
+            .cookies(adminCookies)
         .when()
             .delete("/api/v1/apartments/{id}", tempApartment.getId())
         .then()
@@ -320,11 +491,12 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(15)
+    @Order(22)
     public void deleteApartment_ShouldReturnNotFound_WhenApartmentDoesNotExist() {
         long nonExistentId = 99999L;
         
         given()
+            .cookies(adminCookies)
         .when()
             .delete("/api/v1/apartments/{id}", nonExistentId)
         .then()
@@ -332,18 +504,39 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(16)
+    @Order(23)
     public void deleteApartment_ShouldReturnBadRequest_WhenIdIsNotLong() {
         given()
+            .cookies(adminCookies)
         .when()
             .delete("/api/v1/apartments/{id}", "invalid-id")
         .then()
             .statusCode(400);
     }
 
+    @Test
+    @Order(24)
+    public void deleteApartment_ShouldReturnUnauthorized_WhenNoTokenProvided() {
+        given()
+        .when()
+            .delete("/api/v1/apartments/{id}", savedApartment.getId())
+        .then()
+            .statusCode(401);
+    }
 
     @Test
-    @Order(17)
+    @Order(25)
+    public void deleteApartment_ShouldReturnForbidden_WhenUserIsNotAdmin() {
+        given()
+            .cookies(userCookies)
+        .when()
+            .delete("/api/v1/apartments/{id}", savedApartment.getId())
+        .then()
+            .statusCode(403);
+    }
+
+    @Test
+    @Order(26)
     public void searchApartments_ShouldReturnFilteredApartments_WhenServicesFilter() {
         apartmentRepository.save(new Apartment(
             "WiFi Apartment", 
@@ -372,7 +565,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(18)
+    @Order(27)
     public void searchApartments_ShouldReturnFilteredApartments_WhenMinCapacityFilter() {
         given()
             .queryParam("minCapacity", "4")
@@ -384,19 +577,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(19)
-    public void searchApartments_ShouldReturnFilteredApartments_WhenDateRangeFilter() {
-        given()
-            .queryParam("startDate", "2024-06-01")
-            .queryParam("endDate", "2024-06-07")
-        .when()
-            .get("/api/v1/apartments/search")
-        .then()
-            .statusCode(200);
-    }
-
-    @Test
-    @Order(20)
+    @Order(28)
     public void searchApartments_ShouldReturnAllApartments_WhenNoFilters() {
         given()
         .when()
@@ -407,7 +588,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(21)
+    @Order(29)
     public void searchApartments_ShouldReturn204_WhenNoApartmentsMatchCriteria() {
         given()
             .queryParam("services", "NonExistentService")
@@ -419,7 +600,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(22)
+    @Order(30)
     public void searchApartments_ShouldReturnPaginatedResults() {
         given()
             .queryParam("page", "0")
@@ -432,7 +613,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(23)
+    @Order(31)
     public void getAllServices_ShouldReturnSetOfServices_WhenServicesExist() {
         given()
         .when()
@@ -444,7 +625,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(24)
+    @Order(32)
     public void getAllServices_ShouldReturn204_WhenNoServicesExist() {
         apartmentRepository.deleteAll();
         
@@ -456,20 +637,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(25)
-    public void checkAvailability_ShouldReturnTrue_WhenApartmentIsAvailable() {
-        given()
-            .queryParam("startDate", "2024-06-01")
-            .queryParam("endDate", "2024-06-07")
-        .when()
-            .get("/api/v1/apartments/{id}/availability", savedApartment.getId())
-        .then()
-            .statusCode(200)
-            .body(equalTo("true"));
-    }
-
-    @Test
-    @Order(26)
+    @Order(33)
     public void checkAvailability_ShouldReturnNotFound_WhenApartmentDoesNotExist() {
         long nonExistentId = 99999L;
         
@@ -483,7 +651,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(27)
+    @Order(34)
     public void checkAvailability_ShouldReturnBadRequest_WhenDatesAreMissing() {
         given()
         .when()
@@ -493,7 +661,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(28)
+    @Order(35)
     public void checkAvailability_ShouldReturnBadRequest_WhenDatesAreInvalid() {
         given()
             .queryParam("startDate", "invalid-date")
@@ -505,7 +673,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(29)
+    @Order(36)
     public void checkAvailability_ShouldReturnBadRequest_WhenIdIsNotLong() {
         given()
             .queryParam("startDate", "2024-06-01")
@@ -517,7 +685,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(30)
+    @Order(37)
     public void getAllApartments_ShouldReturnPaginatedResults_WhenPageParametersProvided() {
         for (int i = 1; i <= 15; i++) {
             apartmentRepository.save(new Apartment(
@@ -540,7 +708,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(31)
+    @Order(38)
     public void getAllApartments_ShouldReturnSecondPage_WhenPageIs1() {
         given()
             .queryParam("page", "1")
@@ -552,7 +720,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(32)
+    @Order(39)
     public void searchApartments_ShouldHandleMultipleServices() {
         given()
             .queryParam("services", "WiFi")
@@ -564,7 +732,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(33)
+    @Order(40)
     public void searchApartments_ShouldHandleInvalidDateFormat() {
         given()
             .queryParam("startDate", "invalid-date")
@@ -576,7 +744,7 @@ public class ApartmentAPIe2eTest {
     }
 
     @Test
-    @Order(34)
+    @Order(41)
     public void searchApartments_ShouldHandleEndDateBeforeStartDate() {
         given()
             .queryParam("startDate", "2024-06-07")

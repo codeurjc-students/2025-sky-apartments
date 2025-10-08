@@ -29,94 +29,136 @@ jobs:
               run: mvn test -Dtest='*IntegrationTest'
             
     backend-e2e:
-        name: Backend E2E Check
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Set up Java
-              uses: actions/setup-java@v4
-              with:
-                java-version: '17'
-                distribution: 'temurin'
-                cache: maven
-                
-            - name: Build backend application
-              working-directory: ./backend
-              run: mvn clean package -DskipTests
-            
-            - name: Start all services with Docker Compose
-              run: docker compose up -d
-                
-            - name: Wait for all services to be ready
-              run: |
-                echo "Waiting for MySQL..."
-                timeout 120 bash -c 'until docker exec $(docker ps -q -f name=mysql-apartments) mysqladmin ping -h"127.0.0.1" -uuser -ppassword --silent 2>/dev/null; do sleep 2; done'
-                
-                echo "Waiting for MinIO..."
-                timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live 2>/dev/null; do sleep 2; done'
-                
-                echo "Checking bucket of MinIO..."
-                timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists\|already exists"; do sleep 2; done'
+      name: Backend E2E Check
+      runs-on: ubuntu-latest
+      steps:
+          - uses: actions/checkout@v4
+          - name: Set up Java
+            uses: actions/setup-java@v4
+            with:
+              java-version: '17'
+              distribution: 'temurin'
+              cache: maven
+              
+          - name: Clean up any existing containers and volumes
+            run: docker compose down -v || true
+          
+          - name: Build backend application
+            working-directory: ./backend
+            run: mvn clean package -DskipTests
+          
+          - name: Start all services with Docker Compose
+            run: docker compose up -d --build
+              
+          - name: Wait for all services to be ready
+            run: |
+              echo "Waiting for MySQL..."
+              timeout 120 bash -c 'until docker exec $(docker ps -q -f name=mysql-apartments) mysqladmin ping -h"127.0.0.1" -uuser -ppassword --silent 2>/dev/null; do sleep 2; done'
+              
+              echo "Waiting for MinIO..."
+              timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live 2>/dev/null; do sleep 2; done'
+              
+              echo "Checking bucket of MinIO..."
+              timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists\|already exists"; do sleep 2; done'
 
-                echo "Waiting for backend application..."
-                timeout 180 bash -c 'until curl -f http://localhost:8083/actuator/health 2>/dev/null || nc -z localhost 8083; do sleep 3; done'
-                
-            - name: Run Backend E2E Tests against deployed services
-              working-directory: ./backend
-              run: mvn test -Dtest='*e2eTest'
-              env:
-                BACKEND_BASE_URL: http://localhost:8083
-                SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3303/apartmentsdb
-                SPRING_DATASOURCE_USERNAME: user
-                SPRING_DATASOURCE_PASSWORD: password
-                MINIO_URL: http://localhost:9000
-                MINIO_ACCESS_KEY: minioadmin
-                MINIO_SECRET_KEY: minioadmin
-                MINIO_BUCKET_NAME: apartments-images
-                
-            - name: Show service logs on failure
-              if: failure()
-              run: |
-                echo "=== Docker containers status ==="
-                docker ps -a
-                echo ""
-                echo "=== MySQL logs ==="
-                MYSQL_CONTAINER=$(docker ps -aq -f name=mysql-apartments)
-                if [ ! -z "$MYSQL_CONTAINER" ]; then
-                  docker logs $MYSQL_CONTAINER | tail -50
-                else
-                  echo "No MySQL container found"
-                fi
-                echo ""
-                echo "=== MinIO logs ==="
-                MINIO_CONTAINER=$(docker ps -aq -f name=minio | head -1)
-                if [ ! -z "$MINIO_CONTAINER" ]; then
-                  docker logs $MINIO_CONTAINER | tail -50
-                else
-                  echo "No MinIO container found"
-                fi
-                echo ""
-                echo "=== MinIO MC logs ==="
-                MC_CONTAINER=$(docker ps -aq -f name=mc)
-                if [ ! -z "$MC_CONTAINER" ]; then
-                  docker logs $MC_CONTAINER | tail -50
-                else
-                  echo "No MC container found"
-                fi
-                echo ""
-                echo "=== Backend Application logs ==="
-                APP_CONTAINER=$(docker ps -aq -f name=apartment)
-                if [ ! -z "$APP_CONTAINER" ]; then
-                  docker logs $APP_CONTAINER | tail -100
-                else
-                  echo "No Backend application container found"
-                  echo "Containers with 'apartment' in name:"
-                  docker ps -a | grep apartment || echo "None found"
-                fi
-                
-            - name: Stop services
-              if: always()
-              run: docker compose down -v
+              echo "Waiting for Eureka Server..."
+              timeout 120 bash -c 'until curl -f http://localhost:8761/actuator/health 2>/dev/null; do sleep 3; done'
+              
+              echo "Waiting for services to register in Eureka..."
+              sleep 30
+              
+              echo "Checking Eureka registrations..."
+              timeout 120 bash -c '
+                until [ $(curl -s http://localhost:8761/eureka/apps | grep -o "<status>UP</status>" | wc -l) -ge 4 ]; do 
+                  echo "Waiting for all services to register... Currently registered: $(curl -s http://localhost:8761/eureka/apps | grep -o "<status>UP</status>" | wc -l)"
+                  sleep 5
+                done
+              '
+              
+              echo "Waiting for API Gateway..."
+              timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
+              
+              echo "All services are ready!"
+              echo "Registered services in Eureka:"
+              curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
+              
+          - name: Run Booking E2E Tests
+            working-directory: ./backend/booking
+            run: mvn test -Dtest='*Booking*e2eTest'
+              
+          - name: Run Apartment E2E Tests
+            working-directory: ./backend/apartment
+            run: mvn test -Dtest='*Apartment*e2eTest'
+              
+          - name: Run User E2E Tests
+            working-directory: ./backend/user
+            run: mvn test -Dtest='*User*e2eTest'
+
+          - name: Show service logs on failure
+            if: failure()
+            run: |
+              echo "=== Docker containers status ==="
+              docker ps -a
+              echo ""
+              echo "=== Eureka Server logs ==="
+              EUREKA_CONTAINER=$(docker ps -aq -f name=eureka)
+              if [ ! -z "$EUREKA_CONTAINER" ]; then
+                docker logs $EUREKA_CONTAINER | tail -100
+              else
+                echo "No Eureka container found"
+              fi
+              echo ""
+              echo "=== API Gateway logs ==="
+              GATEWAY_CONTAINER=$(docker ps -aq -f name=api-gateway)
+              if [ ! -z "$GATEWAY_CONTAINER" ]; then
+                docker logs $GATEWAY_CONTAINER | tail -100
+              else
+                echo "No API Gateway container found"
+              fi
+              echo ""
+              echo "=== MySQL logs ==="
+              MYSQL_CONTAINER=$(docker ps -aq -f name=mysql-apartments)
+              if [ ! -z "$MYSQL_CONTAINER" ]; then
+                docker logs $MYSQL_CONTAINER | tail -50
+              else
+                echo "No MySQL container found"
+              fi
+              echo ""
+              echo "=== MinIO logs ==="
+              MINIO_CONTAINER=$(docker ps -aq -f name=minio | head -1)
+              if [ ! -z "$MINIO_CONTAINER" ]; then
+                docker logs $MINIO_CONTAINER | tail -50
+              else
+                echo "No MinIO container found"
+              fi
+              echo ""
+              echo "=== User Service logs ==="
+              USER_CONTAINER=$(docker ps -aq -f name=user)
+              if [ ! -z "$USER_CONTAINER" ]; then
+                docker logs $USER_CONTAINER | tail -100
+              else
+                echo "No User service container found"
+              fi
+              echo ""
+              echo "=== Booking Service logs ==="
+              BOOKING_CONTAINER=$(docker ps -aq -f name=booking)
+              if [ ! -z "$BOOKING_CONTAINER" ]; then
+                docker logs $BOOKING_CONTAINER | tail -100
+              else
+                echo "No Booking service container found"
+              fi
+              echo ""
+              echo "=== Apartment Service logs ==="
+              APARTMENT_CONTAINER=$(docker ps -aq -f name=apartment)
+              if [ ! -z "$APARTMENT_CONTAINER" ]; then
+                docker logs $APARTMENT_CONTAINER | tail -100
+              else
+                echo "No Apartment service container found"
+              fi
+              
+          - name: Stop services
+            if: always()
+            run: docker compose down -v
 
     frontend-integration:
         name: Frontend Integration Quality Check
