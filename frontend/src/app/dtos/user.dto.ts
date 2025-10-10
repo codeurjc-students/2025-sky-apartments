@@ -1,0 +1,8 @@
+export interface UserDTO {
+    id: number;
+    name: string;
+    surname: string;
+    email: string;
+    phoneNumber: string;
+    roles: Set<String>;
+}
