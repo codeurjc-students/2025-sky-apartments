@@ -6,10 +6,10 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: usersdb
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_USERS_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3305:3306"
     volumes:
@@ -17,7 +17,7 @@ services:
     networks:
       - apartments-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,18 +27,18 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: apartmentsdb
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_APARTMENTS_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3303:3306"
-    networks:
-      - apartments-network
     volumes:
       - mysql_apartments_data:/var/lib/mysql
+    networks:
+      - apartments-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,18 +48,18 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: bookingsdb
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3302:3306"
-    networks:
-      - apartments-network
     volumes:
       - mysql_bookings_data:/var/lib/mysql
+    networks:
+      - apartments-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -69,8 +69,8 @@ services:
     image: minio/minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -93,9 +93,9 @@ services:
     entrypoint: >
       /bin/sh -c "
         sleep 5 &&
-        mc alias set local http://minio:9000 minioadmin minioadmin &&
-        mc mb -p local/apartments-images || true &&
-        mc anonymous set public local/apartments-images
+        mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+        mc mb -p local/${MINIO_BUCKET} || true &&
+        mc anonymous set public local/${MINIO_BUCKET}
         tail -f /dev/null
       "
     networks:
@@ -123,7 +123,7 @@ services:
       context: ./backend
       dockerfile: api-gateway/Dockerfile
     environment:
-      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
     ports:
       - "8443:8443"
     networks:
@@ -143,17 +143,17 @@ services:
       context: ./backend
       dockerfile: apartment/Dockerfile
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-apartments:3306/apartmentsdb
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       MINIO_URL: http://minio:9000
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-      MINIO_BUCKET: apartments-images
-      JWT_SECRET: Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
-      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
-      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT}
     depends_on:
       mysql-apartments:
         condition: service_healthy
@@ -179,12 +179,12 @@ services:
       context: ./backend
       dockerfile: user/Dockerfile
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-users:3306/usersdb
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
-      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT}
     depends_on:
       mysql-users:
         condition: service_healthy
@@ -208,12 +208,12 @@ services:
       context: ./backend
       dockerfile: booking/Dockerfile
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-bookings:3306/bookingsdb
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-      EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
-      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT}
     depends_on:
       mysql-bookings:
         condition: service_healthy
