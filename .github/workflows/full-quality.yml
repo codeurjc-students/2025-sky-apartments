@@ -46,9 +46,24 @@ jobs:
           - name: Build backend application
             working-directory: ./backend
             run: mvn clean package -DskipTests
-          
+
+          - name: Create .env file from secrets
+            run: |
+              echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+              echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+              echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+              echo "MYSQL_USERS_DB=${{ secrets.MYSQL_USERS_DB }}" >> .env
+              echo "MYSQL_APARTMENTS_DB=${{ secrets.MYSQL_APARTMENTS_DB }}" >> .env
+              echo "MYSQL_BOOKINGS_DB=${{ secrets.MYSQL_BOOKINGS_DB }}" >> .env
+              echo "MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}" >> .env
+              echo "MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}" >> .env
+              echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
+              echo "EUREKA_SERVER_URL=${{ secrets.EUREKA_SERVER_URL }}" >> .env
+              echo "OTLP_ENDPOINT=${{ secrets.OTLP_ENDPOINT }}" >> .env
+              echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
           - name: Start all services with Docker Compose
-            run: docker compose up -d --build
+            run: docker compose --env-file .env up -d --build
               
           - name: Wait for all services to be ready
             run: |
@@ -177,9 +192,24 @@ jobs:
             - name: Build backend application
               working-directory: ./backend
               run: mvn clean package -DskipTests
-            
+
+            - name: Create .env file from secrets
+              run: |
+                echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+                echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+                echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+                echo "MYSQL_USERS_DB=${{ secrets.MYSQL_USERS_DB }}" >> .env
+                echo "MYSQL_APARTMENTS_DB=${{ secrets.MYSQL_APARTMENTS_DB }}" >> .env
+                echo "MYSQL_BOOKINGS_DB=${{ secrets.MYSQL_BOOKINGS_DB }}" >> .env
+                echo "MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}" >> .env
+                echo "MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}" >> .env
+                echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
+                echo "EUREKA_SERVER_URL=${{ secrets.EUREKA_SERVER_URL }}" >> .env
+                echo "OTLP_ENDPOINT=${{ secrets.OTLP_ENDPOINT }}" >> .env
+                echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
             - name: Start all services with Docker Compose
-              run: docker compose up -d
+              run: docker compose --env-file .env up -d --build
                 
             - name: Wait for all services to be ready
               run: |
