@@ -153,6 +153,7 @@ services:
       MINIO_BUCKET: apartments-images
       JWT_SECRET: Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       mysql-apartments:
         condition: service_healthy
@@ -160,6 +161,8 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     ports:
       - "8083:8083"
     networks:
@@ -181,11 +184,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       mysql-users:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     ports:
       - "8080:8080"
     networks:
@@ -207,11 +213,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
+      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       mysql-bookings:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     ports:
       - "8082:8082"
     networks:
@@ -222,6 +231,16 @@ services:
       timeout: 5s
       retries: 10
       start_period: 60s
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    networks:
+      - apartments-network
   
 volumes:
   mysql_users_data:
