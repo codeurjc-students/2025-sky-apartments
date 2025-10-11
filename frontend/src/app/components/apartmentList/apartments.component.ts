@@ -14,7 +14,7 @@ export class ApartmentsComponent implements OnInit{
     constructor (private apartmentService: ApartmentService) {}
 
     ngOnInit(): void {
-    this.apartmentService.getApartments().subscribe({
+    this.apartmentService.getAllApartments().subscribe({
       next: (data) => this.apartments = data,
       error: (err) => console.error(err)
     });

@@ -54,7 +54,7 @@ describe('ApartmentsComponent', () => {
   });
 
   it('should display a list of apartments when service returns data', () => {
-    mockApartmentService.getApartments.and.returnValue(of(mockApartments));
+    mockApartmentService.getAllApartments.and.returnValue(of(mockApartments));
 
     fixture.detectChanges(); // triggers ngOnInit
 
@@ -67,7 +67,7 @@ describe('ApartmentsComponent', () => {
   });
 
   it('should display "no apartments" message when service returns empty list', () => {
-    mockApartmentService.getApartments.and.returnValue(of([]));
+    mockApartmentService.getAllApartments.and.returnValue(of([]));
 
     fixture.detectChanges();
 
@@ -78,7 +78,7 @@ describe('ApartmentsComponent', () => {
 
   it('should handle error from service gracefully', () => {
     spyOn(console, 'error'); // avoid logging in test output
-    mockApartmentService.getApartments.and.returnValue(throwError(() => new Error('Server error')));
+    mockApartmentService.getAllApartments.and.returnValue(throwError(() => new Error('Server error')));
 
     fixture.detectChanges();
 
