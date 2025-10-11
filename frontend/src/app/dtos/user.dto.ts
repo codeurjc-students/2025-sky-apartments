@@ -4,5 +4,5 @@ export interface UserDTO {
     surname: string;
     email: string;
     phoneNumber: string;
-    roles: Set<String>;
+    roles: string[];
 }
