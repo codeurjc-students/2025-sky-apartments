@@ -1,0 +1,149 @@
+<div class="apartment-list-container">
+  <!-- Sidebar of filters -->
+  <aside class="filters-sidebar">
+    <mat-card class="filters-card">
+      <mat-card-content>
+        <h2>
+          <mat-icon>filter_list</mat-icon>
+          Filters
+        </h2>
+        
+        <!-- Number of guests filter -->
+        <div class="filter-section">
+          <h3>
+            <mat-icon>people</mat-icon>
+            Number of guests
+          </h3>
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Minimum capacity</mat-label>
+            <input 
+              matInput
+              type="number" 
+              [(ngModel)]="selectedCapacity"
+              (change)="onCapacityChange()"
+              min="1"
+              max="20"
+            />
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Services filter -->
+        <div class="filter-section">
+          <h3>
+            <mat-icon>star</mat-icon>
+            Services
+          </h3>
+          <div class="services-list">
+            <mat-checkbox
+              *ngFor="let service of availableServices"
+              [checked]="selectedServices.has(service)"
+              (change)="onServiceToggle(service)"
+              class="service-checkbox"
+            >
+              {{ service }}
+            </mat-checkbox>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </aside>
+
+  <!-- Main content -->
+  <main class="apartments-content">
+    <div class="header-section">
+      <h1>Available Apartments</h1>
+    </div>
+
+    <!-- Initial loading -->
+    <div *ngIf="initialLoading" class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+    </div>
+
+    <!-- Grid of apartments -->
+    <div *ngIf="!initialLoading" class="apartments-grid">
+      <mat-card 
+        *ngFor="let apartment of apartments" 
+        class="apartment-card"
+      >
+        <div class="apartment-image">
+          <img 
+            [src]="apartment.imageUrl" 
+            [alt]="apartment.name"
+          />
+        </div>
+        
+        <mat-card-content class="apartment-details">
+          <div class="title-row">
+            <h3>{{ apartment.name }}</h3>
+            <div class="price-display">
+              <span class="price">${{ apartment.price }}</span>
+              <span class="per-night">/night</span>
+            </div>
+          </div>
+          
+          <p class="description">{{ apartment.description }}</p>
+          
+          <div class="apartment-meta">
+            <div class="meta-item">
+              <mat-icon>people</mat-icon>
+              <span>{{ apartment.capacity }} guests</span>
+            </div>
+          </div>
+          
+          <div class="services-section">
+            <h4>
+              <mat-icon>check_circle</mat-icon>
+              Services
+            </h4>
+            <mat-chip-listbox class="services-chips">
+              <mat-chip-option 
+                *ngFor="let service of getServicesArray(apartment.services)"
+                disabled
+              >
+                <mat-icon>check</mat-icon>
+                {{ service }}
+              </mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button 
+            mat-raised-button 
+            color="primary"
+            class="view-apartment-btn"
+            (click)="goToApartment(apartment.id)"
+          >
+            <mat-icon>visibility</mat-icon>
+            View Apartment
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Message when there aren´t available apartments -->
+    <div *ngIf="apartments.length === 0 && !initialLoading" class="no-results">
+      <mat-card class="empty-state-card">
+        <mat-card-content>
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h2>No apartments found</h2>
+          <p>Try adjusting your filters to find more apartments.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Button of load more -->
+    <div *ngIf="hasMore && apartments.length > 0 && !initialLoading" class="load-more-container">
+      <button 
+        mat-raised-button
+        class="load-more-btn"
+        (click)="loadMore()"
+        [disabled]="loading"
+      >
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">Load More</span>
+      </button>
+    </div>
+  </main>
+</div>
