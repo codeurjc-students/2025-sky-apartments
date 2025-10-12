@@ -1,9 +1,231 @@
-<div *ngIf="apartment; else notFound" id="apartment-detail">
-  <h2 id="apartment-name">{{ apartment.name }}</h2>
-  <p id="apartment-description">
-    <strong>Descripción:</strong> {{ apartment.description }}
-  </p>
-</div>
+<div class="apartment-detail-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="60"></mat-spinner>
+  </div>
 
-<ng-template #notFound>
-  <p id="apartment-not-found">No se encontró el apartamento.</p>
+  <!-- Apartment Details -->
+  <div class="detail-content" *ngIf="!isLoading && apartment">
+    <div class="container">
+      <!-- Back Button -->
+      <button mat-button class="back-button" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Apartments
+      </button>
+
+      <div class="detail-grid">
+        <!-- Left Column: Image and Info -->
+        <div class="left-column">
+          <!-- Main Image -->
+          <div class="apartment-image">
+            <img [src]="apartment.imageUrl" [alt]="apartment.name">
+          </div>
+
+          <!-- Apartment Info -->
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>
+                <div class="title-row">
+                  <h1>{{ apartment.name }}</h1>
+                  <div class="price-display">
+                    <span class="price">${{ apartment.price }}</span>
+                    <span class="per-night">/night</span>
+                  </div>
+                </div>
+              </mat-card-title>
+              <mat-card-subtitle>
+                <div class="apartment-meta">
+                  <div class="meta-item">
+                    <mat-icon>people</mat-icon>
+                    <span>Up to {{ apartment.capacity }} guests</span>
+                  </div>
+                </div>
+              </mat-card-subtitle>
+            </mat-card-header>
+            <br>
+            <mat-card-content>
+              <!-- Description -->
+              <div class="description-section">
+                <h2>
+                  <mat-icon>description</mat-icon>
+                  Description
+                </h2>
+                <p>{{ apartment.description }}</p>
+              </div>
+
+              <!-- Services -->
+              <div class="services-section">
+                <h2>
+                  <mat-icon>verified</mat-icon>
+                  Amenities & Services
+                </h2>
+                <div class="services-grid">
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let service of getServicesArray()">
+                      <mat-icon matChipAvatar>check_circle</mat-icon>
+                      {{ service }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Right Column: Booking -->
+        <div class="right-column">
+          <mat-card class="booking-card">
+            <mat-card-header>
+              <mat-card-title>
+                <h2>Reserve This Apartment</h2>
+              </mat-card-title>
+            </mat-card-header>
+            <br>
+            <mat-card-content>
+              <form [formGroup]="bookingForm">
+                <!-- Check-in Date -->
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Check-in Date</mat-label>
+                  <input 
+                    matInput 
+                    [matDatepicker]="checkInPicker"
+                    formControlName="checkIn"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    placeholder="Select check-in date">
+                  <mat-icon matPrefix>event</mat-icon>
+                  <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #checkInPicker></mat-datepicker>
+                  <mat-error>Check-in date is required</mat-error>
+                </mat-form-field>
+
+                <!-- Check-out Date -->
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Check-out Date</mat-label>
+                  <input 
+                    matInput 
+                    [matDatepicker]="checkOutPicker"
+                    formControlName="checkOut"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    placeholder="Select check-out date">
+                  <mat-icon matPrefix>event</mat-icon>
+                  <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #checkOutPicker></mat-datepicker>
+                  <mat-error>Check-out date is required</mat-error>
+                </mat-form-field>
+
+                <!-- Number of Guests -->
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Number of Guests</mat-label>
+                  <mat-select formControlName="guests" placeholder="Select guests">
+                    <mat-option *ngFor="let num of guestsOptions" [value]="num">
+                      {{ num }} {{ num === 1 ? 'Guest' : 'Guests' }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>people</mat-icon>
+                  <mat-error>Please select number of guests</mat-error>
+                </mat-form-field>
+
+                <!-- Check Availability Button -->
+                <button 
+                  mat-raised-button 
+                  color="accent"
+                  class="check-button"
+                  (click)="checkAvailability()">
+                  <mat-spinner *ngIf="isCheckingAvailability" diameter="20"></mat-spinner>
+                  <span *ngIf="!isCheckingAvailability">Check Availability</span>
+                </button>
+              </form>
+
+              <!-- Availability Result -->
+              <div class="availability-result" *ngIf="hasCheckedAvailability">
+                <!-- Available -->
+                <div class="available-box" *ngIf="isAvailable">
+                  <div class="success-header">
+                    <mat-icon>check_circle</mat-icon>
+                    <h3>Available!</h3>
+                  </div>
+                  
+                  <div class="booking-summary">
+                    <div class="summary-row">
+                      <span>Number of nights:</span>
+                      <strong>{{ numberOfNights }}</strong>
+                    </div>
+                    <div class="summary-row">
+                      <span>${{ apartment.price }} × {{ numberOfNights }} nights</span>
+                      <strong>${{ apartment.price * numberOfNights }}</strong>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="summary-row total">
+                      <span>Total Price:</span>
+                      <strong>${{ totalPrice }}</strong>
+                    </div>
+                  </div>
+
+                  <!-- Login Required Message -->
+                  <div class="login-message" *ngIf="!isLoggedIn">
+                    <mat-icon>info</mat-icon>
+                    <p>You must <a routerLink="/login">log in</a> to make a reservation</p>
+                  </div>
+
+                  <!-- Reserve Button -->
+                  <button 
+                    mat-raised-button 
+                    color="primary"
+                    class="reserve-button"
+                    (click)="proceedToBooking()"
+                    *ngIf="isLoggedIn">
+                    <mat-icon>event_available</mat-icon>
+                    Reserve Now
+                  </button>
+
+                  <!-- Login Button -->
+                  <button 
+                    mat-raised-button 
+                    color="primary"
+                    class="reserve-button"
+                    routerLink="/login"
+                    *ngIf="!isLoggedIn">
+                    <mat-icon>login</mat-icon>
+                    Log In to Reserve
+                  </button>
+                </div>
+
+                <!-- Not Available -->
+                <div class="unavailable-box" *ngIf="!isAvailable">
+                  <div class="error-header">
+                    <mat-icon>cancel</mat-icon>
+                    <h3>Not Available</h3>
+                  </div>
+                  <p>Sorry, this apartment is not available for the selected dates. Please try different dates.</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Additional Info Card -->
+          <mat-card class="info-highlight">
+            <mat-card-content>
+              <div class="highlight-item">
+                <mat-icon>support_agent</mat-icon>
+                <div>
+                  <h4>24/7 Support</h4>
+                  <p>Our team is always available to help you</p>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="highlight-item">
+                <mat-icon>payment</mat-icon>
+                <div>
+                  <h4>Payment on Arrival</h4>
+                  <p>Pay when you arrive at the property. No prepayment required</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
