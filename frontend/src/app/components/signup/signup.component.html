@@ -1,0 +1,129 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <div class="auth-header">
+      <mat-icon class="auth-logo">apartment</mat-icon>
+      <h1 class="auth-title">Sky apartments</h1>
+      <p class="auth-subtitle">Create your account to get started</p>
+    </div>
+
+    <div class="auth-content">
+      <form [formGroup]="signUpForm" (ngSubmit)="onSignUp()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name</mat-label>
+          <input 
+            matInput 
+            formControlName="name" 
+            placeholder="Enter your name"
+            autocomplete="given-name">
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="signUpForm.get('name')?.invalid">
+            {{ getErrorMessage('name') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Surname</mat-label>
+          <input 
+            matInput 
+            formControlName="surname" 
+            placeholder="Enter your surname"
+            autocomplete="family-name">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-error *ngIf="signUpForm.get('surname')?.invalid">
+            {{ getErrorMessage('surname') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input 
+            matInput 
+            type="email"
+            formControlName="email" 
+            placeholder="Enter your email"
+            autocomplete="email">
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="signUpForm.get('email')?.invalid">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone Number</mat-label>
+          <input 
+            matInput 
+            type="tel"
+            formControlName="phoneNumber" 
+            placeholder="Enter your phone number"
+            autocomplete="tel">
+          <mat-icon matPrefix>phone</mat-icon>
+          <mat-error *ngIf="signUpForm.get('phoneNumber')?.invalid">
+            {{ getErrorMessage('phoneNumber') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input 
+            matInput 
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Create a password"
+            autocomplete="new-password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="signUpForm.get('password')?.invalid">
+            {{ getErrorMessage('password') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Repeat Password</mat-label>
+          <input 
+            matInput 
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            formControlName="repeatPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password">
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            type="button"
+            (click)="hideConfirmPassword = !hideConfirmPassword"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hideConfirmPassword">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="signUpForm.get('repeatPassword')?.invalid">
+            {{ getErrorMessage('repeatPassword') }}
+          </mat-error>
+        </mat-form-field>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          class="submit-button"
+          [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+          <span *ngIf="!isLoading">Create Account</span>
+        </button>
+
+        <div class="switch-auth">
+          <p>Already have an account? 
+            <a routerLink="/login" class="link">Log In</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </mat-card>
+</div>
