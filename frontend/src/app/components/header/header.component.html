@@ -1,0 +1,108 @@
+<mat-toolbar class="header-toolbar">
+  <div class="header-container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <a routerLink="/" class="logo-link">
+        <mat-icon class="logo-icon">apartment</mat-icon>
+        <span class="logo-text">Sky Apartments</span>
+      </a>
+    </div>
+
+    <!-- Navigation Menu - Desktop -->
+    <nav class="nav-menu desktop-nav">
+      <a routerLink="/home" fragment="hero" routerLinkActive="active" class="nav-link">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      <a routerLink="/apartments" routerLinkActive="active" class="nav-link">
+        <mat-icon>meeting_room</mat-icon>
+        <span>Apartments</span>
+      </a>
+      <a routerLink="/home" fragment="about" routerLinkActive="active" class="nav-link">
+        <mat-icon>info</mat-icon>
+        <span>About Us</span>
+      </a>
+      <a routerLink="/home" fragment="contact" routerLinkActive="active" class="nav-link">
+        <mat-icon>contact_mail</mat-icon>
+        <span>Contact</span>
+      </a>
+    </nav>
+
+    <!-- Actions Section -->
+    <div class="actions-section">
+      <!-- Book Button -->
+      <button mat-raised-button color="primary" class="book-button" (click)="onBook()">
+        <mat-icon>event_available</mat-icon>
+        <span>Book Now</span>
+      </button>
+
+      <!-- Auth Section - Logged In -->
+      <ng-container *ngIf="loginService.isLogged()">
+        <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="profile-button">
+          <div class="profile-avatar">{{ userInitials }}</div>
+        </button>
+
+        <mat-menu #profileMenu="matMenu" class="profile-menu">
+          <div class="profile-header">
+            <div class="profile-avatar-large">{{ userInitials }}</div>
+            <div class="profile-info">
+              <p class="profile-name">{{ this.loginService.currentUser().name }}</p>
+              <p class="profile-email">{{ this.loginService.currentUser().email }}</p>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="onProfile()">
+            <mat-icon>person</mat-icon>
+            <span>My Profile</span>
+          </button>
+          <button mat-menu-item (click)="onBookings()">
+            <mat-icon>hotel</mat-icon>
+            <span>My bookings</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="onLogout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </ng-container>
+
+      <!-- Auth Section - Not Logged In -->
+      <ng-container *ngIf="!loginService.isLogged()">
+        <button mat-button class="login-button" (click)="onLogin()">
+          <mat-icon>login</mat-icon>
+          <span>Log In</span>
+        </button>
+        <button mat-raised-button class="signup-button" (click)="onSignUp()">
+          <mat-icon>person_add</mat-icon>
+          <span>Sign Up</span>
+        </button>
+      </ng-container>
+
+      <!-- Mobile Menu Button -->
+      <button mat-icon-button class="mobile-menu-button" (click)="toggleMenu()">
+        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <nav class="mobile-nav" [class.open]="isMenuOpen">
+    <a routerLink="/home" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+      <mat-icon>home</mat-icon>
+      <span>Home</span>
+    </a>
+    <a routerLink="/apartments" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+      <mat-icon>meeting_room</mat-icon>
+      <span>Apartments</span>
+    </a>
+    <a routerLink="/about" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+      <mat-icon>info</mat-icon>
+      <span>About Us</span>
+    </a>
+    <a routerLink="/contact" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+      <mat-icon>contact_mail</mat-icon>
+      <span>Contact</span>
+    </a>
+  </nav>
+</mat-toolbar>
