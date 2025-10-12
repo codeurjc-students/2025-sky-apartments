@@ -1,0 +1,90 @@
+.error-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.error-card {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  padding: 20px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.error-icon {
+  margin-bottom: 24px;
+}
+
+.error-icon mat-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: #f44336;
+  animation: pulse 2s infinite;
+}
+
+.error-code {
+  font-size: 72px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 16px;
+}
+
+.error-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 32px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.error-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-actions button {
+  min-width: 140px;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-actions button[color="primary"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+}
+
+.error-actions button[mat-stroked-button] {
+  border-color: #667eea;
+  color: #667eea;
+}

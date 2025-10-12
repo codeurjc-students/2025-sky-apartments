@@ -1,0 +1,28 @@
+<div class="error-container">
+  <div class="error-content">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+        
+        <div class="error-code">{{ errorCode }}</div>
+        
+        <h1 class="error-title">{{ errorMessage }}</h1>
+        
+        <p class="error-description">{{ errorDescription }}</p>
+        
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="goHome()">
+            <mat-icon>home</mat-icon>
+            Go to Home
+          </button>
+          <button mat-stroked-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Go Back
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
