@@ -53,6 +53,9 @@ export class ErrorComponent implements OnInit {
       case 503:
         this.errorDescription = 'The service is temporarily unavailable. Please try again later.';
         break;
+      case 401:
+        this.errorDescription = 'You are not authorized to view this page. Please log in.';
+        break;
       default:
         this.errorDescription = 'An unexpected error occurred. Please try again later.';
     }

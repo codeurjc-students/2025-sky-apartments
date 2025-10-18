@@ -20,7 +20,6 @@ import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 @Component({
   selector: 'app-apartment-detail',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
