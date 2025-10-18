@@ -1,0 +1,105 @@
+<div class="edit-booking-dialog">
+  <div class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">edit_calendar</mat-icon>
+      <div class="header-text">
+        <h2 mat-dialog-title>Edit Booking Dates</h2>
+        <p class="apartment-name">{{ data.apartment.name }}</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="current-dates-section">
+      <h3>
+        <mat-icon>info</mat-icon>
+        Current Booking
+      </h3>
+      <div class="dates-display">
+        <div class="date-item">
+          <mat-icon>login</mat-icon>
+          <div>
+            <span class="date-label">Check-in</span>
+            <span class="date-value">{{ formatDate(originalStartDate) }}</span>
+          </div>
+        </div>
+        <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+        <div class="date-item">
+          <mat-icon>logout</mat-icon>
+          <div>
+            <span class="date-label">Check-out</span>
+            <span class="date-value">{{ formatDate(originalEndDate) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="new-dates-section">
+      <h3>
+        <mat-icon>event</mat-icon>
+        New Dates
+      </h3>
+      
+      <div class="date-inputs">
+        <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
+          <mat-label>Check-in</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="startPicker"
+            [(ngModel)]="startDate"
+            (dateChange)="onStartDateChange()"
+            [min]="minDate"
+            required
+          />
+          <mat-icon matPrefix>login</mat-icon>
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
+          <mat-label>Check-out</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="endPicker"
+            [(ngModel)]="endDate"
+            [min]="getEndMinDate()"
+            [disabled]="!startDate"
+            required
+          />
+          <mat-icon matPrefix>logout</mat-icon>
+          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="warning-message" *ngIf="!hasChanges() && isFormValid()">
+        <mat-icon>info</mat-icon>
+        <span>Please select different dates to update your booking</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button 
+      mat-button 
+      (click)="onCancel()"
+      class="cancel-btn"
+    >
+      Cancel
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="onSave()"
+      [disabled]="!isFormValid() || !hasChanges() || loading"
+      class="save-btn"
+    >
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <mat-icon *ngIf="!loading">save</mat-icon>
+      <span *ngIf="!loading">Save Changes</span>
+    </button>
+  </mat-dialog-actions>
+</div>
