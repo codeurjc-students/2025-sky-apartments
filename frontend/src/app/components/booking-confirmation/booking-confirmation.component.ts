@@ -11,8 +11,8 @@ import { ApartmentDTO } from '../apartmentList/apartment-list.component';
 import { UserDTO } from '../../dtos/user.dto';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { BookingService } from '../../services/booking/booking.service';
-import { LoginService } from '../../services/user/login.service';
 import { BookingRequestDTO } from '../../dtos/bookingRequest.dto';
+import { UserService } from '../../services/user/user.service';
 
 
 @Component({
@@ -50,18 +50,20 @@ export class BookingConfirmationComponent implements OnInit {
     private router: Router,
     private apartmentService: ApartmentService,
     private bookingService: BookingService,
-    private authService: LoginService,
+    private userService: UserService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.user = this.authService.currentUser();
-    
-    if (!this.user) {
-      this.showMessage('Please log in to continue', 'warning');
-      this.router.navigate(['/login']);
-      return;
-    }
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => {
+        this.user = user;
+      },
+      error: (error) => {
+        console.error('Error loading current user:', error);
+        this.router.navigate(['/login']);
+      }
+    });
 
     this.route.queryParams.subscribe(params => {
       this.apartmentId = +params['apartmentId'];
@@ -146,7 +148,7 @@ export class BookingConfirmationComponent implements OnInit {
   }
 
   goToMyBookings(): void {
-    this.router.navigate(['/my-bookings']);
+    this.router.navigate(['/profile'], { fragment: 'bookings' });
   }
 
   goToApartments(): void {
@@ -179,4 +181,6 @@ export class BookingConfirmationComponent implements OnInit {
       panelClass: [`snackbar-${type}`]
     });
   }
+
+  
 }

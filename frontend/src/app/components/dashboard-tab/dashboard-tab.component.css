@@ -1,0 +1,279 @@
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 24px;
+}
+
+.loading-container p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.empty-dashboard {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-dashboard mat-icon {
+  font-size: 100px;
+  width: 100px;
+  height: 100px;
+  color: #667eea;
+  margin-bottom: 24px;
+}
+
+.empty-dashboard h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  color: #333;
+}
+
+.empty-dashboard p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 24px;
+}
+
+.loading-container p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+::ng-deep .loading-container mat-spinner circle {
+  stroke: #667eea;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Statistics Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px !important;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: white;
+}
+
+.stat-icon.bookings {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon.active {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-icon.revenue {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-icon.occupancy {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Chart Cards */
+.chart-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 15px;
+}
+
+.chart-card mat-card-header {
+  padding: 24px 24px 0;
+}
+
+.chart-card mat-card-content {
+  padding: 24px !important;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.chart-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.chart-card h2 mat-icon {
+  color: #667eea;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.period-select {
+  min-width: 180px;
+}
+
+::ng-deep .period-select .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stat-card mat-card-content {
+    padding: 20px !important;
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .stat-icon mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .stat-info h3 {
+    font-size: 28px;
+  }
+
+  .chart-card mat-card-header {
+    padding: 20px 20px 0;
+  }
+
+  .chart-card mat-card-content {
+    padding: 20px !important;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .period-select {
+    width: 100%;
+  }
+
+  .chart-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-info h3 {
+    font-size: 24px;
+  }
+
+  .stat-info p {
+    font-size: 13px;
+  }
+
+  .chart-card h2 {
+    font-size: 18px;
+  }
+
+  .chart-card h2 mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
