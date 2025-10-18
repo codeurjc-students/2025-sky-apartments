@@ -73,7 +73,17 @@ export class HomeComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading apartments:', error);
-        this.isLoading = true;
+        this.isLoading = false;
+      
+        const errorCode = error.status || 500;
+        const errorMessage = error.error?.message || 'Failed to load apartments';
+        
+        this.router.navigate(['/error'], {
+          queryParams: {
+            code: errorCode,
+            message: errorMessage
+          }
+        });
       }
     });
   }
