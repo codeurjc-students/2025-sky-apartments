@@ -1,0 +1,297 @@
+<div class="profile-container">
+  <div class="container">
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="isLoading">
+      <mat-spinner diameter="60"></mat-spinner>
+    </div>
+
+    <!-- Profile Content -->
+    <div *ngIf="!isLoading && user">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="user-avatar">
+          <div class="avatar-circle">
+            {{ user.name.charAt(0) }}{{ user.surname.charAt(0) }}
+          </div>
+        </div>
+        <div class="user-info">
+          <h1>{{ user.name }} {{ user.surname }}</h1>
+          <p class="user-role">
+            <mat-icon>{{ isAdmin ? 'admin_panel_settings' : 'person' }}</mat-icon>
+            {{ isAdmin ? 'Administrator' : 'User' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- USER VIEW -->
+      <mat-tab-group #userTabs class="profile-tabs" [(selectedIndex)]="selectedTabIndex" *ngIf="!isAdmin">
+        <!-- Personal Information Tab -->
+        <mat-tab label="Personal Information">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>
+                  <h2>Your Profile</h2>
+                </mat-card-title>
+                <button 
+                  mat-icon-button 
+                  *ngIf="!isEditingProfile"
+                  (click)="toggleEditProfile()"
+                  class="edit-button">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </mat-card-header>
+
+              <mat-card-content>
+                <form [formGroup]="profileForm">
+                  <div class="form-grid">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Name</mat-label>
+                      <input matInput formControlName="name" [readonly]="!isEditingProfile">
+                      <mat-icon matPrefix>person</mat-icon>
+                      <mat-error>Name is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Surname</mat-label>
+                      <input matInput formControlName="surname" [readonly]="!isEditingProfile">
+                      <mat-icon matPrefix>badge</mat-icon>
+                      <mat-error>Surname is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Email</mat-label>
+                      <input matInput type="email" formControlName="email" [readonly]="!isEditingProfile">
+                      <mat-icon matPrefix>email</mat-icon>
+                      <mat-error>Valid email is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Phone Number</mat-label>
+                      <input matInput formControlName="phoneNumber" [readonly]="!isEditingProfile">
+                      <mat-icon matPrefix>phone</mat-icon>
+                      <mat-error>{{ getProfileErrorMessage('phoneNumber') }}</mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Password Section (only shown when editing) -->
+                  <div class="password-section" *ngIf="isEditingProfile">
+                    <h3>Change Password (Optional)</h3>
+                    <p class="password-hint">Leave blank if you don't want to change your password</p>
+                    <div class="form-grid">
+                      <mat-form-field appearance="outline">
+                        <mat-label>New Password</mat-label>
+                        <input 
+                          matInput 
+                          [type]="hidePassword ? 'password' : 'text'"
+                          formControlName="password"
+                          placeholder="Enter new password">
+                        <mat-icon matPrefix>lock</mat-icon>
+                        <button 
+                          mat-icon-button 
+                          matSuffix 
+                          type="button"
+                          (click)="hidePassword = !hidePassword">
+                          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error>{{ getProfileErrorMessage('password') }}</mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline">
+                        <mat-label>Repeat New Password</mat-label>
+                        <input 
+                          matInput 
+                          [type]="hideRepeatPassword ? 'password' : 'text'"
+                          formControlName="repeatPassword"
+                          placeholder="Repeat new password">
+                        <mat-icon matPrefix>lock_outline</mat-icon>
+                        <button 
+                          mat-icon-button 
+                          matSuffix 
+                          type="button"
+                          (click)="hideRepeatPassword = !hideRepeatPassword">
+                          <mat-icon>{{ hideRepeatPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error>{{ getProfileErrorMessage('repeatPassword') }}</mat-error>
+                      </mat-form-field>
+                    </div>
+                  </div>
+
+                  <div class="form-actions" *ngIf="isEditingProfile">
+                    <button mat-button (click)="toggleEditProfile()">Cancel</button>
+                    <button 
+                      mat-raised-button 
+                      color="primary"
+                      (click)="saveProfile()"
+                      [disabled]="profileForm.invalid || isSavingProfile">
+                      <mat-spinner *ngIf="isSavingProfile" diameter="20"></mat-spinner>
+                      <span *ngIf="!isSavingProfile">Save Changes</span>
+                    </button>
+                  </div>
+                </form>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- My Bookings Tab -->
+        <mat-tab label="My Bookings">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>
+                  <h2>Your Reservations</h2>
+                </mat-card-title>
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="loading-bookings" *ngIf="isLoadingBookings">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
+
+                <div class="bookings-list" *ngIf="!isLoadingBookings">
+                  <div class="booking-card" *ngFor="let booking of userBookings">
+                    <div class="booking-image">
+                      <img [src]="booking.apartment?.imageUrl" [alt]="booking.apartment?.name">
+                    </div>
+                    <div class="booking-info">
+                      <h3>{{ booking.apartment?.name }}</h3>
+                      <div class="booking-details">
+                        <div class="detail-row">
+                          <mat-icon>event</mat-icon>
+                          <span>{{ formatDate(booking.startDate) }} - {{ formatDate(booking.endDate) }}</span>
+                        </div>
+                        <div class="detail-row">
+                          <mat-icon>people</mat-icon>
+                          <span>{{ booking.guests }} guest{{ booking.guests > 1 ? 's' : '' }}</span>
+                        </div>
+                        <div class="detail-row">
+                          <mat-icon>payments</mat-icon>
+                          <span>${{ booking.cost }}</span>
+                        </div>
+                        <div class="detail-row">
+                          <mat-icon>confirmation_number</mat-icon>
+                          <span>ID: #{{ booking.id }}</span>
+                        </div>
+                      </div>
+                      <mat-chip [ngClass]="getStatusClass(booking.state)">
+                        {{ booking.state }}
+                      </mat-chip>
+                    </div>
+                    <div class="booking-actions">
+                      <button 
+                        mat-icon-button 
+                        color="primary"
+                        (click)="editBooking(booking)"
+                        [disabled]="booking.state === 'CANCELLED' || booking.state === 'COMPLETED'"
+                        matTooltip="Edit booking">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button 
+                        mat-icon-button 
+                        color="warn"
+                        (click)="cancelBooking(booking.id)"
+                        [disabled]="booking.state === 'CANCELLED' || booking.state === 'COMPLETED'"
+                        matTooltip="Cancel booking">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <div *ngIf="hasMore && userBookings.length > 0" class="load-more-container">
+                    <button 
+                      mat-raised-button
+                      class="load-more-btn"
+                      (click)="loadMore()"
+                      [disabled]="loading"
+                    >
+                      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+                      <span *ngIf="!loading">Load More</span>
+                    </button>
+                  </div>
+
+                  <div class="empty-state" *ngIf="userBookings.length === 0">
+                    <mat-icon>event_busy</mat-icon>
+                    <h3>No bookings yet</h3>
+                    <p>Start exploring our apartments and make your first reservation!</p>
+                    <button mat-raised-button color="primary" routerLink="/apartments">Browse Apartments</button>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+      <!-- ADMIN VIEW -->
+      <mat-tab-group #adminTabs class="profile-tabs" [(selectedIndex)]="selectedTabIndex" *ngIf="isAdmin">
+        <!-- Dashboard Tab -->
+        <mat-tab label="Dashboard">
+          <div class="tab-content">
+              <app-dashboard-tab></app-dashboard-tab>
+          </div>
+        </mat-tab>
+
+        <!-- Apartments Management Tab -->
+        <mat-tab label="Manage Apartments">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>
+                  <h2>All Apartments</h2>
+                </mat-card-title>
+                <button mat-raised-button color="primary" class="add-button" (click)="addApartment()">
+                  <mat-icon>add</mat-icon>
+                  Add Apartment
+                </button>
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="loading-admin" *ngIf="isLoadingAdminData">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
+
+                <div class="apartments-grid" *ngIf="!isLoadingAdminData">
+                  <mat-card class="apartment-admin-card" *ngFor="let apartment of allApartments">
+                    <img mat-card-image [src]="apartment.imageUrl" [alt]="apartment.name">
+                    <mat-card-content>
+                      <h3>{{ apartment.name }}</h3>
+                      <div class="apartment-meta">
+                        <span class="price">${{ apartment.price }}/night</span>
+                        <span class="capacity">
+                          <mat-icon>people</mat-icon>
+                          {{ apartment.capacity }}
+                        </span>
+                      </div>
+                    </mat-card-content>
+                    <mat-card-actions>
+                      <button mat-button color="primary" (click)="editApartment(apartment)">
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                      <button mat-button color="warn" (click)="deleteApartment(apartment.id)">
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                      </button>
+                    </mat-card-actions>
+                  </mat-card>
+                  
+                </div>
+                <div class="load-more-container">
+                  <button 
+                    mat-raised-button
+                    class="load-more-btn"
+                    (click)="loadMoreApt()"
+                    [disabled]="aptLoading"
+                  >
+                    <mat-spinner *ngIf="aptLoading" diameter="20"></mat-spinner>
+                    <span *ngIf="!aptLoading">Load More</span>
+                  </button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

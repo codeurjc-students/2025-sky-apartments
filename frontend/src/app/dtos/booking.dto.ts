@@ -5,8 +5,8 @@ export interface BookingDTO {
     apartmentId: number;
     startDate: Date;
     endDate: Date;
-    totalPrice: number;
-    status: string;
+    cost: number;
+    state: string;
     guests: number;
     createdAt: Date;
 }

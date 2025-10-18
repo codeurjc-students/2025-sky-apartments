@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserDTO } from '../../dtos/user.dto';
+import { tap } from 'rxjs';
 
 const BASE_URL = '/api/v1/auth';
 
@@ -46,12 +47,12 @@ export class LoginService {
   }
 
   public logOut() {
-    return this.http
-      .post(BASE_URL + "/logout", { withCredentials: true })
-      .subscribe((_) => {
+    return this.http.post(BASE_URL + "/logout", {}, { withCredentials: true }).pipe(
+      tap(() => {
         console.log("LOGOUT: Successfully");
         this.logged = false;
-      });
+      })
+    );
   }
 
   public isLogged() {

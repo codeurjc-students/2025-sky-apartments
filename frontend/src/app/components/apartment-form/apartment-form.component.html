@@ -1,0 +1,228 @@
+<div class="apartment-form-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="onCancel()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-text">
+        <mat-icon class="header-icon">{{ getIcon() }}</mat-icon>
+        <h1>{{ getTitle() }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="initializing || (loading && mode === 'edit')" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>{{ initializing ? 'Verifying access...' : 'Loading apartment details...' }}</p>
+  </div>
+
+  <!-- Form Content -->
+  <div *ngIf="!initializing && (!loading || mode === 'create')" class="form-content">
+    <mat-card class="form-card">
+      <mat-card-content>
+        <!-- Image Upload Section -->
+        <div class="image-section">
+          <h3>
+            <mat-icon>image</mat-icon>
+            Apartment Image
+          </h3>
+          
+          <div class="image-upload-container">
+            <div class="image-preview" *ngIf="imagePreview">
+              <img [src]="imagePreview" alt="Apartment preview" />
+              <button 
+                mat-icon-button 
+                class="remove-image-btn"
+                (click)="removeImage()"
+                type="button"
+                *ngIf="imageFile || mode === 'create'"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            <div class="upload-placeholder" *ngIf="!imagePreview">
+              <mat-icon>add_photo_alternate</mat-icon>
+              <p>No image selected</p>
+            </div>
+
+            <input 
+              type="file" 
+              id="fileInput" 
+              accept="image/*" 
+              (change)="onFileSelected($event)"
+              style="display: none"
+            />
+            
+            <button 
+              mat-raised-button 
+              color="primary"
+              (click)="triggerFileInput()"
+              class="upload-btn"
+              type="button"
+            >
+              <mat-icon>upload</mat-icon>
+              {{ imagePreview ? 'Change Image' : 'Upload Image' }}
+            </button>
+            
+            <p class="image-hint">Maximum size: 5MB. Formats: JPG, PNG, GIF</p>
+          </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h3>
+            <mat-icon>info</mat-icon>
+            Basic Information
+          </h3>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Apartment Name</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="name"
+              placeholder="Enter apartment name"
+              required
+            />
+            <mat-icon matPrefix>home</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea 
+              matInput 
+              [(ngModel)]="description"
+              placeholder="Describe the apartment"
+              rows="4"
+              required
+            ></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Price per Night</mat-label>
+              <input 
+                matInput 
+                type="number"
+                [(ngModel)]="price"
+                placeholder="0"
+                min="0"
+                step="0.01"
+                required
+              />
+              <mat-icon matPrefix>attach_money</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Capacity</mat-label>
+              <input 
+                matInput 
+                type="number"
+                [(ngModel)]="capacity"
+                placeholder="0"
+                min="1"
+                max="20"
+                required
+              />
+              <mat-icon matPrefix>people</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="form-section">
+          <h3>
+            <mat-icon>star</mat-icon>
+            Services & Amenities
+          </h3>
+
+          <!-- Selected Services -->
+          <div class="selected-services" *ngIf="selectedServices.size > 0">
+            <p class="section-label">Selected Services:</p>
+            <div class="services-chips">
+              <mat-chip-row
+                *ngFor="let service of getSelectedServicesArray()"
+                (removed)="removeService(service)"
+              >
+                <mat-icon matChipAvatar>check_circle</mat-icon>
+                {{ service }}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            </div>
+          </div>
+
+          <!-- Available Services -->
+          <div class="available-services">
+            <p class="section-label">Available Services:</p>
+            <div class="services-list">
+              <mat-checkbox
+                *ngFor="let service of availableServices"
+                [checked]="selectedServices.has(service)"
+                (change)="onServiceToggle(service)"
+                class="service-checkbox"
+              >
+                {{ service }}
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <!-- Add New Service -->
+          <div class="add-service-section">
+            <p class="section-label">Add New Service:</p>
+            <div class="add-service-input">
+              <mat-form-field appearance="outline" class="service-input">
+                <mat-label>Service Name</mat-label>
+                <input 
+                  matInput 
+                  [(ngModel)]="newService"
+                  placeholder="e.g., Pool, Gym, Parking"
+                  (keyup.enter)="addNewService()"
+                />
+                <mat-icon matPrefix>add</mat-icon>
+              </mat-form-field>
+              <button 
+                mat-raised-button 
+                color="accent"
+                (click)="addNewService()"
+                [disabled]="!newService.trim()"
+                type="button"
+              >
+                <mat-icon>add_circle</mat-icon>
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button 
+        mat-button 
+        (click)="onCancel()"
+        class="cancel-btn"
+        [disabled]="loading"
+      >
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="onSave()"
+        [disabled]="!isFormValid() || loading"
+        class="save-btn"
+      >
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!loading">{{ mode === 'create' ? 'add' : 'save' }}</mat-icon>
+        <span *ngIf="!loading">{{ getSaveButtonText() }}</span>
+      </button>
+    </div>
+  </div>
+</div>
