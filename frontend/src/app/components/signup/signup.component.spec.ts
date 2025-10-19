@@ -49,7 +49,6 @@ describe('SignUpComponent', () => {
     fixture = TestBed.createComponent(SignUpComponent);
     component = fixture.componentInstance;
     
-    // Manually inject the spy into the component
     (component as any).snackBar = snackBar;
     
     fixture.detectChanges();
@@ -331,7 +330,7 @@ describe('SignUpComponent', () => {
 
       userService.createUser.and.callFake(() => {
         isLoadingDuringCall = component.isLoading;
-        return of(mockUser); // <-- importante
+        return of(mockUser);
       });
 
       component.signUpForm.patchValue({
