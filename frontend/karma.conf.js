@@ -13,7 +13,6 @@ module.exports = function (config) {
     ],
     client: {
       jasmine: {
-        // Aumentar timeout para peticiones HTTP reales
         timeoutInterval: 10000
       },
       clearContext: false
@@ -30,7 +29,7 @@ module.exports = function (config) {
       ]
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     restartOnFileChange: true,
     
     proxies: {
