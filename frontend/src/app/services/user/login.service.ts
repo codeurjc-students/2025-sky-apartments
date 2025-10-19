@@ -43,7 +43,11 @@ export class LoginService {
       BASE_URL + "/login",
       { username: user, password: pass },
       { withCredentials: true }
-    ).pipe();
+    ).pipe(
+      tap(() => {
+        this.reqIsLogged();
+      })
+    );
   }
 
   public logOut() {
@@ -51,6 +55,14 @@ export class LoginService {
       tap(() => {
         console.log("LOGOUT: Successfully");
         this.logged = false;
+        this.user = {
+          id: 0,
+          name: '',
+          surname: '',
+          email: '',
+          phoneNumber: '',
+          roles: []
+        };
       })
     );
   }
