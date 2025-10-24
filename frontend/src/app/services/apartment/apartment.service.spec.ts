@@ -379,7 +379,7 @@ describe('ApartmentService (Integration)', () => {
       service.getAllServices().subscribe({
         next: (services: string[]) => {
           const hasCommonServices = services.some(s => 
-            ['WIFI', 'POOL', 'PARKING', 'GYM'].includes(s)
+            ['WiFi', 'Piscina', 'Parking', 'TV'].includes(s)
           );
           expect(hasCommonServices).toBeTrue();
           done();

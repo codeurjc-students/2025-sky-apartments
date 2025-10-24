@@ -23,7 +23,6 @@ import { ApartmentService } from '../../services/apartment/apartment.service';
 import { UserDTO } from '../../dtos/user.dto';
 import { BookingDTO } from '../../dtos/booking.dto';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
-import { UpdateUserRequestDTO } from '../../dtos/updateUserRequest.dto';
 import { EditBooking } from '../edit-booking/edit-booking.component';
 import Swal from 'sweetalert2';
 import { DashboardTabComponent } from '../dashboard-tab/dashboard-tab.component';
