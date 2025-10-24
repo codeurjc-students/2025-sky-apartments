@@ -70,7 +70,6 @@ describe('ApartmentDetailComponent', () => {
     router = TestBed.inject(Router);
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
 
-    // Default mock responses
     apartmentService.getApartmentById.and.returnValue(of(mockApartment));
     apartmentService.checkAvailability.and.returnValue(of(true));
     loginService.isLogged.and.returnValue(true);
@@ -78,7 +77,6 @@ describe('ApartmentDetailComponent', () => {
     fixture = TestBed.createComponent(ApartmentDetailComponent);
     component = fixture.componentInstance;
     
-    // Manually inject the spy into the component
     (component as any).snackBar = snackBar;
   });
 
