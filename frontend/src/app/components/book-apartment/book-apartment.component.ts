@@ -13,16 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ApartmentService } from '../../services/apartment/apartment.service';
-
-export interface ApartmentDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  services: Set<string>;
-  capacity: number;
-  imageUrl: string;
-}
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 @Component({
   selector: 'app-book-apartment',

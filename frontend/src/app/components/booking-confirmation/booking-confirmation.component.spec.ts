@@ -9,9 +9,9 @@ import { BookingConfirmationComponent } from './booking-confirmation.component';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { BookingService } from '../../services/booking/booking.service';
 import { UserService } from '../../services/user/user.service';
-import { ApartmentDTO } from '../apartmentList/apartment-list.component';
 import { UserDTO } from '../../dtos/user.dto';
 import { BookingRequestDTO } from '../../dtos/bookingRequest.dto';
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 describe('BookingConfirmationComponent', () => {
   let component: BookingConfirmationComponent;

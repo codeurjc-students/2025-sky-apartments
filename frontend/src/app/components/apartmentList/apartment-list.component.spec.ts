@@ -4,8 +4,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
-import { ApartmentListComponent, ApartmentDTO } from './apartment-list.component';
+import { ApartmentListComponent } from './apartment-list.component';
 import { ApartmentService } from '../../services/apartment/apartment.service';
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 describe('ApartmentListComponent', () => {
   let component: ApartmentListComponent;

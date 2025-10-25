@@ -7,12 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { ApartmentDTO } from '../apartmentList/apartment-list.component';
 import { UserDTO } from '../../dtos/user.dto';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { BookingService } from '../../services/booking/booking.service';
 import { BookingRequestDTO } from '../../dtos/bookingRequest.dto';
 import { UserService } from '../../services/user/user.service';
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 
 @Component({

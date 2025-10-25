@@ -11,17 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApartmentService } from '../../services/apartment/apartment.service';
-
-
-export interface ApartmentDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  services: Set<string>;
-  capacity: number;
-  imageUrl: string;
-}
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 @Component({
   selector: 'app-apartment-list',

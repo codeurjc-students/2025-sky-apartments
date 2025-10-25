@@ -13,16 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { UserService } from '../../services/user/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-export interface ApartmentDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  services: Set<string>;
-  capacity: number;
-  imageUrl: string;
-}
+import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 @Component({
   selector: 'app-apartment-form',
