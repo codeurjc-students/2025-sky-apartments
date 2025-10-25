@@ -338,19 +338,24 @@ jobs:
                 node-version: '20'
 
             - name: Install Dependencies
+              working-directory: ./frontend
               run: npm install
 
             - name: Install Playwright Browsers
+              working-directory: ./frontend
               run: npx playwright install
 
             - name: Start Frontend Server
+              working-directory: ./frontend
               run: npm run start &
               
             - name: Wait for server to be ready
+              working-directory: ./frontend
               run: |
                 npx wait-on http://localhost:4200  
 
             - name: Run Frontend E2E Tests
+              working-directory: ./frontend
               run: npm run test:e2e
             
             - name: Show service logs on failure
