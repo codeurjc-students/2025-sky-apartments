@@ -1,0 +1,487 @@
+.apartment-form-container {
+  min-height: calc(100vh - 64px);
+  background: #f8f9fa;
+  padding-bottom: 80px;
+}
+
+/* Header */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 32px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  color: white !important;
+  width: 48px;
+  height: 48px;
+}
+
+.back-btn mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.header-text {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.header-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.header-text h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 24px;
+}
+
+.loading-container p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+::ng-deep .loading-container mat-spinner circle {
+  stroke: #667eea;
+}
+
+/* Form Content */
+.form-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.form-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.form-card mat-card-content {
+  padding: 32px !important;
+}
+
+.image-section,
+.form-section {
+  margin-bottom: 40px;
+}
+
+.image-section:last-child,
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.image-section h3,
+.form-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 24px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #555;
+}
+
+.image-section h3 mat-icon,
+.form-section h3 mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #667eea;
+}
+
+/* Image Upload Section */
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #d0d0d0;
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  width: 40px;
+  height: 40px;
+}
+
+.remove-image-btn:hover {
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 40px;
+  color: #999;
+}
+
+.upload-placeholder mat-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: #ccc;
+}
+
+.upload-placeholder p {
+  margin: 0;
+  font-size: 18px;
+}
+
+.upload-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-weight: 600;
+  height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+}
+
+.upload-btn mat-icon {
+  margin-right: 8px;
+}
+
+.image-hint {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+/* Form Fields */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+::ng-deep .apartment-form-container .mat-mdc-form-field-icon-prefix {
+  color: #667eea;
+  margin-right: 8px;
+}
+
+::ng-deep .apartment-form-container .mat-mdc-text-field-wrapper {
+  background: white;
+}
+
+::ng-deep .apartment-form-container textarea.mat-mdc-input-element {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Services Section */
+.section-label {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.selected-services {
+  margin-bottom: 32px;
+}
+
+.services-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+::ng-deep .services-chips mat-chip-row {
+  background: #667eea !important;
+  color: white !important;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+::ng-deep .services-chips mat-chip-row mat-icon {
+  color: white !important;
+}
+
+.available-services {
+  margin-bottom: 32px;
+}
+
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.service-checkbox {
+  display: block;
+}
+
+::ng-deep .service-checkbox .mdc-label {
+  color: #555;
+  font-size: 15px;
+}
+
+::ng-deep .service-checkbox .mdc-checkbox__background {
+  border-color: #667eea;
+}
+
+::ng-deep .service-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.add-service-section {
+  padding: 20px;
+  background: #f0f4ff;
+  border-radius: 12px;
+  border: 2px dashed #667eea;
+}
+
+.add-service-input {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.service-input {
+  flex: 1;
+}
+
+.add-service-input button {
+  margin-top: 8px;
+  height: 56px;
+  font-weight: 600;
+  padding: 0 24px;
+}
+
+.add-service-input button mat-icon {
+  margin-right: 8px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  position: sticky;
+  bottom: 0;
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cancel-btn {
+  color: #666 !important;
+  font-weight: 500;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 15px;
+}
+
+.cancel-btn mat-icon {
+  margin-right: 8px;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-weight: 600;
+  min-width: 200px;
+  height: 48px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-btn:disabled {
+  background: #e0e0e0 !important;
+  color: #999 !important;
+}
+
+.save-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+::ng-deep .save-btn mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+::ng-deep .save-btn mat-spinner circle {
+  stroke: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .form-content {
+    padding: 24px 16px;
+  }
+
+  .form-card mat-card-content {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 24px 16px;
+  }
+
+  .header-text h1 {
+    font-size: 24px;
+  }
+
+  .header-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .back-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .half-width {
+    width: 100%;
+  }
+
+  .services-list {
+    grid-template-columns: 1fr;
+  }
+
+  .add-service-input {
+    flex-direction: column;
+  }
+
+  .add-service-input button {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .action-buttons {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .cancel-btn,
+  .save-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: 20px 12px;
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+  }
+
+  .form-card mat-card-content {
+    padding: 20px !important;
+  }
+
+  .image-upload-container {
+    padding: 20px;
+  }
+
+  .image-preview {
+    max-width: 100%;
+  }
+
+  .upload-placeholder {
+    padding: 40px 20px;
+  }
+
+  .upload-placeholder mat-icon {
+    font-size: 60px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .action-buttons {
+    padding: 16px 12px;
+  }
+}

@@ -1,0 +1,209 @@
+<div class="home-container">
+  <!-- HERO CAROUSEL SECTION -->
+  <section id="hero" class="carousel-section">
+    <div class="carousel-container" *ngIf="!isLoading && carouselApartments.length > 0">
+      <div class="carousel-wrapper">
+        <div class="carousel-slides" [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
+          <div class="carousel-slide" *ngFor="let apartment of carouselApartments" (click)="viewApartment(apartment.id)">
+            <img [src]="apartment.imageUrl" [alt]="apartment.name">
+            <div class="carousel-overlay">
+              <div class="carousel-content">
+                <h2>{{ apartment.name }}</h2>
+                <p>{{ apartment.description }}</p>
+                <div class="price">${{ apartment.price }}/night</div>
+                <button mat-raised-button color="primary" class="view-btn">
+                  View Details
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <button class="carousel-btn prev" (click)="prevSlide()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button class="carousel-btn next" (click)="nextSlide()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <!-- Indicators -->
+      <div class="carousel-indicators">
+        <button 
+          *ngFor="let apartment of carouselApartments; let i = index" 
+          [class.active]="i === currentSlide"
+          (click)="goToSlide(i)">
+        </button>
+      </div>
+    </div>
+
+    <div class="loading-spinner" *ngIf="isLoading">
+      <mat-spinner diameter="60"></mat-spinner>
+    </div>
+  </section>
+
+  <!-- FEATURED APARTMENTS SECTION -->
+  <section id="featured" class="featured-section">
+    <div class="container">
+      <h2 class="section-title">Featured Apartments</h2>
+      <p class="section-subtitle">Discover our most popular accommodations</p>
+      
+      <div class="featured-grid">
+        <mat-card class="apartment-card" *ngFor="let apartment of featuredApartments">
+          <img mat-card-image [src]="apartment.imageUrl" [alt]="apartment.name" (click)="viewApartment(apartment.id)">
+          <mat-card-content>
+            <h3>{{ apartment.name }}</h3>
+            <p class="description">{{ apartment.description }}</p>
+            <div class="details">
+              <div class="detail-item">
+                <mat-icon>people</mat-icon>
+                <span>{{ apartment.capacity }} guests</span>
+              </div>
+              <div class="price-tag">${{ apartment.price }}/night</div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="viewApartment(apartment.id)">
+              View Details
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+      <button mat-raised-button color="primary" class="view-more-btn" (click)="viewAllApartments()">
+        View more apartments
+      </button>
+    </div>
+  </section>
+
+  <!-- ABOUT US SECTION -->
+  <section id="about" class="about-section">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-image">
+          <img src="granvia.jpg" alt="Sky Apartments Building">
+        </div>
+        <div class="about-text">
+          <h2>About Sky Apartments</h2>
+          <div class="about-subsection">
+            <h3><mat-icon>history</mat-icon> Our Story</h3>
+            <p>Founded in 2010, Sky Apartments has been providing premium accommodation experiences for travelers worldwide. What started as a single property has grown into a collection of carefully curated apartments across the city.</p>
+          </div>
+          <div class="about-subsection">
+            <h3><mat-icon>visibility</mat-icon> Our Vision</h3>
+            <p>To redefine urban living by offering exceptional spaces that combine comfort, style, and convenience. We believe every stay should feel like home, only better.</p>
+          </div>
+          <div class="about-subsection">
+            <h3><mat-icon>favorite</mat-icon> Our Values</h3>
+            <ul>
+              <li><strong>Excellence:</strong> We maintain the highest standards in every property</li>
+              <li><strong>Hospitality:</strong> Your comfort and satisfaction are our priority</li>
+              <li><strong>Innovation:</strong> We continuously improve our services and facilities</li>
+              <li><strong>Sustainability:</strong> We're committed to eco-friendly practices</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <h2 class="section-title">Get In Touch</h2>
+      <p class="section-subtitle">We'd love to hear from you</p>
+      
+      <div class="contact-content">
+        <!-- Contact Info & Map -->
+        <div class="contact-info-wrapper">
+          <div class="contact-info">
+            <div class="info-item">
+              <mat-icon>location_on</mat-icon>
+              <div>
+                <h4>Address</h4>
+                <p>Gran Vía 67<br>Madrid, Spain 28013</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon>phone</mat-icon>
+              <div>
+                <h4>Phone</h4>
+                <p>+34 912 345 678</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon>email</mat-icon>
+              <div>
+                <h4>Email</h4>
+                <p>info&#64;skyapartments.com</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="map-container">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.3869449861246!2d-3.7089827!3d40.4205854!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42288523cd3b8d%3A0x8b0c5c5e1e5c5e1e!2sGran%20V%C3%ADa%2C%2067%2C%2028013%20Madrid!5e0!3m2!1sen!2ses!4v1234567890"
+              width="100%" 
+              height="300" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy">
+            </iframe>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form-wrapper">
+          <mat-card>
+            <mat-card-content>
+              <form [formGroup]="contactForm" (ngSubmit)="onSubmitContact()">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Name</mat-label>
+                  <input matInput formControlName="name" placeholder="Your name">
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error>{{ getContactErrorMessage('name') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="your@email.com">
+                  <mat-icon matPrefix>email</mat-icon>
+                  <mat-error>{{ getContactErrorMessage('email') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Subject</mat-label>
+                  <input matInput formControlName="subject" placeholder="Message subject">
+                  <mat-icon matPrefix>subject</mat-icon>
+                  <mat-error>{{ getContactErrorMessage('subject') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Message</mat-label>
+                  <textarea 
+                    matInput 
+                    formControlName="message" 
+                    rows="5"
+                    placeholder="Your message..."></textarea>
+                  <mat-icon matPrefix>message</mat-icon>
+                  <mat-error>{{ getContactErrorMessage('message') }}</mat-error>
+                </mat-form-field>
+
+                <button 
+                  mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  class="submit-btn"
+                  [disabled]="isSendingMessage">
+                  <mat-spinner *ngIf="isSendingMessage" diameter="20"></mat-spinner>
+                  <span *ngIf="!isSendingMessage">Send Message</span>
+                </button>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

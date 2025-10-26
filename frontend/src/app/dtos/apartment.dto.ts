@@ -4,7 +4,7 @@ export interface ApartmentDTO {
     name: string;
     description: string;
     price: number;
-    services: Set<String>;
+    services: Set<string>;
     capacity: number;
     imageUrl: string;
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -15,7 +16,7 @@ public interface BookingClient {
 
     @GetMapping("/unavailable")
     Set<Long> getUnavailableApartments(
-        @RequestParam("startDate") LocalDate startDate,
-        @RequestParam("endDate") LocalDate endDate
+        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     );
 }

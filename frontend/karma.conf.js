@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -10,13 +12,36 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      jasmine: {
+        timeoutInterval: 10000
+      },
+      clearContext: false
+    },
+    jasmineHtmlReporter: {
+      suppressAll: true
+    },
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/your-project-name'),
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['ChromeHeadless'], //ChromeHeadless for non-GUI environments
+    browsers: ['ChromeHeadless'],
     restartOnFileChange: true,
+    
     proxies: {
-      '/api/': 'http://localhost:8083/api/'
+      '/api/v1/apartments': 'http://localhost:8083/api/v1/apartments',
+      '/api/v1/auth': 'http://localhost:8080/api/v1/auth/',
+      '/api/v1/users': 'http://localhost:8080/api/v1/users',
+      '/api/v1/bookings': 'http://localhost:8082/api/v1/bookings'
     },
+
+    browserNoActivityTimeout: 60000,
+    browserDisconnectTimeout: 10000,
+    browserDisconnectTolerance: 3,
+    captureTimeout: 210000
   });
 };

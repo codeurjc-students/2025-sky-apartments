@@ -1,0 +1,104 @@
+<footer class="footer">
+  <div class="footer-content">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Company Info -->
+        <div class="footer-section">
+          <div class="footer-logo">
+            <mat-icon>apartment</mat-icon>
+            <h3>Sky Apartments</h3>
+          </div>
+          <p class="footer-description">
+            Premium accommodations in the heart of Madrid. Experience comfort, style, and exceptional service.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li *ngFor="let link of quickLinks">
+              <a [routerLink]="link.route" [fragment]="link.fragment">
+                <mat-icon>chevron_right</mat-icon>
+                {{ link.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li *ngFor="let link of legalLinks">
+              <a href="{{ link.href }}" target="_blank" rel="noopener">
+                <mat-icon>chevron_right</mat-icon>
+                {{ link.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="footer-section">
+          <h4>Contact Us</h4>
+          <div class="contact-info">
+            <div class="contact-item">
+              <mat-icon>location_on</mat-icon>
+              <div>
+                <p>Gran Vía 67</p>
+                <p>28013 Madrid, Spain</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <mat-icon>phone</mat-icon>
+              <div>
+                <p>+34 912 345 678</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <mat-icon>email</mat-icon>
+              <div>
+                <p>info&#64;skyapartments.com</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <mat-icon>schedule</mat-icon>
+              <div>
+                <p>Mon - Fri: 9:00 - 20:00</p>
+                <p>Sat - Sun: 10:00 - 18:00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="bottom-content">
+        <p class="copyright">
+          © {{ currentYear }} Sky Apartments. All rights reserved.
+        </p>
+        <div class="bottom-links">
+          <a href="privacy.html" target="_blank" rel="noopener">Privacy</a>
+          <span class="separator">|</span>
+          <a href="terms.html" target="_blank" rel="noopener">Terms</a>
+          <span class="separator">|</span>
+          <a href="gdpr.html" target="_blank" rel="noopener">GDPR</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button 
+    class="scroll-top" 
+    (click)="scrollToTop()"
+    aria-label="Scroll to top">
+    <mat-icon>keyboard_arrow_up</mat-icon>
+  </button>
+</footer>

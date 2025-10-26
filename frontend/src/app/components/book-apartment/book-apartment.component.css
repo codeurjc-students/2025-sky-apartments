@@ -1,0 +1,632 @@
+.book-apartment-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  min-height: calc(100vh - 64px);
+  background: #f8f9fa;
+}
+
+/* Date Filter Section */
+.date-filter-section {
+  margin-bottom: 32px;
+}
+
+.date-filter-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.date-filter-card mat-card-content {
+  padding: 32px;
+}
+
+.date-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.date-filter-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+}
+
+.date-filter-header h2 mat-icon {
+  color: white;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.clear-dates-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white !important;
+  font-weight: 500;
+}
+
+.clear-dates-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.clear-dates-btn mat-icon {
+  margin-right: 4px;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.date-field {
+  flex: 1;
+}
+
+::ng-deep .date-filter-card .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .date-filter-card .mat-mdc-text-field-wrapper {
+  background: white;
+  border-radius: 8px;
+}
+
+::ng-deep .date-filter-card .mat-mdc-form-field-icon-prefix,
+::ng-deep .date-filter-card .mat-mdc-form-field-icon-suffix {
+  color: #667eea;
+}
+
+::ng-deep .date-filter-card .mdc-text-field--outlined .mdc-notched-outline__leading,
+::ng-deep .date-filter-card .mdc-text-field--outlined .mdc-notched-outline__notch,
+::ng-deep .date-filter-card .mdc-text-field--outlined .mdc-notched-outline__trailing {
+  border-color: transparent;
+}
+
+::ng-deep .date-filter-card .mat-mdc-form-field-focus-overlay {
+  background-color: transparent;
+}
+
+::ng-deep .date-filter-card .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .date-filter-card .mat-mdc-input-element::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+.arrow-icon {
+  color: white;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  display: flex;
+  gap: 32px;
+}
+
+.filters-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.filters-card {
+  position: sticky;
+  top: 90px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.filters-card mat-card-content {
+  padding: 24px;
+}
+
+.filters-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filters-card h2 mat-icon {
+  color: #667eea;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.filter-section {
+  margin-bottom: 32px;
+}
+
+.filter-section:last-child {
+  margin-bottom: 0;
+}
+
+.filter-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+}
+
+.filter-section h3 mat-icon {
+  color: #667eea;
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+::ng-deep .filter-section .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .filter-section .mat-icon {
+  color: #667eea;
+}
+
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.service-checkbox {
+  display: block;
+}
+
+::ng-deep .service-checkbox .mdc-label {
+  color: #555;
+  font-size: 15px;
+}
+
+::ng-deep .service-checkbox .mdc-checkbox__background {
+  border-color: #667eea;
+}
+
+::ng-deep .service-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.apartments-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-section {
+  margin-bottom: 32px;
+}
+
+.header-section h1 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+.date-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0 0;
+  font-size: 16px;
+  color: #667eea;
+  font-weight: 500;
+}
+
+.date-info mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+::ng-deep .loading-container mat-spinner circle {
+  stroke: #667eea;
+}
+
+.apartments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.apartment-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.apartment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.apartment-image {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  background: #e0e0e0;
+}
+
+.apartment-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.apartment-card:hover .apartment-image img {
+  transform: scale(1.05);
+}
+
+.apartment-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px !important;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.apartment-details h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.price-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.per-night {
+  font-size: 14px;
+  color: #666;
+}
+
+.description {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.apartment-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 15px;
+}
+
+.meta-item mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #667eea;
+}
+
+.services-section {
+  margin-top: auto;
+}
+
+.services-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+}
+
+.services-section h4 mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #667eea;
+}
+
+.services-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+::ng-deep .services-chips mat-chip-option {
+  background: #f0f4ff !important;
+  color: #667eea !important;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 32px;
+  padding: 0 12px;
+}
+
+::ng-deep .services-chips mat-chip-option mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  color: #667eea;
+}
+
+::ng-deep .apartment-card mat-card-actions {
+  padding: 0 24px 24px;
+  margin: 0;
+}
+
+.view-apartment-btn {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+}
+
+.view-apartment-btn mat-icon {
+  margin-right: 8px;
+}
+
+.view-apartment-btn:hover {
+  background: #5568d3 !important;
+}
+
+.no-results {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.empty-state-card {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.empty-state-card mat-card-content {
+  padding: 64px 32px;
+}
+
+.empty-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: #ccc;
+  margin-bottom: 24px;
+}
+
+.empty-state-card h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.empty-state-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.load-more-btn {
+  padding: 0 48px;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  min-width: 160px;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  background: #f0f4ff;
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+}
+
+::ng-deep .load-more-btn mat-spinner {
+  display: inline-block;
+  margin: 0;
+}
+
+::ng-deep .load-more-btn mat-spinner circle {
+  stroke: #667eea;
+}
+
+@media (max-width: 1200px) {
+  .apartments-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .content-wrapper {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .filters-sidebar {
+    width: 100%;
+  }
+
+  .filters-card {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .book-apartment-container {
+    padding: 24px 16px 60px;
+  }
+
+  .date-filter-card mat-card-content {
+    padding: 24px;
+  }
+
+  .date-filter-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .date-filter-header h2 {
+    font-size: 24px;
+  }
+
+  .date-inputs {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .arrow-icon {
+    transform: rotate(90deg);
+    align-self: center;
+  }
+
+  .header-section h1 {
+    font-size: 28px;
+  }
+
+  .apartments-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .apartment-image {
+    height: 200px;
+  }
+
+  .apartment-details h3 {
+    font-size: 20px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .date-filter-card mat-card-content {
+    padding: 20px;
+  }
+
+  .date-filter-header h2 {
+    font-size: 20px;
+  }
+
+  .date-filter-header h2 mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .filters-card mat-card-content {
+    padding: 20px;
+  }
+
+  .apartment-details {
+    padding: 20px !important;
+  }
+
+  .title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .apartment-details h3 {
+    font-size: 18px;
+  }
+
+  .price {
+    font-size: 22px;
+  }
+
+  .empty-state-card mat-card-content {
+    padding: 48px 24px;
+  }
+
+  .empty-icon {
+    font-size: 60px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .empty-state-card h2 {
+    font-size: 20px;
+  }
+}

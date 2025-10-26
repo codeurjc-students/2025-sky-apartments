@@ -1,0 +1,123 @@
+<div class="dashboard-content">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="!loading && apartments.length === 0" class="empty-dashboard">
+    <mat-icon>insert_chart</mat-icon>
+    <h3>No Data Available</h3>
+    <p>Add some apartments and bookings to see analytics here.</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && apartments.length > 0">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon bookings">
+            <mat-icon>event_available</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ totalBookings }}</h3>
+            <p>Total Bookings</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon active">
+            <mat-icon>hotel</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ activeBookings }}</h3>
+            <p>Active Bookings</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon revenue">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>${{ totalRevenue.toFixed(2) }}</h3>
+            <p>Total Revenue</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon occupancy">
+            <mat-icon>analytics</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ averageOccupancy.toFixed(1) }}%</h3>
+            <p>Average Occupancy</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Occupancy Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <div class="chart-header">
+            <h2>
+              <mat-icon>show_chart</mat-icon>
+              Occupancy Over Time
+            </h2>
+            <mat-form-field appearance="outline" class="period-select">
+              <mat-label>Period</mat-label>
+              <mat-select [(ngModel)]="selectedPeriod" (selectionChange)="onPeriodChange()">
+                <mat-option value="7">Last 7 days</mat-option>
+                <mat-option value="30">Last 30 days</mat-option>
+                <mat-option value="90">Last 90 days</mat-option>
+                <mat-option value="180">Last 6 months</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="occupancyChartData"
+            [options]="occupancyChartOptions"
+            [type]="occupancyChartType"
+          ></canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Bookings per Apartment Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <h2>
+            <mat-icon>bar_chart</mat-icon>
+            Top Apartments by Bookings
+          </h2>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="bookingsChartData"
+            [options]="bookingsChartOptions"
+            [type]="bookingsChartType"
+          ></canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

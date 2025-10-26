@@ -1,0 +1,230 @@
+<div class="booking-confirmation-container">
+  <div class="container">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+    </div>
+
+    <!-- Booking Details -->
+    <div *ngIf="!loading && !bookingConfirmed" class="booking-content">
+      <!-- Back Button -->
+      <button 
+        mat-button 
+        class="back-button"
+        (click)="goBack()"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        Back to Apartment
+      </button>
+      <!-- Header -->
+      <div class="page-header">
+        <h1>
+          <mat-icon>book_online</mat-icon>
+          Confirm Your Booking
+        </h1>
+        <p>Please review your booking details before confirming</p>
+      </div>
+
+      <div class="booking-grid">
+        <!-- Left Column: Guest & Booking Details -->
+        <div class="left-column">
+          <!-- Guest Information -->
+          <mat-card class="info-card">
+            <mat-card-content>
+              <h2>
+                <mat-icon>person</mat-icon>
+                Guest Information
+              </h2>
+              
+              <div class="info-row">
+                <span class="label">Full Name:</span>
+                <span class="value">{{ user?.name }} {{ user?.surname }}</span>
+              </div>
+              
+              <mat-divider></mat-divider>
+              
+              <div class="info-row">
+                <span class="label">Email:</span>
+                <span class="value">{{ user?.email }}</span>
+              </div>
+              
+              <mat-divider></mat-divider>
+              
+              <div class="info-row">
+                <span class="label">Phone Number:</span>
+                <span class="value">{{ user?.phoneNumber }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Booking Details -->
+          <mat-card class="info-card">
+            <mat-card-content>
+              <h2>
+                <mat-icon>event</mat-icon>
+                Booking Details
+              </h2>
+              
+              <div class="info-row">
+                <span class="label">Check-in:</span>
+                <span class="value">{{ formatDate(checkIn) }}</span>
+              </div>
+              
+              <mat-divider></mat-divider>
+              
+              <div class="info-row">
+                <span class="label">Check-out:</span>
+                <span class="value">{{ formatDate(checkOut) }}</span>
+              </div>
+              
+              <mat-divider></mat-divider>
+              
+              <div class="info-row">
+                <span class="label">Number of Nights:</span>
+                <span class="value highlight">{{ numberOfNights }} night{{ numberOfNights !== 1 ? 's' : '' }}</span>
+              </div>
+              
+              <mat-divider></mat-divider>
+              
+              <div class="info-row">
+                <span class="label">Number of Guests:</span>
+                <span class="value">{{ guests }} guest{{ guests !== 1 ? 's' : '' }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Right Column: Apartment & Payment -->
+        <div class="right-column">
+          <!-- Apartment Information -->
+          <mat-card class="apartment-card">
+            <div class="apartment-image">
+              <img [src]="apartment?.imageUrl" [alt]="apartment?.name" />
+            </div>
+            <mat-card-content>
+              <h2>{{ apartment?.name }}</h2>
+              <p class="description">{{ apartment?.description }}</p>
+              
+              <div class="apartment-features">
+                <div class="feature">
+                  <mat-icon>people</mat-icon>
+                  <span>Up to {{ apartment?.capacity }} guests</span>
+                </div>
+              </div>
+
+              <div class="services-section" *ngIf="apartment && apartment.services && apartment.services.size > 0">
+                <h3>
+                  <mat-icon>check_circle</mat-icon>
+                  Included Services
+                </h3>
+                <div class="services-list">
+                  <div class="service-item" *ngFor="let service of getServicesArray(apartment!.services)">
+                    <mat-icon>check</mat-icon>
+                    <span>{{ service }}</span>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Price Summary -->
+          <mat-card class="price-card">
+            <mat-card-content>
+              <h2>
+                <mat-icon>receipt</mat-icon>
+                Price Summary
+              </h2>
+              
+              <div class="price-row">
+                <span class="label">${{ apartment?.price }} × {{ numberOfNights }} night{{ numberOfNights !== 1 ? 's' : '' }}</span>
+                <span class="value">${{ totalPrice }}</span>
+              </div>
+              
+              <mat-divider></mat-divider>
+              
+              <div class="price-row total">
+                <span class="label">Total</span>
+                <span class="value">${{ totalPrice }}</span>
+              </div>
+
+              <button 
+                mat-raised-button 
+                color="primary"
+                class="confirm-button"
+                (click)="confirmBooking()"
+                [disabled]="bookingInProgress"
+              >
+                <mat-spinner *ngIf="bookingInProgress" diameter="24"></mat-spinner>
+                <mat-icon *ngIf="!bookingInProgress">check_circle</mat-icon>
+                <span *ngIf="!bookingInProgress">Confirm Booking</span>
+                <span *ngIf="bookingInProgress">Processing...</span>
+              </button>
+
+              <p class="cancellation-policy">
+                <mat-icon>info</mat-icon>
+                Pay when you arrive at the property. No prepayment required
+              </p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="bookingConfirmed" class="success-container">
+      <mat-card class="success-card">
+        <mat-card-content>
+          <div class="success-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          
+          <h1>Booking Confirmed!</h1>
+          <p class="booking-number">Booking #{{ bookingId }}</p>
+          
+          <div class="success-message">
+            <p>Your booking has been confirmed successfully.</p>
+            <p>A confirmation email has been sent to <strong>{{ user?.email }}</strong></p>
+          </div>
+
+          <div class="booking-summary">
+            <h3>Booking Summary</h3>
+            <div class="summary-item">
+              <mat-icon>apartment</mat-icon>
+              <span>{{ apartment?.name }}</span>
+            </div>
+            <div class="summary-item">
+              <mat-icon>event</mat-icon>
+              <span>{{ formatDate(checkIn) }} - {{ formatDate(checkOut) }}</span>
+            </div>
+            <div class="summary-item">
+              <mat-icon>people</mat-icon>
+              <span>{{ guests }} guest{{ guests !== 1 ? 's' : '' }}</span>
+            </div>
+            <div class="summary-item">
+              <mat-icon>euro</mat-icon>
+              <span>${{ totalPrice }}</span>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button 
+              mat-raised-button 
+              color="primary"
+              (click)="goToMyBookings()"
+            >
+              <mat-icon>list</mat-icon>
+              View My Bookings
+            </button>
+            <button 
+              mat-stroked-button
+              (click)="goToApartments()"
+            >
+              <mat-icon>search</mat-icon>
+              Browse More Apartments
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

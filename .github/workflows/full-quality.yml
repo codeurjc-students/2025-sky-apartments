@@ -30,6 +30,7 @@ jobs:
             
     backend-e2e:
       name: Backend E2E Check
+      needs: backend-unit-integration
       runs-on: ubuntu-latest
       steps:
           - uses: actions/checkout@v4
@@ -93,10 +94,23 @@ jobs:
               echo "Waiting for API Gateway..."
               timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
               
+              echo "All services registered! Waiting additional time for services to be fully ready..."
+              sleep 45
+              
+              echo "Verifying service health endpoints..."
+              echo "User service health:"
+              curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+              echo ""
+              echo "Apartment service health:"
+              curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+              echo ""
+              echo "Booking service health:"
+              curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+              
               echo "All services are ready!"
               echo "Registered services in Eureka:"
               curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
-              
+
           - name: Run Booking E2E Tests
             working-directory: ./backend/booking
             run: mvn test -Dtest='*Booking*e2eTest'
@@ -177,6 +191,7 @@ jobs:
 
     frontend-integration:
         name: Frontend Integration Quality Check
+        needs: backend-e2e
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -222,9 +237,40 @@ jobs:
                 echo "Checking bucket of MinIO..."
                 timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists\|already exists"; do sleep 2; done'
 
-                echo "Waiting for backend application..."
-                timeout 180 bash -c 'until curl -f http://localhost:8083/actuator/health 2>/dev/null || nc -z localhost 8083; do sleep 3; done'
-            
+                echo "Waiting for Eureka Server..."
+                timeout 120 bash -c 'until curl -f http://localhost:8761/actuator/health 2>/dev/null; do sleep 3; done'
+                
+                echo "Waiting for services to register in Eureka..."
+                sleep 30
+                
+                echo "Checking Eureka registrations..."
+                timeout 120 bash -c '
+                  until [ $(curl -s http://localhost:8761/eureka/apps | grep -o "<status>UP</status>" | wc -l) -ge 4 ]; do 
+                    echo "Waiting for all services to register... Currently registered: $(curl -s http://localhost:8761/eureka/apps | grep -o "<status>UP</status>" | wc -l)"
+                    sleep 5
+                  done
+                '
+                
+                echo "Waiting for API Gateway..."
+                timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
+                
+                echo "All services registered! Waiting additional time for services to be fully ready..."
+                sleep 45
+                
+                echo "Verifying service health endpoints..."
+                echo "User service health:"
+                curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+                echo ""
+                echo "Apartment service health:"
+                curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+                echo ""
+                echo "Booking service health:"
+                curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+                
+                echo "All services are ready!"
+                echo "Registered services in Eureka:"
+                curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
+
             # Frontend setup
             - name: Set up Node
               uses: actions/setup-node@v4
@@ -281,8 +327,160 @@ jobs:
               if: always()
               run: docker compose down -v
 
-    frontend-unit-e2e:
-        name: Frontend Unit and E2E Quality Check
+    frontend-e2e:
+        name: Frontend e2e Quality Check
+        needs: frontend-integration
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            
+            # Backend setup
+            - name: Set up Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '17'
+                distribution: 'temurin'
+                cache: maven
+                
+            - name: Build backend application
+              working-directory: ./backend
+              run: mvn clean package -DskipTests
+
+            - name: Create .env file from secrets
+              run: |
+                echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+                echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+                echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+                echo "MYSQL_USERS_DB=${{ secrets.MYSQL_USERS_DB }}" >> .env
+                echo "MYSQL_APARTMENTS_DB=${{ secrets.MYSQL_APARTMENTS_DB }}" >> .env
+                echo "MYSQL_BOOKINGS_DB=${{ secrets.MYSQL_BOOKINGS_DB }}" >> .env
+                echo "MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}" >> .env
+                echo "MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}" >> .env
+                echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
+                echo "EUREKA_SERVER_URL=${{ secrets.EUREKA_SERVER_URL }}" >> .env
+                echo "OTLP_ENDPOINT=${{ secrets.OTLP_ENDPOINT }}" >> .env
+                echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
+            - name: Start all services with Docker Compose
+              run: docker compose --env-file .env up -d --build
+                
+            - name: Wait for all services to be ready
+              run: |
+                echo "Waiting for MySQL..."
+                timeout 120 bash -c 'until docker exec $(docker ps -q -f name=mysql-apartments) mysqladmin ping -h"127.0.0.1" -uuser -ppassword --silent 2>/dev/null; do sleep 2; done'
+                
+                echo "Waiting for MinIO..."
+                timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live 2>/dev/null; do sleep 2; done'
+                
+                echo "Checking bucket of MinIO..."
+                timeout 60 bash -c 'until docker logs $(docker ps -q -f name=mc) 2>&1 | grep -q "Bucket created successfully\|Bucket.*already exists\|already exists"; do sleep 2; done'
+
+                echo "Waiting for Eureka Server..."
+                timeout 120 bash -c 'until curl -f http://localhost:8761/actuator/health 2>/dev/null; do sleep 3; done'
+                
+                echo "Waiting for services to register in Eureka..."
+                sleep 30
+                
+                echo "Checking Eureka registrations..."
+                timeout 120 bash -c '
+                  until [ $(curl -s http://localhost:8761/eureka/apps | grep -o "<status>UP</status>" | wc -l) -ge 4 ]; do 
+                    echo "Waiting for all services to register... Currently registered: $(curl -s http://localhost:8761/eureka/apps | grep -o "<status>UP</status>" | wc -l)"
+                    sleep 5
+                  done
+                '
+                
+                echo "Waiting for API Gateway..."
+                timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
+                
+                echo "All services registered! Waiting additional time for services to be fully ready..."
+                sleep 45
+                
+                echo "Verifying service health endpoints..."
+                echo "User service health:"
+                curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+                echo ""
+                echo "Apartment service health:"
+                curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+                echo ""
+                echo "Booking service health:"
+                curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+                
+                echo "All services are ready!"
+                echo "Registered services in Eureka:"
+                curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
+
+            # Frontend setup
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+
+            - name: Install Dependencies
+              working-directory: ./frontend
+              run: npm install
+
+            - name: Install Playwright Browsers
+              working-directory: ./frontend
+              run: npx playwright install
+
+            - name: Start Frontend Server
+              working-directory: ./frontend
+              run: npm run start &
+              
+            - name: Wait for server to be ready
+              working-directory: ./frontend
+              run: |
+                npx wait-on http://localhost:4200  
+
+            - name: Run Frontend E2E Tests
+              working-directory: ./frontend
+              run: npm run test:e2e
+            
+            - name: Show service logs on failure
+              if: failure()
+              run: |
+                echo "=== Docker containers status ==="
+                docker ps -a
+                echo ""
+                echo "=== MySQL logs ==="
+                MYSQL_CONTAINER=$(docker ps -aq -f name=mysql-apartments)
+                if [ ! -z "$MYSQL_CONTAINER" ]; then
+                  docker logs $MYSQL_CONTAINER | tail -50
+                else
+                  echo "No MySQL container found"
+                fi
+                echo ""
+                echo "=== MinIO logs ==="
+                MINIO_CONTAINER=$(docker ps -aq -f name=minio | head -1)
+                if [ ! -z "$MINIO_CONTAINER" ]; then
+                  docker logs $MINIO_CONTAINER | tail -50
+                else
+                  echo "No MinIO container found"
+                fi
+                echo ""
+                echo "=== MinIO MC logs ==="
+                MC_CONTAINER=$(docker ps -aq -f name=mc)
+                if [ ! -z "$MC_CONTAINER" ]; then
+                  docker logs $MC_CONTAINER | tail -50
+                else
+                  echo "No MC container found"
+                fi
+                echo ""
+                echo "=== Backend Application logs ==="
+                APP_CONTAINER=$(docker ps -aq -f name=apartment)
+                if [ ! -z "$APP_CONTAINER" ]; then
+                  docker logs $APP_CONTAINER | tail -100
+                else
+                  echo "No Backend application container found"
+                fi
+                
+            - name: Stop services
+              if: always()
+              run: docker compose down -v
+
+    frontend-unit:
+        name: Frontend Unit Quality Check
+        needs: frontend-e2e
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -300,16 +498,3 @@ jobs:
 
             - name: Run Frontend Unit Tests
               run: npm run test:unit
-
-            - name: Install Playwright Browsers
-              run: npx playwright install
-
-            - name: Start Frontend Server
-              run: npm run start &
-              
-            - name: Wait for server to be ready
-              run: |
-                npx wait-on http://localhost:4200  
-
-            - name: Run Frontend E2E Tests
-              run: npm run test:e2e

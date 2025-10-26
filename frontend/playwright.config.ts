@@ -1,4 +1,3 @@
-
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
@@ -8,7 +7,6 @@ export default defineConfig({
   use: {
     headless: true,
     baseURL: 'http://localhost:4200',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+
   },
 });
