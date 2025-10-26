@@ -94,10 +94,23 @@ jobs:
               echo "Waiting for API Gateway..."
               timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
               
+              echo "All services registered! Waiting additional time for services to be fully ready..."
+              sleep 45
+              
+              echo "Verifying service health endpoints..."
+              echo "User service health:"
+              curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+              echo ""
+              echo "Apartment service health:"
+              curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+              echo ""
+              echo "Booking service health:"
+              curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+              
               echo "All services are ready!"
               echo "Registered services in Eureka:"
               curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
-              
+
           - name: Run Booking E2E Tests
             working-directory: ./backend/booking
             run: mvn test -Dtest='*Booking*e2eTest'
@@ -241,10 +254,23 @@ jobs:
                 echo "Waiting for API Gateway..."
                 timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
                 
+                echo "All services registered! Waiting additional time for services to be fully ready..."
+                sleep 45
+                
+                echo "Verifying service health endpoints..."
+                echo "User service health:"
+                curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+                echo ""
+                echo "Apartment service health:"
+                curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+                echo ""
+                echo "Booking service health:"
+                curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+                
                 echo "All services are ready!"
                 echo "Registered services in Eureka:"
                 curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
-              
+
             # Frontend setup
             - name: Set up Node
               uses: actions/setup-node@v4
@@ -366,10 +392,23 @@ jobs:
                 echo "Waiting for API Gateway..."
                 timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
                 
+                echo "All services registered! Waiting additional time for services to be fully ready..."
+                sleep 45
+                
+                echo "Verifying service health endpoints..."
+                echo "User service health:"
+                curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+                echo ""
+                echo "Apartment service health:"
+                curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+                echo ""
+                echo "Booking service health:"
+                curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+                
                 echo "All services are ready!"
                 echo "Registered services in Eureka:"
                 curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
-              
+
             # Frontend setup
             - name: Set up Node.js
               uses: actions/setup-node@v4
