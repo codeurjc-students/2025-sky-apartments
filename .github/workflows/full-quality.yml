@@ -30,6 +30,7 @@ jobs:
             
     backend-e2e:
       name: Backend E2E Check
+      needs: backend-unit-integration
       runs-on: ubuntu-latest
       steps:
           - uses: actions/checkout@v4
@@ -177,6 +178,7 @@ jobs:
 
     frontend-integration:
         name: Frontend Integration Quality Check
+        needs: backend-e2e
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -283,6 +285,7 @@ jobs:
 
     frontend-e2e:
         name: Frontend e2e Quality Check
+        needs: frontend-integration
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -402,6 +405,7 @@ jobs:
 
     frontend-unit:
         name: Frontend Unit Quality Check
+        needs: frontend-e2e
         runs-on: ubuntu-latest
         defaults:
             run:
