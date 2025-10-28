@@ -72,7 +72,7 @@ export class ProfileComponent implements OnInit {
   isLoadingBookings = false;
   bookingsDisplayedColumns = ['image', 'apartment', 'dates', 'guests', 'price', 'status', 'actions'];
   currentPage: number = 0;
-  pageSize: number = 1;
+  pageSize: number = 10;
   hasMore: boolean = true;
   loading: boolean = false;
 

@@ -160,7 +160,7 @@ public class BookingService {
         return bookingRepository.findUnavailableApartments(startDate, endDate);
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "0 0 0 * * *") //Everyday at midnight
     @Transactional
     public void markCompletedBookings() {
         LocalDate today = LocalDate.now();
