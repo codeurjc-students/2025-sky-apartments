@@ -42,13 +42,15 @@ jobs:
               cache: maven
               
           - name: Clean up any existing containers and volumes
-            run: docker compose down -v || true
+            working-directory: ./docker
+            run: docker compose -f docker-compose-testing.yml down -v || true
           
           - name: Build backend application
             working-directory: ./backend
             run: mvn clean package -DskipTests
 
           - name: Create .env file from secrets
+            working-directory: ./docker
             run: |
               echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
               echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
@@ -64,7 +66,8 @@ jobs:
               echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
           - name: Start all services with Docker Compose
-            run: docker compose --env-file .env up -d --build
+            working-directory: ./docker
+            run: docker compose -f docker-compose-testing.yml --env-file .env up -d --build
               
           - name: Wait for all services to be ready
             run: |
@@ -187,7 +190,8 @@ jobs:
               
           - name: Stop services
             if: always()
-            run: docker compose down -v
+            working-directory: ./docker
+            run: docker compose -f docker-compose-testing.yml down -v
 
     frontend-integration:
         name: Frontend Integration Quality Check
@@ -209,6 +213,7 @@ jobs:
               run: mvn clean package -DskipTests
 
             - name: Create .env file from secrets
+              working-directory: ./docker
               run: |
                 echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
                 echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
@@ -224,7 +229,8 @@ jobs:
                 echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
             - name: Start all services with Docker Compose
-              run: docker compose --env-file .env up -d --build
+              working-directory: ./docker
+              run: docker compose -f docker-compose-testing.yml --env-file .env up -d --build
                 
             - name: Wait for all services to be ready
               run: |
@@ -325,7 +331,8 @@ jobs:
                 
             - name: Stop services
               if: always()
-              run: docker compose down -v
+              working-directory: ./docker
+              run: docker compose -f docker-compose-testing.yml down -v
 
     frontend-e2e:
         name: Frontend e2e Quality Check
@@ -347,6 +354,7 @@ jobs:
               run: mvn clean package -DskipTests
 
             - name: Create .env file from secrets
+              working-directory: ./docker
               run: |
                 echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
                 echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
@@ -362,7 +370,8 @@ jobs:
                 echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
             - name: Start all services with Docker Compose
-              run: docker compose --env-file .env up -d --build
+              working-directory: ./docker
+              run: docker compose -f docker-compose-testing.yml --env-file .env up -d --build
                 
             - name: Wait for all services to be ready
               run: |
@@ -476,7 +485,8 @@ jobs:
                 
             - name: Stop services
               if: always()
-              run: docker compose down -v
+              working-directory: ./docker
+              run: docker compose -f docker-compose-testing.yml down -v
 
     frontend-unit:
         name: Frontend Unit Quality Check
