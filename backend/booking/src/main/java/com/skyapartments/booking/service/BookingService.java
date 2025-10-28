@@ -2,10 +2,12 @@ package com.skyapartments.booking.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.skyapartments.booking.dto.ApartmentDTO;
@@ -49,6 +51,7 @@ public class BookingService {
         return bookingRepository.findByApartmentIdOrderByStartDateDesc(apartmentId, pageable).map(booking -> new BookingDTO(booking));
     }
 
+    @Transactional
     public BookingDTO createBooking (BookingRequestDTO request, String userEmail) {
         Long userId = userClient.getUserIdByEmail(userEmail);
         if (!request.getUserId().equals(userId)) {
@@ -57,6 +60,20 @@ public class BookingService {
         ApartmentDTO apartment = apartmentClient.getApartment(request.getApartmentId());
         if (apartment == null) {
             throw new ResourceNotFoundException("Apartment not found");
+        }
+        if (request.getEndDate().isBefore(request.getStartDate())) {
+            throw new BusinessValidationException("End date must be after start date");
+        }
+        if (request.getEndDate().isBefore(LocalDate.now())) {
+            throw new BusinessValidationException("End date must be after today");
+        }
+        // Check for overlapping bookings
+        boolean overlaps = bookingRepository.findByApartmentIdAndStateNot(
+                        request.getApartmentId(), BookingState.CANCELLED)
+                .stream()
+                .anyMatch(b -> !request.getStartDate().isAfter(b.getEndDate()) && !request.getEndDate().isBefore(b.getStartDate()));
+        if (overlaps) {
+            throw new BusinessValidationException("The apartment is not available for the selected dates");
         }
 
         Booking booking = new Booking();
@@ -107,6 +124,10 @@ public class BookingService {
             throw new BusinessValidationException("Cannot modify a cancelled booking");
         }
 
+        if (booking.getState() == BookingState.COMPLETED) {
+            throw new BusinessValidationException("Cannot modify a completed booking");
+        }
+
         if (newEndDate.isBefore(newStartDate)) {
             throw new BusinessValidationException("End date must be after start date");
         }
@@ -137,5 +158,16 @@ public class BookingService {
 
     public Set<Long> getUnavailableApartments(LocalDate startDate, LocalDate endDate) {
         return bookingRepository.findUnavailableApartments(startDate, endDate);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void markCompletedBookings() {
+        LocalDate today = LocalDate.now();
+        List<Booking> pastBookings = bookingRepository.findByEndDateBeforeAndState(today, BookingState.CONFIRMED);
+        for (Booking booking : pastBookings) {
+            booking.setState(BookingState.COMPLETED);
+        }
+        bookingRepository.saveAll(pastBookings);
     }
 }
