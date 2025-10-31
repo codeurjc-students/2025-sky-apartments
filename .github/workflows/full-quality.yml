@@ -95,7 +95,7 @@ jobs:
               '
               
               echo "Waiting for API Gateway..."
-              timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
+              timeout 180 bash -c 'until curl -fk https://localhost:443/actuator/health 2>/dev/null; do sleep 3; done'
               
               echo "All services registered! Waiting additional time for services to be fully ready..."
               sleep 45
@@ -258,7 +258,7 @@ jobs:
                 '
                 
                 echo "Waiting for API Gateway..."
-                timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
+                timeout 180 bash -c 'until curl -fk https://localhost:443/actuator/health 2>/dev/null; do sleep 3; done'
                 
                 echo "All services registered! Waiting additional time for services to be fully ready..."
                 sleep 45
@@ -399,14 +399,14 @@ jobs:
                 '
                 
                 echo "Waiting for API Gateway..."
-                timeout 180 bash -c 'until curl -fk https://localhost:8443/actuator/health 2>/dev/null; do sleep 3; done'
+                timeout 180 bash -c 'until curl -fk https://localhost:443/actuator/health 2>/dev/null; do sleep 3; done'
                 
                 echo "All services registered! Waiting additional time for services to be fully ready..."
                 sleep 45
                 
                 echo "Verifying service health endpoints..."
                 echo "User service health:"
-                curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+                curl -s http://localhost:8080/actuator/health || echo "User service not responding"
                 echo ""
                 echo "Apartment service health:"
                 curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
