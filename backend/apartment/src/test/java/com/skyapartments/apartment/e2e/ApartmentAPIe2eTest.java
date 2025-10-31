@@ -46,9 +46,9 @@ public class ApartmentAPIe2eTest {
     public static void init() {
         useRelaxedHTTPSValidation();
         
-        gatewayUrl = "https://" + "localhost" + ":" + 8443;
+        gatewayUrl = "https://" + "localhost" + ":" + 443;
         RestAssured.baseURI = gatewayUrl;
-        RestAssured.port = 8443;
+        RestAssured.port = 443;
     }
 
     @BeforeEach
