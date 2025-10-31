@@ -33,4 +33,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Set<Long> findUnavailableApartments(@Param("startDate") LocalDate startDate,
                                         @Param("endDate") LocalDate endDate);
 
+    List<Booking> findByEndDateBeforeAndState(LocalDate today, BookingState state);
+
 }

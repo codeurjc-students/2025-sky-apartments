@@ -130,7 +130,7 @@ describe('ProfileComponent', () => {
       expect(component.user).toEqual(mockUser);
       expect(component.isAdmin).toBeFalse();
       expect(component.isLoading).toBeFalse();
-      expect(mockBookingService.getBookingsByUserId).toHaveBeenCalledWith(1, 0, 1);
+      expect(mockBookingService.getBookingsByUserId).toHaveBeenCalledWith(1, 0, 10);
     }));
 
     it('should load current user and initialize profile for admin', fakeAsync(() => {
@@ -354,7 +354,7 @@ describe('ProfileComponent', () => {
       tick();
 
       expect(component.currentPage).toBe(1);
-      expect(mockBookingService.getBookingsByUserId).toHaveBeenCalledWith(1, 1, 1);
+      expect(mockBookingService.getBookingsByUserId).toHaveBeenCalledWith(1, 1, 10);
     }));
 
     it('should handle empty bookings', fakeAsync(() => {

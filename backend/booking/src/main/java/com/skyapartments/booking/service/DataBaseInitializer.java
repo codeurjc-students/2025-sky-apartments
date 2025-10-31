@@ -61,8 +61,8 @@ public class DataBaseInitializer {
         bookingRepository.save(new Booking(
             1L,
             5L,
-            LocalDate.of(2025, 5, 15),
-            LocalDate.of(2025, 5, 18),
+            LocalDate.of(2025, 11, 15),
+            LocalDate.of(2025, 11, 18),
             new BigDecimal("400.00"),
             2
         ));

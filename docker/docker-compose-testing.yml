@@ -103,7 +103,7 @@ services:
 
   eureka-server:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: eureka-server/Dockerfile
     ports:
       - "8761:8761"
@@ -120,19 +120,19 @@ services:
       
   api-gateway:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: api-gateway/Dockerfile
     environment:
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
     ports:
-      - "8443:8443"
+      - "443:443"
     networks:
       - apartments-network
     depends_on:
       eureka-server:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:8443/actuator/health"]
+      test: ["CMD", "curl", "-fk", "https://localhost:443/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -140,13 +140,13 @@ services:
 
   apartment:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: apartment/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       MINIO_URL: http://minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
@@ -176,13 +176,13 @@ services:
 
   user:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: user/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       OTLP_ENDPOINT: ${OTLP_ENDPOINT}
     depends_on:
@@ -205,13 +205,13 @@ services:
 
   booking:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: booking/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       OTLP_ENDPOINT: ${OTLP_ENDPOINT}
     depends_on:

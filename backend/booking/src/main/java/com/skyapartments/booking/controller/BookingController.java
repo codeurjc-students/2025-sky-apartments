@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import java.net.URI;
+
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,7 +79,10 @@ public class BookingController {
     public ResponseEntity<BookingDTO> createBooking(@Valid @RequestBody BookingRequestDTO booking, HttpServletRequest request) {
         String userEmail = request.getUserPrincipal().getName();
         BookingDTO newBooking = bookingService.createBooking(booking, userEmail);
-        return ResponseEntity.ok(newBooking);
+
+        URI location = fromCurrentRequest().path("/{id}").buildAndExpand(newBooking.getId()).toUri();
+
+        return ResponseEntity.created(location).body(newBooking);
     }
 
     @DeleteMapping("/{bookingId}")

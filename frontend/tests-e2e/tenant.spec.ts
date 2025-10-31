@@ -303,9 +303,11 @@ test.describe('Regular User Journey', () => {
       await page.waitForSelector('.bookings-list, .loading-bookings, .empty-state', { timeout: 10000 });
       
       // Check if there are bookings or empty state
-      const hasBookings = await page.locator('.booking-card').isVisible();
+      const bookingCards = page.locator('.booking-card');
+      const count = await bookingCards.count();
+      const hasBookings = count > 0;
       const isEmpty = await page.locator('.empty-state').isVisible();
-      
+
       expect(hasBookings || isEmpty).toBeTruthy();
     });
 

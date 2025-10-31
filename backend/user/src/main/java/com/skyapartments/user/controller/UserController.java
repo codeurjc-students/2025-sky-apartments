@@ -13,6 +13,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.security.Principal;
 
+import java.net.URI;
+
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -160,7 +164,10 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserRequestDTO requestDTO) {
         UserDTO createdUser = userService.createUser(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+
+        URI location = fromCurrentRequest().path("/{id}").buildAndExpand(createdUser.getId()).toUri();
+
+        return ResponseEntity.created(location).body(createdUser);
     }
 }
 
