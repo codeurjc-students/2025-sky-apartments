@@ -102,13 +102,13 @@ jobs:
               
               echo "Verifying service health endpoints..."
               echo "User service health:"
-              curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+              curl -s http://localhost:8080/actuator/health || echo "User service not responding"
               echo ""
               echo "Apartment service health:"
-              curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
+              curl -s http://localhost:8083/actuator/health || echo "Apartment service not responding"
               echo ""
               echo "Booking service health:"
-              curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+              curl -s http://localhost:8082/actuator/health || echo "Booking service not responding"
               
               echo "All services are ready!"
               echo "Registered services in Eureka:"
@@ -265,7 +265,7 @@ jobs:
                 
                 echo "Verifying service health endpoints..."
                 echo "User service health:"
-                curl -s http://localhost:8081/actuator/health || echo "User service not responding"
+                curl -s http://localhost:8080/actuator/health || echo "User service not responding"
                 echo ""
                 echo "Apartment service health:"
                 curl -s http://localhost:8082/actuator/health || echo "Apartment service not responding"
