@@ -349,7 +349,7 @@ public class Bookinge2eTest {
             .post("/api/v1/bookings")
         .then()
             .log().all()
-            .statusCode(200)
+            .statusCode(201)
             .body("id", notNullValue())
             .body("userId", equalTo(regularUserId.intValue()))
             .body("apartmentId", equalTo(1))
@@ -375,7 +375,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(200)
+            .statusCode(201)
             .body("userId", equalTo(adminUserId.intValue()))
             .body("apartmentId", equalTo(1))
             .body("state", equalTo("CONFIRMED"));
@@ -955,7 +955,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(200)
+            .statusCode(201)
             .body("guests", equalTo(1));
     }
 
@@ -977,7 +977,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(200)
+            .statusCode(201)
             .body("guests", equalTo(10));
     }
 
@@ -999,7 +999,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(200);
+            .statusCode(201);
     }
 
     @Test
@@ -1020,7 +1020,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(200)
+            .statusCode(201)
             .body("cost", equalTo(480.0f));
     }
 
@@ -1107,7 +1107,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings");
 
-        createResponse.then().statusCode(200);
+        createResponse.then().statusCode(201);
         Long bookingId = createResponse.jsonPath().getLong("id");
 
         given()
