@@ -1,0 +1,33 @@
+name: Release Build
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  extract-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+    steps:
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          # Elimina el prefijo 'v' si existe (v0.1 -> 0.1)
+          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${VERSION#v}
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${VERSION}"
+
+  build:
+    needs: extract-version
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      docker_tag: ${{ needs.extract-version.outputs.version }}
+      compose_tag: ${{ needs.extract-version.outputs.version }}
+      push_latest: true
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      
