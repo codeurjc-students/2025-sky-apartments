@@ -1,0 +1,46 @@
+name: Manual Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or commit to build'
+        required: true
+        default: 'main'
+        type: string
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.generate_tag.outputs.TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: Generate tag
+        id: generate_tag
+        run: |
+          # Sanitizar el nombre de la rama (reemplazar / por -)
+          BRANCH_NAME=$(echo "${{ github.event.inputs.ref }}" | sed 's/\//-/g')
+          # Obtener el commit corto
+          COMMIT_SHORT=$(git rev-parse --short HEAD)
+          # Generar timestamp
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          # Crear tag final
+          TAG="${BRANCH_NAME}-${TIMESTAMP}-${COMMIT_SHORT}"
+          echo "TAG=${TAG}" >> $GITHUB_OUTPUT
+          echo "Generated tag: ${TAG}"
+
+  build:
+    needs: prepare
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      docker_tag: ${{ needs.prepare.outputs.tag }}
+      compose_tag: ${{ needs.prepare.outputs.tag }}
+      push_latest: false
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

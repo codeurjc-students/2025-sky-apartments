@@ -1,0 +1,196 @@
+version: "3.9"
+
+services:
+
+  mysql-users:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_USERS_DB:-usersdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+    ports:
+      - "3305:3306"  # Port exposed for development
+    volumes:
+      - mysql_users_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mysql-apartments:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_APARTMENTS_DB:-apartmentsdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+    ports:
+      - "3303:3306"  
+    volumes:
+      - mysql_apartments_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # BBDD MySQL for bookings
+  mysql-bookings:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB:-bookingsdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+    ports:
+      - "3302:3306"
+    volumes:
+      - mysql_bookings_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # MinIO for file storage
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    restart: always
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Web console
+    volumes:
+      - minio_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # MinIO config
+  mc:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5 &&
+        mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin} &&
+        mc mb -p local/${MINIO_BUCKET:-apartments-images} || true &&
+        mc anonymous set public local/${MINIO_BUCKET:-apartments-images}
+        exit 0
+      "
+    networks:
+      - app-network
+
+  # Jaeger for distributed traceability
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    restart: always
+    ports:
+      - "16686:16686"  # UI of Jaeger
+      - "4318:4318"    # OTLP HTTP
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    networks:
+      - app-network
+
+  # Main application (Backend + Frontend) - Develop
+  app:
+    image: ${DOCKER_USERNAME}/apartments-app:dev
+    restart: always
+    ports:
+      - "443:443"
+      - "8761:8761"  # Eureka
+    environment:
+      # General config
+      JAVA_OPTS: "-Xmx1024m -Xms512m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      SPRING_PROFILES_ACTIVE: dev
+      
+      # BBDD - Users
+      USER_DB_URL: jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB:-usersdb}
+      USER_DB_USERNAME: ${MYSQL_USER:-user}
+      USER_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      
+      # BBDD - Apartments
+      APARTMENT_DB_URL: jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB:-apartmentsdb}
+      APARTMENT_DB_USERNAME: ${MYSQL_USER:-user}
+      APARTMENT_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      
+      # BBDD - Bookings
+      BOOKING_DB_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB:-bookingsdb}
+      BOOKING_DB_USERNAME: ${MYSQL_USER:-user}
+      BOOKING_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      
+      # MinIO
+      MINIO_URL: http://minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-apartments}
+      
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key}
+      
+      # SSL/HTTPS
+      SERVER_SSL_KEY_STORE: ${SSL_KEY_STORE:-classpath:keystore.p12}
+      SERVER_SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD:-changeit}
+      SERVER_SSL_KEY_STORE_TYPE: ${SSL_KEY_STORE_TYPE:-PKCS12}
+      SERVER_SSL_KEY_ALIAS: ${SSL_KEY_ALIAS:-apartments}
+      
+      # Logging
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_APARTMENTS: DEBUG
+      
+      # Jaeger/OTLP
+      OTLP_ENDPOINT: http://jaeger:4318
+    depends_on:
+      mysql-users:
+        condition: service_healthy
+      mysql-apartments:
+        condition: service_healthy
+      mysql-bookings:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+volumes:
+  mysql_users_data:
+  mysql_apartments_data:
+  mysql_bookings_data:
+  minio_data:
+
+networks:
+  app-network:
+    driver: bridge

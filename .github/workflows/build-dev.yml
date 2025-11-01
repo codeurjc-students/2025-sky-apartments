@@ -1,0 +1,17 @@
+name: Build and Push Dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      docker_tag: dev
+      compose_tag: dev
+      push_latest: false
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
