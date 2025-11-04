@@ -7,7 +7,7 @@
 3. [Tools](#️-tools)
 4. [Architecture](#️-architecture)
 5. [Quality Assurance](#-quality-assurance)
-6. [Deployment and Distribution](#-deployment-and-distribution)
+6. [Deployment and Distribution](#deployment-and-distribution)
 7. [Development Process](#-development-process)
 8. [Code Execution and Environment Setup](#️-code-execution-and-environment-setup)
 
@@ -361,9 +361,7 @@ npx playwright show-report
 
 ---
 
----
-
-## **Deployment and Distribution**
+## Deployment and Distribution
 
 The application follows a containerized deployment strategy using **Docker** and **Docker Compose** for orchestration.
 
