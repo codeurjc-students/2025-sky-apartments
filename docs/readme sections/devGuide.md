@@ -465,7 +465,7 @@ The current Docker-based approach provides:
 - Pull command: `docker pull eloydsdlh/apartments-app:latest`
 
 **Docker Compose OCI Artifact:**
-- URL: `https://hub.docker.com/r/eloydsdlh/apartments-app/compose`
+- URL: `https://hub.docker.com/r/eloydsdlh/apartments-compose`
 - Tags available: `latest`, `dev`, `0.1`, etc.
 
 
