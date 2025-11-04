@@ -199,9 +199,11 @@ Each microservice runs as an independent Spring Boot application with its own da
 The backend REST API is defined using **OpenAPI** specification.  
 A generated **HTML version** of the documentation is available for direct viewing on GitHub without executing the application:
 
-📄 **[View REST API Documentation of Apartment MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/14d3b8216f39521555db9dc96a4bed471fdeaf7b/docs/api/api-docs-apartment.html)**
-📄 **[View REST API Documentation of User MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/14d3b8216f39521555db9dc96a4bed471fdeaf7b/docs/api/api-docs-user.html)**
-📄 **[View REST API Documentation of Booking MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/14d3b8216f39521555db9dc96a4bed471fdeaf7b/docs/api/api-docs-booking.html)**
+📄 **[View REST API Documentation of Apartment MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-apartment.html)**
+
+📄 **[View REST API Documentation of User MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-user.html)**
+
+📄 **[View REST API Documentation of Booking MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-booking.html)**
 
 ### **Distributed Tracing**
 
