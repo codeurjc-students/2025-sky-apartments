@@ -1026,5 +1026,5 @@ Pull and run any version:
 docker pull /apartments-app:0.1
 docker compose up
 ```
-
 ---
+[👉 Go back](/README.md)

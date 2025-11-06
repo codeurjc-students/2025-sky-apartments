@@ -1,6 +1,9 @@
 ## 📋 Table of contents
 
-1. [Objectives](docs/readme%20sections/objectives.md)
-2. [Methodology](docs/readme%20sections/methodology.md)
-3. [Features](docs/readme%20sections/features.md)
-4. [Analysis](docs/readme%20sections/analysis.md)
+1. [Objectives](objectives.md)
+2. [Methodology](methodology.md)
+3. [Features](features.md)
+4. [Analysis](analysis.md)
+
+---
+[👉 Go back](/README.md)

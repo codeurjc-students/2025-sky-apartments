@@ -122,3 +122,6 @@ Custom error pages maintain the application's visual style:
 ---
 
 *All features illustrated above are fully functional in version 0.1*
+
+---
+[👉 Go back](/README.md)
