@@ -69,15 +69,16 @@ jobs:
           cp docker/docker-compose.yml docker-compose-temp.yml
           sed -i "s/\${DOCKER_USERNAME}/${{ secrets.DOCKER_USERNAME }}/g" docker-compose-temp.yml
           sed -i "s/:0\.1/:${{ inputs.docker_tag }}/g" docker-compose-temp.yml
+          sed -i '/^version:/d' docker-compose-temp.yml
 
       - name: Push docker-compose as OCI artifact (versioned)
         run: |
-          docker compose -f docker-compose-temp.yml publish ${{ secrets.DOCKER_USERNAME }}/apartments-compose:${{ inputs.compose_tag }}
+          docker compose -f docker-compose-temp.yml publish --with-env ${{ secrets.DOCKER_USERNAME }}/apartments-compose:${{ inputs.compose_tag }}
 
       - name: Push docker-compose as OCI artifact (latest)
         if: ${{ inputs.push_latest }}
         run: |
-          docker compose -f docker-compose-temp.yml publish ${{ secrets.DOCKER_USERNAME }}/apartments-compose:latest
+          docker compose -f docker-compose-temp.yml publish --with-env ${{ secrets.DOCKER_USERNAME }}/apartments-compose:latest
 
       - name: Cleanup
         if: always()
