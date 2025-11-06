@@ -70,34 +70,19 @@ jobs:
           sed -i "s/\${DOCKER_USERNAME}/${{ secrets.DOCKER_USERNAME }}/g" docker-compose-temp.yml
           sed -i "s/:0\.1/:${{ inputs.docker_tag }}/g" docker-compose-temp.yml
 
-      - name: Create Dockerfile for compose artifact
-        run: |
-          cat > Dockerfile.compose <<EOF
-          FROM scratch
-          COPY docker-compose-temp.yml /docker-compose.yml
-          EOF
-
       - name: Push docker-compose as OCI artifact (versioned)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile.compose
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/apartments-compose:${{ inputs.compose_tag }}
+        run: |
+          docker compose -f docker-compose-temp.yml publish ${{ secrets.DOCKER_USERNAME }}/apartments-compose:${{ inputs.compose_tag }}
 
       - name: Push docker-compose as OCI artifact (latest)
         if: ${{ inputs.push_latest }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile.compose
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/apartments-compose:latest
+        run: |
+          docker compose -f docker-compose-temp.yml publish ${{ secrets.DOCKER_USERNAME }}/apartments-compose:latest
 
       - name: Cleanup
         if: always()
         run: |
-          rm -f docker-compose-temp.yml Dockerfile.compose
+          rm -f docker-compose-temp.yml
 
       - name: Output build summary
         run: |
