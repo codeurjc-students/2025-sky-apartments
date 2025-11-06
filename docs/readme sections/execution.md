@@ -247,3 +247,6 @@ The development version uses the `dev` tag from DockerHub and includes the lates
 ---
 
 *For more detailed development instructions, see the [Development Guide](devGuide.md)*
+
+---
+[👉 Go back](/README.md)

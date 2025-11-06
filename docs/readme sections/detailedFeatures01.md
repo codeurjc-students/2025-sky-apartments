@@ -107,3 +107,6 @@ This document provides a comprehensive list of all planned features for Sky Apar
 **Legend:**
 - ✅ Implemented and tested
 - ⏳ Planned for future versions
+
+---
+[👉 Go back](/README.md)
