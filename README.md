@@ -9,9 +9,9 @@ Version 0.1 of Sky Apartments implements the core functionalities of the applica
 **For Anonymous Users:**
 - View the complete apartment catalog
 - Advanced search system with combined filters and multiple criteria
-- Filter by characteristics (number of guests, terrace/balcony, location, price range, etc.)
-- Map integration to display exact apartment locations
-- Detailed apartment information with images and descriptions
+- Filter by characteristics (number of guests, terrace/balcony, etc.)
+- Map integration to display apartments location
+- Detailed apartment information with image and description
 - Check availability for specific dates
 
 **For Registered Users:**
@@ -25,7 +25,6 @@ Version 0.1 of Sky Apartments implements the core functionalities of the applica
 - Access through system credentials
 - Full apartment management (create, edit, delete)
 - Upload images for apartments
-- Manage all system bookings
 
 ## 📸 Screenshots
 
@@ -45,7 +44,7 @@ Version 0.1 of Sky Apartments implements the core functionalities of the applica
 
 [![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://youtu.be/cu5g7nJVYz4)
 
-*1-minute video showcasing the main features of version 0.1*
+*Video showcasing the main features of version 0.1*
 
 ---
 
