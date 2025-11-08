@@ -84,7 +84,7 @@ docker compose version
 
 The docker-compose.yml file is also published as an OCI artifact:
 ```bash
-docker compose -f docker://eloydsdlh/apartments-compose:0.1 up -d
+docker compose -f oci://eloydsdlh/apartments-compose:main-20251107-160911-26997c0 up
 ```
 
 ## Accessing the Application

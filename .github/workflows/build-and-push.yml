@@ -41,14 +41,12 @@ jobs:
 
       - name: Update Docker Compose to latest
         run: |
-          # Descargar la última versión
           COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
           echo "Installing Docker Compose ${COMPOSE_VERSION}"
           
           sudo curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           
-          # Crear symlink para 'docker compose'
           sudo mkdir -p /usr/local/lib/docker/cli-plugins
           sudo ln -sf /usr/local/bin/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
           

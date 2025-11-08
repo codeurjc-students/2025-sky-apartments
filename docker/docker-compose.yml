@@ -6,16 +6,16 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_USERS_DB:-users_db}
-      MYSQL_USER: ${MYSQL_USER:-appuser}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_USERS_DB:-usersdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       - mysql_users_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-appuser}", "-p${MYSQL_PASSWORD:-apppassword}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,16 +26,16 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_APARTMENTS_DB:-apartments_db}
-      MYSQL_USER: ${MYSQL_USER:-appuser}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_APARTMENTS_DB:-apartmentsdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       - mysql_apartments_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-appuser}", "-p${MYSQL_PASSWORD:-apppassword}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,16 +46,16 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB:-bookings_db}
-      MYSQL_USER: ${MYSQL_USER:-appuser}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB:-bookingsdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       - mysql_bookings_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-appuser}", "-p${MYSQL_PASSWORD:-apppassword}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -69,6 +69,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9000:9000"
     volumes:
       - minio_data:/data
     networks:
@@ -90,8 +92,8 @@ services:
       /bin/sh -c "
         sleep 5 &&
         mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin} &&
-        mc mb -p local/${MINIO_BUCKET:-apartments} || true &&
-        mc anonymous set public local/${MINIO_BUCKET:-apartments}
+        mc mb -p local/${MINIO_BUCKET:-apartments-images} || true &&
+        mc anonymous set public local/${MINIO_BUCKET:-apartments-images}
         exit 0
       "
     networks:
@@ -115,34 +117,40 @@ services:
     restart: always
     ports:
       - "443:443"
+      - "8761:8761"  # Eureka Server
     environment:
       # General config
       JAVA_OPTS: "-Xmx1024m -Xms512m"
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-prod}
       
       # BBDD - Users
-      USER_DB_URL: jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB:-users_db}
-      USER_DB_USERNAME: ${MYSQL_USER:-appuser}
-      USER_DB_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      USER_DB_URL: jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB:-usersdb}
+      USER_DB_USERNAME: ${MYSQL_USER:-user}
+      USER_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_USERS_DB: ${MYSQL_USERS_DB:-usersdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
       
       # BBDD - Apartments
-      APARTMENT_DB_URL: jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB:-apartments_db}
-      APARTMENT_DB_USERNAME: ${MYSQL_USER:-appuser}
-      APARTMENT_DB_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      APARTMENT_DB_URL: jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB:-apartmentsdb}
+      APARTMENT_DB_USERNAME: ${MYSQL_USER:-user}
+      APARTMENT_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_APARTMENTS_DB: ${MYSQL_APARTMENTS_DB:-apartmentsdb}
       
       # BBDD - Bookings
-      BOOKING_DB_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB:-bookings_db}
-      BOOKING_DB_USERNAME: ${MYSQL_USER:-appuser}
-      BOOKING_DB_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      BOOKING_DB_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB:-bookingsdb}
+      BOOKING_DB_USERNAME: ${MYSQL_USER:-user}
+      BOOKING_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_BOOKINGS_DB: ${MYSQL_BOOKINGS_DB:-bookingsdb}
       
       # MinIO
       MINIO_URL: http://minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
-      MINIO_BUCKET: ${MINIO_BUCKET:-apartments}
+      MINIO_BUCKET: ${MINIO_BUCKET:-apartments-images}
       
       # JWT
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      JWT_SECRET: ${JWT_SECRET:-Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd}
       
       # SSL/HTTPS
       SERVER_SSL_KEY_STORE: ${SSL_KEY_STORE:-classpath:keystore.p12}
