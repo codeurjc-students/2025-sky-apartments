@@ -409,7 +409,7 @@ The application image and Docker Compose files are distributed through **DockerH
 The `docker-compose.yml` file is also published as an OCI artifact on DockerHub, allowing users to pull the complete orchestration configuration:
 ```bash
 # Pull and use the compose file directly from DockerHub
-docker compose pull eloydsdlh/apartments-app:0.1
+docker compose -f oci://eloydsdlh/apartments-compose:main-20251107-160911-26997c0 up
 ```
 
 ### **🔹 Deployment Options**

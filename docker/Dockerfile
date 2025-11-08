@@ -64,7 +64,11 @@ RUN ls -la /app/static/ && \
 
 # Copy startup script
 COPY docker/entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
+
+# FIX: Convert Windows line endings to Unix and make executable
+RUN sed -i 's/\r$//' ./entrypoint.sh && \
+    chmod +x ./entrypoint.sh && \
+    ls -la ./entrypoint.sh
 
 # Create required directories
 RUN mkdir -p /app/logs && chmod 755 /app/logs
@@ -80,5 +84,5 @@ ENV SPRING_PROFILES_ACTIVE=prod
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
   CMD curl -fk https://localhost:443/actuator/health || exit 1
 
-# Entrypoint
-ENTRYPOINT ["./entrypoint.sh"]
+# Entrypoint - using absolute path for clarity
+ENTRYPOINT ["/app/entrypoint.sh"]
