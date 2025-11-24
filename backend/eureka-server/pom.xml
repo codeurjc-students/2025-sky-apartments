@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.skyapartments</groupId>
 		<artifactId>backend</artifactId>
-		<version>0.1.0</version>
+		<version>0.2.0</version>
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 	<groupId>com.skyapartments</groupId>
 	<artifactId>eureka-server</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<name>eureka-server</name>
 	<packaging>jar</packaging>
 	<properties>
