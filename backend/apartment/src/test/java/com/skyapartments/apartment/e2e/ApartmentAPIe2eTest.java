@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class ApartmentAPIe2eTest {
             Set.of("WiFi", "Parking"), 
             4
         );
-        apto.setImageUrl("https://my-bucket.s3.amazonaws.com/test_image.jpg");
+        apto.setImageUrls(List.of("https://my-bucket.s3.amazonaws.com/test_image.jpg"));
         savedApartment = apartmentRepository.save(apto);
 
         this.adminCookies = loginAndGetAllCookies("admin@example.com", "Password@1234");

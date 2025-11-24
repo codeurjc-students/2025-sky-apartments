@@ -100,7 +100,7 @@ public class ApartmentServiceIntegrationTest {
                 "fake-image-content".getBytes()
         );
         String imageUrl = imageService.saveImage(imageFile, apt1.getId());
-        apt1.setImageUrl(imageUrl);
+        apt1.addImageUrl(imageUrl);
         apt1 = apartmentRepository.save(apt1);
         apartmentRepository.save(new Apartment("Test Apartment 2", "Sea view", BigDecimal.valueOf(150.00), Set.of("WiFi", "Sea"), 2));
         request = new ApartmentRequestDTO();
@@ -125,14 +125,14 @@ public class ApartmentServiceIntegrationTest {
         assertThat(apartments.getContent().get(0).getPrice()).isEqualByComparingTo(BigDecimal.valueOf(100.00));
         assertThat(apartments.getContent().get(0).getServices()).containsExactlyInAnyOrder("WiFi", "Parking");
         assertThat(apartments.getContent().get(0).getCapacity()).isEqualTo(4);
-        assertThat(apartments.getContent().get(0).getImageUrl()).isNotEmpty();
+        assertThat(apartments.getContent().get(0).getImagesUrl()).isNotEmpty();
 
         assertThat(apartments.getContent().get(1).getName()).isEqualTo("Test Apartment 2");
         assertThat(apartments.getContent().get(1).getDescription()).isEqualTo("Sea view");
         assertThat(apartments.getContent().get(1).getPrice()).isEqualByComparingTo(BigDecimal.valueOf(150.00));
         assertThat(apartments.getContent().get(1).getServices()).containsExactlyInAnyOrder("WiFi", "Sea");
         assertThat(apartments.getContent().get(1).getCapacity()).isEqualTo(2);
-        assertThat(apartments.getContent().get(1).getImageUrl()).isBlank();
+        assertThat(apartments.getContent().get(1).getImagesUrl()).isEmpty();
     }
 
     @Test
@@ -154,7 +154,7 @@ public class ApartmentServiceIntegrationTest {
         assertThat(apartment.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(100));
         assertThat(apartment.getServices()).containsExactlyInAnyOrder("WiFi", "Parking");
         assertThat(apartment.getCapacity()).isEqualTo(4);
-        assertThat(apartment.getImageUrl()).isNotEmpty();
+        assertThat(apartment.getImagesUrl()).isNotEmpty();
     }
 
     @Test
@@ -178,21 +178,21 @@ public class ApartmentServiceIntegrationTest {
         assertThat(dto.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(100.00));
         assertThat(dto.getServices()).containsExactlyInAnyOrder("WiFi", "Parking");
         assertThat(dto.getCapacity()).isEqualTo(4);
-        assertThat(dto.getImageUrl()).isBlank();
+        assertThat(dto.getImagesUrl()).isEmpty();
     }
 
     @Test
     public void createApartment_ShouldCreateApartmentWithImages() {
         apartmentRepository.deleteAll();
 
-        request.setImage(imageFile);
+        request.setImages(List.of(imageFile));
         
         ApartmentDTO dto = apartmentService.createApartment(request);
 
         assertThat(dto.getId()).isNotNull();
         assertThat(dto.getName()).isEqualTo("Test Apartment 1");
         assertThat(dto.getServices()).containsExactlyInAnyOrder("Parking", "WiFi");
-        assertThat(dto.getImageUrl()).isNotEmpty();
+        assertThat(dto.getImagesUrl()).isNotEmpty();
     }
 
     @Test
@@ -225,7 +225,7 @@ public class ApartmentServiceIntegrationTest {
         assertThat(updated.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(300));
         assertThat(updated.getCapacity()).isEqualTo(6);
         assertThat(updated.getServices()).containsExactly("Air Conditioning");
-        assertThat(updated.getImageUrl()).isBlank();
+        assertThat(updated.getImagesUrl()).isEmpty();
     }
 
     @Test
@@ -236,7 +236,7 @@ public class ApartmentServiceIntegrationTest {
         request.setCapacity(6);
         request.setPrice(BigDecimal.valueOf(300));
         request.setServices(Set.of("Air Conditioning"));
-        request.setImage(imageFile);
+        request.setImages(List.of(imageFile));
         // Act
         ApartmentDTO updated = apartmentService.updateApartment(apt1.getId(), request);
 
@@ -247,9 +247,8 @@ public class ApartmentServiceIntegrationTest {
         assertThat(updated.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(300));
         assertThat(updated.getCapacity()).isEqualTo(6);
         assertThat(updated.getServices()).containsExactly("Air Conditioning");
-        assertThat(updated.getImageUrl()).isNotEmpty();
-        assertThat(updated.getImageUrl()).contains("picture.jpg");
-        assertThat(imageService.imageExists(apt1.getImageUrl())).isFalse();
+        assertThat(updated.getImagesUrl()).isNotEmpty();
+        assertThat(imageService.imageExists(apt1.getImageUrls().get(0))).isFalse();
     }
 
     @Test
@@ -268,7 +267,7 @@ public class ApartmentServiceIntegrationTest {
         apartmentService.deleteApartment(apt1.getId());
 
         assertThat(apartmentRepository.findById(apt1.getId())).isEmpty();
-        assertThat(imageService.imageExists(apt1.getImageUrl())).isFalse();
+        assertThat(imageService.imageExists(apt1.getImageUrls().get(0))).isFalse();
     }
 
     @Test

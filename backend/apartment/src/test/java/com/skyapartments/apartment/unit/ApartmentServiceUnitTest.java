@@ -171,7 +171,7 @@ public class ApartmentServiceUnitTest {
         request.setPrice(new BigDecimal("300.00"));
         request.setCapacity(4);
         request.setServices(Set.of("piscina"));
-        request.setImage(file1);
+        request.setImages(List.of(file1));
 
         when(apartmentRepository.existsByName("Apt con fotos")).thenReturn(false);
 
@@ -186,7 +186,7 @@ public class ApartmentServiceUnitTest {
         ApartmentDTO result = apartmentService.createApartment(request);
 
         // then
-        assertThat(result.getImageUrl()).contains("url1");
+        assertThat(result.getImagesUrl()).contains("url1");
         verify(imageService, times(1)).saveImage(any(), eq(10L));
     }
 
@@ -223,7 +223,7 @@ public class ApartmentServiceUnitTest {
         request.setPrice(new BigDecimal("150.00"));
         request.setCapacity(2);
         request.setServices(Set.of("wifi"));
-        request.setImage(file);
+        request.setImages(List.of(file));
 
         when(apartmentRepository.existsByName("Apt con error")).thenReturn(false);
 
@@ -253,7 +253,7 @@ public class ApartmentServiceUnitTest {
         apt.setPrice(new BigDecimal("100"));
         apt.setCapacity(2);
         apt.setServices(Set.of("wifi"));
-        apt.setImageUrl("old1.jpg");
+        apt.addImageUrl("old1.jpg");
         
         ApartmentRequestDTO request = new ApartmentRequestDTO();
         request.setName("New Name");
@@ -281,11 +281,11 @@ public class ApartmentServiceUnitTest {
         // given
         Apartment apt = new Apartment();
         apt.setId(2L);
-        apt.setImageUrl("old.jpg");
+        apt.addImageUrl("old.jpg");
 
         ApartmentRequestDTO request = new ApartmentRequestDTO();
         MultipartFile file1 = mock(MultipartFile.class);
-        request.setImage(file1);
+        request.setImages(List.of(file1));
         request.setName("Updated Apt");
         request.setDescription("Desc");
         request.setPrice(new BigDecimal("200"));
@@ -300,7 +300,7 @@ public class ApartmentServiceUnitTest {
         ApartmentDTO result = apartmentService.updateApartment(2L, request);
 
         // then
-        assertThat(result.getImageUrl()).contains("url1");
+        assertThat(result.getImagesUrl()).contains("url1");
         verify(imageService, times(1)).deleteImage("old.jpg");
         verify(imageService, times(1)).saveImage(any(), eq(2L));
     }
@@ -335,7 +335,7 @@ public class ApartmentServiceUnitTest {
 
         MultipartFile file = mock(MultipartFile.class);
         ApartmentRequestDTO request = new ApartmentRequestDTO();
-        request.setImage(file);
+        request.setImages(List.of(file));
 
         when(apartmentRepository.findById(5L)).thenReturn(Optional.of(apt));
         when(imageService.saveImage(file, 5L)).thenThrow(new RuntimeException("Storage down"));
@@ -356,7 +356,7 @@ public class ApartmentServiceUnitTest {
         // given
         Apartment apt = new Apartment();
         apt.setId(1L);
-        apt.setImageUrl("img1.jpg");
+        apt.addImageUrl("img1.jpg");
 
         when(apartmentRepository.findById(1L)).thenReturn(Optional.of(apt));
 

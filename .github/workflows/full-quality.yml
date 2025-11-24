@@ -109,10 +109,17 @@ jobs:
               echo ""
               echo "Booking service health:"
               curl -s http://localhost:8082/actuator/health || echo "Booking service not responding"
+              echo ""
+              echo "Review service health:"
+              curl -s http://localhost:8081/actuator/health || echo "Review service not responding"
               
               echo "All services are ready!"
               echo "Registered services in Eureka:"
               curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
+
+          - name: Run Review E2E Tests
+            working-directory: ./backend/review
+            run: mvn test -Dtest='*Review*e2eTest'
 
           - name: Run Booking E2E Tests
             working-directory: ./backend/booking
@@ -187,6 +194,14 @@ jobs:
               else
                 echo "No Apartment service container found"
               fi
+              echo ""
+              echo "=== Review Service logs ==="
+              REVIEW_CONTAINER=$(docker ps -aq -f name=review)
+              if [ ! -z "$REVIEW_CONTAINER" ]; then
+                docker logs $REVIEW_CONTAINER | tail -100
+              else
+                echo "No Review service container found"
+              fi
               
           - name: Stop services
             if: always()
@@ -221,6 +236,7 @@ jobs:
                 echo "MYSQL_USERS_DB=${{ secrets.MYSQL_USERS_DB }}" >> .env
                 echo "MYSQL_APARTMENTS_DB=${{ secrets.MYSQL_APARTMENTS_DB }}" >> .env
                 echo "MYSQL_BOOKINGS_DB=${{ secrets.MYSQL_BOOKINGS_DB }}" >> .env
+                echo "MYSQL_REVIEWS_DB=${{ secrets.MYSQL_REVIEWS_DB }}" >> .env
                 echo "MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}" >> .env
                 echo "MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}" >> .env
                 echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
@@ -272,6 +288,9 @@ jobs:
                 echo ""
                 echo "Booking service health:"
                 curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+                echo ""
+                echo "Review service health:"
+                curl -s http://localhost:8081/actuator/health || echo "Review service not responding"
                 
                 echo "All services are ready!"
                 echo "Registered services in Eureka:"
@@ -362,6 +381,7 @@ jobs:
                 echo "MYSQL_USERS_DB=${{ secrets.MYSQL_USERS_DB }}" >> .env
                 echo "MYSQL_APARTMENTS_DB=${{ secrets.MYSQL_APARTMENTS_DB }}" >> .env
                 echo "MYSQL_BOOKINGS_DB=${{ secrets.MYSQL_BOOKINGS_DB }}" >> .env
+                echo "MYSQL_REVIEWS_DB=${{ secrets.MYSQL_REVIEWS_DB }}" >> .env
                 echo "MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}" >> .env
                 echo "MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}" >> .env
                 echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
@@ -413,6 +433,9 @@ jobs:
                 echo ""
                 echo "Booking service health:"
                 curl -s http://localhost:8083/actuator/health || echo "Booking service not responding"
+                echo ""
+                echo "Review service health:"
+                curl -s http://localhost:8081/actuator/health || echo "Review service not responding"
                 
                 echo "All services are ready!"
                 echo "Registered services in Eureka:"
