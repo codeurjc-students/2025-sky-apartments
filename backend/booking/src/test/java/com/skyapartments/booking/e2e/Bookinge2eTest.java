@@ -374,7 +374,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(403)
+            .statusCode(403);
     }
 
     @Test
