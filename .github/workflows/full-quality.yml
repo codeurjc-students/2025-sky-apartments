@@ -58,6 +58,7 @@ jobs:
               echo "MYSQL_USERS_DB=${{ secrets.MYSQL_USERS_DB }}" >> .env
               echo "MYSQL_APARTMENTS_DB=${{ secrets.MYSQL_APARTMENTS_DB }}" >> .env
               echo "MYSQL_BOOKINGS_DB=${{ secrets.MYSQL_BOOKINGS_DB }}" >> .env
+              echo "MYSQL_REVIEWS_DB=${{ secrets.MYSQL_REVIEWS_DB }}" >> .env
               echo "MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}" >> .env
               echo "MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}" >> .env
               echo "MINIO_BUCKET=${{ secrets.MINIO_BUCKET }}" >> .env
