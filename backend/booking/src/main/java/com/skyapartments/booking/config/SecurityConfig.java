@@ -40,7 +40,7 @@ public class SecurityConfig {
                 // PRIVATE ENDPOINTS
                 .requestMatchers(HttpMethod.GET, "/api/v1/bookings/user/*").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/bookings/apartment/*").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/bookings").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/bookings").hasRole("USER")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/bookings/*/dates").hasAnyRole("USER","ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/bookings/*").hasAnyRole("USER","ADMIN")
                 // PUBLIC ENDPOINTS

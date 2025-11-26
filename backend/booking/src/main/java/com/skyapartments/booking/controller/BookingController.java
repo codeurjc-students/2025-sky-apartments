@@ -113,5 +113,17 @@ public class BookingController {
         return bookingService.getUnavailableApartments(startDate, endDate);
     }
 
+    @GetMapping("/active/user/{userId}/apartment/{apartmentId}")
+    public ResponseEntity<List<BookingDTO>> getActiveBookingsByUserAndApartment(
+            @PathVariable Long userId,
+            @PathVariable Long apartmentId
+    ) {
+        List<BookingDTO> bookings = bookingService.getActiveBookingsByUserAndApartment(userId, apartmentId);
+        if (bookings.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(bookings);
+    }
+    
 }
 
