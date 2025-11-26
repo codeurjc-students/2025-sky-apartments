@@ -99,7 +99,7 @@
           <!-- Apartment Information -->
           <mat-card class="apartment-card">
             <div class="apartment-image">
-              <img [src]="apartment?.imageUrl" [alt]="apartment?.name" />
+              <img [src]="apartment?.imagesUrl?.[0]" [alt]="apartment?.name" />
             </div>
             <mat-card-content>
               <h2>{{ apartment?.name }}</h2>

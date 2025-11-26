@@ -39,7 +39,7 @@ describe('BookingConfirmationComponent', () => {
     price: 100,
     services: new Set(['WiFi', 'AC', 'Kitchen']),
     capacity: 4,
-    imageUrl: 'test.jpg'
+    imagesUrl: ['test.jpg']
   };
 
   const mockBooking = {
