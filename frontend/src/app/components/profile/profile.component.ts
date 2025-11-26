@@ -275,6 +275,9 @@ export class ProfileComponent implements OnInit {
         } else {
           this.aptHasMore = false;
         }
+        if (apartments.length != this.aptPageSize) {
+          this.aptHasMore = false;
+        }
         this.aptLoading = false;
         this.allApartments = [... this.allApartments, ...apartments];
         this.isLoadingAdminData = false;
