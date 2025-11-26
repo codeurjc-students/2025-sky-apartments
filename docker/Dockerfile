@@ -27,6 +27,7 @@ COPY backend/api-gateway/pom.xml ./api-gateway/
 COPY backend/apartment/pom.xml ./apartment/
 COPY backend/booking/pom.xml ./booking/
 COPY backend/user/pom.xml ./user/
+COPY backend/review/pom.xml ./review/
 
 # Download dependencies (cached layer)
 RUN mvn dependency:go-offline -B
@@ -53,6 +54,7 @@ COPY --from=backend-build /app/eureka-server/target/*.jar ./eureka-server.jar
 COPY --from=backend-build /app/apartment/target/*.jar ./apartment.jar
 COPY --from=backend-build /app/booking/target/*.jar ./booking.jar
 COPY --from=backend-build /app/user/target/*.jar ./user.jar
+COPY --from=backend-build /app/review/target/*.jar ./review.jar
 
 # Copy compiled frontend to static resources
 # Angular 17+ outputs to dist/<project-name>/browser/

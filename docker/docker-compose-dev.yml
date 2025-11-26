@@ -64,6 +64,28 @@ services:
       retries: 5
       start_period: 30s
 
+  # BBDD MySQL for reviews
+  mysql-reviews:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB:-reviewsdb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+    ports:
+      - "3304:3306"
+    volumes:
+      - mysql_reviews_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s  
+  
   # MinIO for file storage
   minio:
     image: minio/minio
@@ -141,6 +163,11 @@ services:
       BOOKING_DB_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB:-bookingsdb}
       BOOKING_DB_USERNAME: ${MYSQL_USER:-user}
       BOOKING_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+
+      # BBDD - Reviews
+      REVIEW_DB_URL: jdbc:mysql://mysql-reviews:3306/${MYSQL_REVIEWS_DB:-reviewsdb}
+      REVIEW_DB_USERNAME: ${MYSQL_USER:-user}
+      REVIEW_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
       
       # MinIO
       MINIO_URL: http://minio:9000
@@ -163,12 +190,19 @@ services:
       
       # Jaeger/OTLP
       OTLP_ENDPOINT: http://jaeger:4318
+
+      # Email configuration
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      
     depends_on:
       mysql-users:
         condition: service_healthy
       mysql-apartments:
         condition: service_healthy
       mysql-bookings:
+        condition: service_healthy
+      mysql-reviews:
         condition: service_healthy
       minio:
         condition: service_healthy
@@ -187,6 +221,7 @@ volumes:
   mysql_users_data:
   mysql_apartments_data:
   mysql_bookings_data:
+  mysql_reviews_data:
   minio_data:
 
 networks:
