@@ -192,7 +192,7 @@ test.describe('Admin User Journey', () => {
       });
       
       // Wait for image preview
-      await page.waitForSelector('.image-preview img', { timeout: 5000 });
+      await page.waitForSelector('.image-preview-item img', { timeout: 5000 });
       
       // Select services
       await page.click('mat-checkbox:has-text("WiFi")');
@@ -254,7 +254,7 @@ test.describe('Admin User Journey', () => {
         buffer: Buffer.from('test')
       });
       
-      await page.waitForSelector('.image-preview img', { timeout: 5000 });
+      await page.waitForSelector('.image-preview-item img', { timeout: 5000 });
     });
 
     test('should edit an existing apartment', async ({ page }) => {
@@ -333,7 +333,7 @@ test.describe('Admin User Journey', () => {
         buffer: Buffer.from('test')
       });
       
-      await page.waitForSelector('.image-preview img');
+      await page.waitForSelector('.image-preview-item img');
       await page.click('button:has-text("Create Apartment")');
       await page.waitForURL(/\/profile#apartments/);
       
