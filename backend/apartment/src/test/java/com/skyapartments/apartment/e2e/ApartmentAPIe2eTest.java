@@ -181,7 +181,7 @@ public class ApartmentAPIe2eTest {
             .formParam("capacity", "3")
             .formParam("services", "WiFi")
             .formParam("services", "Air Conditioning")
-            .multiPart("image", "photo1.jpg",
+            .multiPart("images", "photo1.jpg",
                     new ByteArrayInputStream("fakeimage1".getBytes()),
                     MediaType.IMAGE_JPEG_VALUE)
         .when()
@@ -195,7 +195,7 @@ public class ApartmentAPIe2eTest {
             .body("price", equalTo(180.00f))
             .body("capacity", equalTo(3))
             .body("services", hasItems("WiFi", "Air Conditioning"))
-            .body("imageUrl", notNullValue());
+            .body("imagesUrl", notNullValue());
 
     }
     @Test
@@ -208,7 +208,7 @@ public class ApartmentAPIe2eTest {
             .multiPart("description", "No name apartment")
             .multiPart("price", "100.00")
             .multiPart("capacity", "2")
-            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+            .multiPart("images", "photo1.jpg", new ByteArrayInputStream("fakeimage".getBytes()), MediaType.IMAGE_JPEG_VALUE)
         .when()
             .post("/api/v1/apartments")
         .then()
@@ -230,7 +230,7 @@ public class ApartmentAPIe2eTest {
             .post("/api/v1/apartments")
         .then()
             .statusCode(400)
-            .body("errors.imagePresent", equalTo("At least one image is required"));
+            .body("errors.images", equalTo("At least one image is required"));
     }
 
     @Test
@@ -314,7 +314,7 @@ public class ApartmentAPIe2eTest {
             .multiPart("description", "Second apartment")
             .multiPart("price", "150.00")
             .multiPart("capacity", "3")
-            .multiPart("image", "photo2.jpg", new ByteArrayInputStream("fakeimage2".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+            .multiPart("images", "photo2.jpg", new ByteArrayInputStream("fakeimage2".getBytes()), MediaType.IMAGE_JPEG_VALUE)
         .when()
             .post("/api/v1/apartments")
         .then()
@@ -370,7 +370,7 @@ public class ApartmentAPIe2eTest {
             .formParam("capacity", "6")
             .formParam("services", "WiFi")
             .formParam("services", "Balcony")
-            .multiPart("image", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
+            .multiPart("images", "photo1.jpg", new ByteArrayInputStream("fakeimage1".getBytes()), MediaType.IMAGE_JPEG_VALUE)
         .when()
             .put("/api/v1/apartments/{id}", savedApartment.getId())
         .then()
@@ -396,7 +396,7 @@ public class ApartmentAPIe2eTest {
             .formParam("description", "This apartment doesn't exist")
             .formParam("price", "150.00")
             .formParam("capacity", "4")
-            .multiPart("image", "photo.jpg",
+            .multiPart("images", "photo.jpg",
                     new ByteArrayInputStream("fake_image".getBytes()),
                     MediaType.IMAGE_JPEG_VALUE)
         .when()
