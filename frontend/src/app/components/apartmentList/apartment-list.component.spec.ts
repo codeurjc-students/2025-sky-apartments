@@ -22,7 +22,7 @@ describe('ApartmentListComponent', () => {
       price: 150,
       services: new Set(['WiFi', 'AC', 'Kitchen']),
       capacity: 4,
-      imageUrl: 'apartment1.jpg'
+      imagesUrl: ['apartment1.jpg']
     },
     {
       id: 2,
@@ -31,7 +31,7 @@ describe('ApartmentListComponent', () => {
       price: 80,
       services: new Set(['WiFi', 'Heating']),
       capacity: 2,
-      imageUrl: 'apartment2.jpg'
+      imagesUrl: ['apartment2.jpg']
     }
   ];
 
