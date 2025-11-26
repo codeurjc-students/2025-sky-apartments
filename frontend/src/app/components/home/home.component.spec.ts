@@ -8,12 +8,14 @@ import { of, throwError, Subject } from 'rxjs';
 
 import { HomeComponent } from './home.component';
 import { ApartmentService } from '../../services/apartment/apartment.service';
+import { ContactService } from '../../services/contact/contact.service';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let apartmentService: jasmine.SpyObj<ApartmentService>;
+  let contactService: jasmine.SpyObj<ContactService>;
   let router: Router;
   let viewportScroller: jasmine.SpyObj<ViewportScroller>;
   let fragmentSubject: Subject<string | null>;
@@ -25,7 +27,7 @@ describe('HomeComponent', () => {
       description: 'Description 1',
       price: 100,
       capacity: 2,
-      imageUrl: 'image1.jpg',
+      imagesUrl: ['image1.jpg'],
       services: new Set<string>()
     },
     {
@@ -34,7 +36,7 @@ describe('HomeComponent', () => {
       description: 'Description 2',
       price: 150,
       capacity: 4,
-      imageUrl: 'image2.jpg',
+      imagesUrl: ['image2.jpg'],
       services: new Set<string>()
     },
     {
@@ -43,7 +45,7 @@ describe('HomeComponent', () => {
       description: 'Description 3',
       price: 200,
       capacity: 6,
-      imageUrl: 'image3.jpg',
+      imagesUrl: ['image3.jpg'],
       services: new Set<string>()
     },
     {
@@ -52,7 +54,7 @@ describe('HomeComponent', () => {
       description: 'Description 4',
       price: 250,
       capacity: 8,
-      imageUrl: 'image4.jpg',
+      imagesUrl: ['image4.jpg'],
       services: new Set<string>()
     },
     {
@@ -61,7 +63,7 @@ describe('HomeComponent', () => {
       description: 'Description 5',
       price: 300,
       capacity: 10,
-      imageUrl: 'image5.jpg',
+      imagesUrl: ['image5.jpg'],
       services: new Set<string>()
     },
     {
@@ -70,7 +72,7 @@ describe('HomeComponent', () => {
       description: 'Description 6',
       price: 350,
       capacity: 12,
-      imageUrl: 'image6.jpg',
+      imagesUrl: ['image6.jpg'],
       services: new Set<string>()
     },
     {
@@ -79,7 +81,7 @@ describe('HomeComponent', () => {
       description: 'Description 7',
       price: 400,
       capacity: 14,
-      imageUrl: 'image7.jpg',
+      imagesUrl: ['image7.jpg'],
       services: new Set<string>()
     },
     {
@@ -88,7 +90,7 @@ describe('HomeComponent', () => {
       description: 'Description 8',
       price: 450,
       capacity: 16,
-      imageUrl: 'image8.jpg',
+      imagesUrl: ['image8.jpg'],
       services: new Set<string>()
     },
     {
@@ -97,7 +99,7 @@ describe('HomeComponent', () => {
       description: 'Description 9',
       price: 500,
       capacity: 18,
-      imageUrl: 'image9.jpg',
+      imagesUrl: ['image9.jpg'],
       services: new Set<string>()
     },
     {
@@ -106,13 +108,14 @@ describe('HomeComponent', () => {
       description: 'Description 10',
       price: 550,
       capacity: 20,
-      imageUrl: 'image10.jpg',
+      imagesUrl: ['image10.jpg'],
       services: new Set<string>()
     }
   ];
 
   beforeEach(async () => {
     const apartmentServiceSpy = jasmine.createSpyObj('ApartmentService', ['getAllApartments']);
+    const contactServiceSpy = jasmine.createSpyObj('ContactService', ['sendContactMessage']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const viewportScrollerSpy = jasmine.createSpyObj('ViewportScroller', ['scrollToAnchor']);
     
@@ -129,6 +132,7 @@ describe('HomeComponent', () => {
       ],
       providers: [
         { provide: ApartmentService, useValue: apartmentServiceSpy },
+        { provide: ContactService, useValue: contactServiceSpy },
         { provide: ViewportScroller, useValue: viewportScrollerSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
         provideRouter([])
@@ -136,6 +140,7 @@ describe('HomeComponent', () => {
     }).compileComponents();
 
     apartmentService = TestBed.inject(ApartmentService) as jasmine.SpyObj<ApartmentService>;
+    contactService = TestBed.inject(ContactService) as jasmine.SpyObj<ContactService>;
     router = TestBed.inject(Router);
     viewportScroller = TestBed.inject(ViewportScroller) as jasmine.SpyObj<ViewportScroller>;
 
@@ -250,7 +255,6 @@ describe('HomeComponent', () => {
       });
     });
 
-
     it('should use default error code 500 when status is not provided', () => {
       const error = { error: { message: 'Unknown error' } };
       apartmentService.getAllApartments.and.returnValue(throwError(() => error));
@@ -266,13 +270,19 @@ describe('HomeComponent', () => {
       });
     });
 
-
     it('should use default error message when not provided', () => {
       const error = { status: 500 };
       apartmentService.getAllApartments.and.returnValue(throwError(() => error));
+      const navigateSpy = spyOn(router, 'navigate');
       
       component.loadApartments();
       
+      expect(navigateSpy).toHaveBeenCalledWith(['/error'], {
+        queryParams: {
+          code: 500,
+          message: 'Failed to load apartments'
+        }
+      });
     });
   });
 
@@ -356,7 +366,6 @@ describe('HomeComponent', () => {
       expect(navigateSpy).toHaveBeenCalledWith(['/apartments']);
     });
   });
-
 
   describe('Contact Form Validation', () => {
     it('should make name control required', () => {
