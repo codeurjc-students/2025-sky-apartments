@@ -40,8 +40,9 @@ export class ApartmentFormComponent implements OnInit {
   capacity: number | null = null;
   selectedServices: Set<string> = new Set();
   availableServices: string[] = [];
-  imageFile: File | null = null;
-  imagePreview: string | null = null;
+  imageFiles: File[] = [];
+  imagePreviews: string[] = [];
+  originalImageUrls: string[] = []; // Para mantener las URLs originales en modo edición
   newService: string = '';
   loading: boolean = false;
   apartmentId: number | null = null;
@@ -135,42 +136,54 @@ export class ApartmentFormComponent implements OnInit {
     this.price = apartment.price;
     this.capacity = apartment.capacity;
     this.selectedServices = new Set(apartment.services);
-    this.imagePreview = apartment.imageUrl;
+    this.originalImageUrls = [...apartment.imagesUrl];
+    this.imagePreviews = [...apartment.imagesUrl];
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      const file = input.files[0];
+      const files = Array.from(input.files);
       
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        this.showMessage('Please select a valid image file', 'warning');
-        return;
+      for (const file of files) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          this.showMessage('Please select valid image files only', 'warning');
+          continue;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          this.showMessage(`File ${file.name} is too large. Maximum size is 5MB`, 'warning');
+          continue;
+        }
+
+        // Add file
+        this.imageFiles.push(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreviews.push(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        this.showMessage('File size must be less than 5MB', 'warning');
-        return;
-      }
-
-      this.imageFile = file;
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imagePreview = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
+      // Clear input to allow selecting the same file again
+      input.value = '';
     }
   }
 
-  removeImage(): void {
-    this.imageFile = null;
-    // In edit mode, don't remove the preview (keep original image)
-    if (this.mode === 'create') {
-      this.imagePreview = null;
+  removeImage(index: number): void {
+    this.imagePreviews.splice(index, 1);
+    
+    // If it's a newly added image (File), remove it from imageFiles
+    if (index >= this.originalImageUrls.length) {
+      const fileIndex = index - this.originalImageUrls.length;
+      this.imageFiles.splice(fileIndex, 1);
+    } else {
+      // If it's an original image, remove from originalImageUrls
+      this.originalImageUrls.splice(index, 1);
     }
   }
 
@@ -216,14 +229,9 @@ export class ApartmentFormComponent implements OnInit {
     const hasValidPrice = this.price !== null && this.price > 0;
     const hasValidCapacity = this.capacity !== null && this.capacity > 0;
     const hasServices = this.selectedServices.size > 0;
+    const hasImages = this.imagePreviews.length > 0;
     
-    // For create mode, image is required
-    if (this.mode === 'create') {
-      return hasName && hasDescription && hasValidPrice && hasValidCapacity && hasServices && this.imageFile !== null;
-    }
-    
-    // For edit mode, image is optional (can keep existing)
-    return hasName && hasDescription && hasValidPrice && hasValidCapacity && hasServices;
+    return hasName && hasDescription && hasValidPrice && hasValidCapacity && hasServices && hasImages;
   }
 
   onCancel(): void {
@@ -237,63 +245,78 @@ export class ApartmentFormComponent implements OnInit {
 
     this.loading = true;
 
-    // If in edit mode and no new image was uploaded, fetch the current image
-    let imageToSend: File = this.imageFile!;
-    
-    if (this.mode === 'edit' && !this.imageFile && this.imagePreview) {
-      try {
-        imageToSend = await this.urlToFile(this.imagePreview, 'apartment-image.jpg');
-      } catch (error) {
-        console.error('Error converting image URL to file:', error);
+    try {
+      // Prepare all images to send
+      const imagesToSend: File[] = [];
+
+      // First, convert original URLs to Files (if they still exist)
+      for (const url of this.originalImageUrls) {
+        try {
+          const file = await this.urlToFile(url, `apartment-image-${imagesToSend.length}.jpg`);
+          imagesToSend.push(file);
+        } catch (error) {
+          console.error('Error converting image URL to file:', error);
+        }
+      }
+
+      // Then add newly uploaded files
+      imagesToSend.push(...this.imageFiles);
+
+      // Verify we have at least one image
+      if (imagesToSend.length === 0) {
         this.loading = false;
-        this.showMessage('Error processing the apartment image. Please try uploading a new image.', 'error');
+        this.showMessage('At least one image is required', 'error');
         return;
       }
-    }
 
-    const apartmentData = {
-      name: this.name.trim(),
-      description: this.description.trim(),
-      price: this.price!,
-      capacity: this.capacity!,
-      services: this.selectedServices,
-      image: imageToSend
-    };
+      const apartmentData = {
+        name: this.name.trim(),
+        description: this.description.trim(),
+        price: this.price!,
+        capacity: this.capacity!,
+        services: this.selectedServices,
+        images: imagesToSend
+      };
 
-    if (this.mode === 'create') {
-      this.apartmentService.createApartment(apartmentData).subscribe({
-        next: (apartment) => {
-          this.loading = false;
-          this.showMessage('Apartment created successfully', 'success');
-          this.router.navigate(['/profile'], { fragment: 'apartments' });
-        },
-        error: (error) => {
-          this.loading = false;
-          this.router.navigate(['/error'], {
-            queryParams: {
-              message: error.error?.message || 'Failed to create apartment',
-              code: error.status || 500
-            }
-          });
-        }
-      });
-    } else {
-      this.apartmentService.updateApartment(this.apartmentId!, apartmentData).subscribe({
-        next: (apartment) => {
-          this.showMessage('Apartment updated successfully', 'success');
-          this.loading = false;
-          this.router.navigate(['/profile'], { fragment: 'apartments' });
-        },
-        error: (error) => {
-          this.loading = false;
-          this.router.navigate(['/error'], {
-            queryParams: {
-              message: 'Failed to update apartment',
-              code: error.status || 500
-            }
-          });
-        }
-      });
+      if (this.mode === 'create') {
+        this.apartmentService.createApartment(apartmentData).subscribe({
+          next: (apartment) => {
+            this.loading = false;
+            this.showMessage('Apartment created successfully', 'success');
+            this.router.navigate(['/profile'], { fragment: 'apartments' });
+          },
+          error: (error) => {
+            this.loading = false;
+            this.router.navigate(['/error'], {
+              queryParams: {
+                message: error.error?.message || 'Failed to create apartment',
+                code: error.status || 500
+              }
+            });
+          }
+        });
+      } else {
+        this.apartmentService.updateApartment(this.apartmentId!, apartmentData).subscribe({
+          next: (apartment) => {
+            this.showMessage('Apartment updated successfully', 'success');
+            this.loading = false;
+            this.router.navigate(['/profile'], { fragment: 'apartments' });
+          },
+          error: (error) => {
+            this.loading = false;
+            this.router.navigate(['/error'], {
+              queryParams: {
+                message: 'Failed to update apartment',
+                code: error.status || 500
+              }
+            });
+          }
+        });
+      }
+    } catch (error) {
+      this.loading = false;
+      this.showMessage('Error processing images. Please try again.', 'error');
+      console.error('Error in onSave:', error);
     }
   }
 
@@ -328,5 +351,4 @@ export class ApartmentFormComponent implements OnInit {
       panelClass: [`snackbar-${type}`]
     });
   }
-
 }

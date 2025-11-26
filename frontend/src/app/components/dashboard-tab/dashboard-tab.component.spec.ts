@@ -23,7 +23,7 @@ describe('DashboardTabComponent', () => {
       price: 100,
       services: new Set(['WiFi', 'AC']),
       capacity: 4,
-      imageUrl: 'img1.jpg'
+      imagesUrl: ['img1.jpg']
     },
     {
       id: 2,
@@ -32,7 +32,7 @@ describe('DashboardTabComponent', () => {
       price: 150,
       services: new Set(['WiFi']),
       capacity: 2,
-      imageUrl: 'img2.jpg'
+      imagesUrl: ['img2.jpg']
     }
   ];
 
