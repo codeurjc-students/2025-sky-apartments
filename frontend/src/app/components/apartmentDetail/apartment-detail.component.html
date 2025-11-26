@@ -16,9 +16,35 @@
       <div class="detail-grid">
         <!-- Left Column: Image and Info -->
         <div class="left-column">
-          <!-- Main Image -->
-          <div class="apartment-image">
-            <img [src]="apartment.imageUrl" [alt]="apartment.name">
+          <!-- Image Carousel -->
+          <div class="carousel-container">
+            <div class="carousel-image">
+              <img [src]="apartment.imagesUrl[currentImageIndex]" [alt]="apartment.name">
+              
+              <!-- Navigation Arrows -->
+              <button mat-icon-button class="carousel-btn prev" (click)="previousImage()" *ngIf="apartment.imagesUrl.length > 1">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <button mat-icon-button class="carousel-btn next" (click)="nextImage()" *ngIf="apartment.imagesUrl.length > 1">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+              
+              <!-- Image Counter -->
+              <div class="image-counter" *ngIf="apartment.imagesUrl.length > 1">
+                {{ currentImageIndex + 1 }} / {{ apartment.imagesUrl.length }}
+              </div>
+            </div>
+            
+            <!-- Thumbnail Navigation -->
+            <div class="carousel-thumbnails" *ngIf="apartment.imagesUrl.length > 1">
+              <div 
+                *ngFor="let image of apartment.imagesUrl; let i = index" 
+                class="thumbnail"
+                [class.active]="i === currentImageIndex"
+                (click)="goToImage(i)">
+                <img [src]="image" [alt]="'Image ' + (i + 1)">
+              </div>
+            </div>
           </div>
 
           <!-- Apartment Info -->
@@ -73,158 +99,345 @@
         </div>
 
         <!-- Right Column: Booking -->
-        <div class="right-column">
-          <mat-card class="booking-card">
-            <mat-card-header>
-              <mat-card-title>
-                <h2>Reserve This Apartment</h2>
-              </mat-card-title>
-            </mat-card-header>
-            <br>
-            <mat-card-content>
-              <form [formGroup]="bookingForm">
-                <!-- Check-in Date -->
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Check-in Date</mat-label>
-                  <input 
-                    matInput 
-                    [matDatepicker]="checkInPicker"
-                    formControlName="checkIn"
-                    [min]="minDate"
-                    [max]="maxDate"
-                    placeholder="Select check-in date">
-                  <mat-icon matPrefix>event</mat-icon>
-                  <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
-                  <mat-datepicker #checkInPicker></mat-datepicker>
-                  <mat-error>Check-in date is required</mat-error>
-                </mat-form-field>
-
-                <!-- Check-out Date -->
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Check-out Date</mat-label>
-                  <input 
-                    matInput 
-                    [matDatepicker]="checkOutPicker"
-                    formControlName="checkOut"
-                    [min]="minDate"
-                    [max]="maxDate"
-                    placeholder="Select check-out date">
-                  <mat-icon matPrefix>event</mat-icon>
-                  <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
-                  <mat-datepicker #checkOutPicker></mat-datepicker>
-                  <mat-error>Check-out date is required</mat-error>
-                </mat-form-field>
-
-                <!-- Number of Guests -->
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Number of Guests</mat-label>
-                  <mat-select formControlName="guests" placeholder="Select guests">
-                    <mat-option *ngFor="let num of guestsOptions" [value]="num">
-                      {{ num }} {{ num === 1 ? 'Guest' : 'Guests' }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-icon matPrefix>people</mat-icon>
-                  <mat-error>Please select number of guests</mat-error>
-                </mat-form-field>
-
-                <!-- Check Availability Button -->
-                <button 
-                  mat-raised-button 
-                  color="accent"
-                  class="check-button"
-                  (click)="checkAvailability()">
-                  <mat-spinner *ngIf="isCheckingAvailability" diameter="20"></mat-spinner>
-                  <span *ngIf="!isCheckingAvailability">Check Availability</span>
-                </button>
-              </form>
-
-              <!-- Availability Result -->
-              <div class="availability-result" *ngIf="hasCheckedAvailability">
-                <!-- Available -->
-                <div class="available-box" *ngIf="isAvailable">
-                  <div class="success-header">
-                    <mat-icon>check_circle</mat-icon>
-                    <h3>Available!</h3>
-                  </div>
-                  
-                  <div class="booking-summary">
-                    <div class="summary-row">
-                      <span>Number of nights:</span>
-                      <strong>{{ numberOfNights }}</strong>
-                    </div>
-                    <div class="summary-row">
-                      <span>${{ apartment.price }} × {{ numberOfNights }} nights</span>
-                      <strong>${{ apartment.price * numberOfNights }}</strong>
-                    </div>
-                    <mat-divider></mat-divider>
-                    <div class="summary-row total">
-                      <span>Total Price:</span>
-                      <strong>${{ totalPrice }}</strong>
-                    </div>
-                  </div>
-
-                  <!-- Login Required Message -->
-                  <div class="login-message" *ngIf="!isLoggedIn">
-                    <mat-icon>info</mat-icon>
-                    <p>You must <a routerLink="/login">log in</a> to make a reservation</p>
-                  </div>
-
-                  <!-- Reserve Button -->
-                  <button 
-                    mat-raised-button 
-                    color="primary"
-                    class="reserve-button"
-                    (click)="proceedToBooking()"
-                    *ngIf="isLoggedIn">
-                    <mat-icon>event_available</mat-icon>
-                    Reserve Now
-                  </button>
-
-                  <!-- Login Button -->
-                  <button 
-                    mat-raised-button 
-                    color="primary"
-                    class="reserve-button"
-                    routerLink="/login"
-                    *ngIf="!isLoggedIn">
-                    <mat-icon>login</mat-icon>
-                    Log In to Reserve
-                  </button>
-                </div>
-
-                <!-- Not Available -->
-                <div class="unavailable-box" *ngIf="!isAvailable">
-                  <div class="error-header">
-                    <mat-icon>cancel</mat-icon>
-                    <h3>Not Available</h3>
-                  </div>
-                  <p>Sorry, this apartment is not available for the selected dates. Please try different dates.</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <!-- Additional Info Card -->
-          <mat-card class="info-highlight">
-            <mat-card-content>
-              <div class="highlight-item">
-                <mat-icon>support_agent</mat-icon>
-                <div>
-                  <h4>24/7 Support</h4>
-                  <p>Our team is always available to help you</p>
-                </div>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="highlight-item">
-                <mat-icon>payment</mat-icon>
-                <div>
-                  <h4>Payment on Arrival</h4>
-                  <p>Pay when you arrive at the property. No prepayment required</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
+        <!-- Right Column: Booking -->
+<div class="right-column">
+  <mat-card class="booking-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h2>Reserve This Apartment</h2>
+      </mat-card-title>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+      <!-- Calendar -->
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button mat-icon-button (click)="previousMonth()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <h3>{{ getMonthYearLabel() }}</h3>
+          <button mat-icon-button (click)="nextMonth()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
         </div>
+
+        <!-- Loading spinner -->
+        <div class="calendar-loading" *ngIf="isLoadingAvailability">
+          <mat-spinner diameter="30"></mat-spinner>
+          <span>Loading availability...</span>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="calendar-grid" [class.loading]="isLoadingAvailability">
+          <!-- Week day headers -->
+          <div class="calendar-weekday" *ngFor="let day of weekDays">
+            {{ day }}
+          </div>
+
+          <!-- Calendar days -->
+          <div 
+            *ngFor="let day of calendarDays"
+            class="calendar-day"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.past]="day.isPast"
+            [class.unavailable]="day.isAvailable === false"
+            [class.available]="day.isAvailable === true"
+            [class.selected]="day.isSelected"
+            [class.in-range]="day.isInRange"
+            [class.today]="day.isToday"
+            (click)="selectDate(day)">
+            <span class="day-number">{{ day.day }}</span>
+            <span class="availability-indicator" *ngIf="day.isCurrentMonth && !day.isPast && day.isAvailable !== null">
+              <mat-icon *ngIf="day.isAvailable">check_circle</mat-icon>
+              <mat-icon *ngIf="!day.isAvailable">cancel</mat-icon>
+            </span>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <div class="legend-color available"></div>
+            <span>Available</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color unavailable"></div>
+            <span>Unavailable</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color selected"></div>
+            <span>Selected</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Dates Display -->
+      <div class="selected-dates" *ngIf="selectedCheckIn || selectedCheckOut">
+        <div class="date-display">
+          <div class="date-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <label>Check-in</label>
+              <span>{{ selectedCheckIn ? (selectedCheckIn | date:'mediumDate') : 'Select date' }}</span>
+            </div>
+          </div>
+          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+          <div class="date-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <label>Check-out</label>
+              <span>{{ selectedCheckOut ? (selectedCheckOut | date:'mediumDate') : 'Select date' }}</span>
+            </div>
+          </div>
+        </div>
+        <button mat-button color="warn" (click)="clearDates()" class="clear-dates-btn">
+          <mat-icon>clear</mat-icon>
+          Clear Dates
+        </button>
+      </div>
+
+      <!-- Number of Guests -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Number of Guests</mat-label>
+        <mat-select [(ngModel)]="selectedGuests" placeholder="Select guests" name="guests" (selectionChange)="onGuestsChange($event)">
+          <mat-option *ngFor="let num of guestsOptions" [value]="num">
+            {{ num }} {{ num === 1 ? 'Guest' : 'Guests' }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>people</mat-icon>
+      </mat-form-field>
+
+      <!-- Booking Summary -->
+      <div class="booking-summary" *ngIf="selectedCheckIn && selectedCheckOut && numberOfNights > 0">
+        <div class="summary-row">
+          <span>Number of nights:</span>
+          <strong>{{ numberOfNights }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>${{ apartment.price }} × {{ numberOfNights }} nights</span>
+          <strong>${{ apartment.price * numberOfNights }}</strong>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="summary-row total">
+          <span>Total Price:</span>
+          <strong>${{ totalPrice }}</strong>
+        </div>
+      </div>
+
+      <!-- Login Required Message -->
+      <div class="login-message" *ngIf="!loginService.isLogged() && selectedCheckIn && selectedCheckOut">
+        <mat-icon>info</mat-icon>
+        <p>You must <a routerLink="/login">log in</a> to make a reservation</p>
+      </div>
+
+      <!-- Reserve Button -->
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="reserve-button"
+        (click)="proceedToBooking()"
+        [disabled]="!selectedCheckIn || !selectedCheckOut || isLoadingAvailability"
+        *ngIf="loginService.isLogged()">
+        <mat-spinner *ngIf="isLoadingAvailability" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!isLoadingAvailability">event_available</mat-icon>
+        <span *ngIf="!isLoadingAvailability">Reserve Now</span>
+        <span *ngIf="isLoadingAvailability">Verifying...</span>
+      </button>
+
+      <!-- Login Button -->
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="reserve-button"
+        routerLink="/login"
+        *ngIf="!loginService.isLogged()">
+        <mat-icon>login</mat-icon>
+        Log In to Reserve
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Additional Info Card -->
+  <mat-card class="info-highlight">
+    <mat-card-content>
+      <div class="highlight-item">
+        <mat-icon>support_agent</mat-icon>
+        <div>
+          <h4>24/7 Support</h4>
+          <p>Our team is always available to help you</p>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="highlight-item">
+        <mat-icon>payment</mat-icon>
+        <div>
+          <h4>Payment on Arrival</h4>
+          <p>Pay when you arrive at the property. No prepayment required</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="reviews-section">
+        <mat-card class="reviews-card">
+          <mat-card-header>
+            <mat-card-title>
+              <div class="reviews-header">
+                <h2>
+                  <mat-icon>star</mat-icon>
+                  Guest Reviews
+                </h2>
+                <div class="rating-summary" *ngIf="averageRating > 0">
+                  <div class="stars">
+                    <mat-icon *ngFor="let filled of getStarArray(getRoundedRating())" 
+                              [class.filled]="filled">
+                      {{ filled ? 'star' : 'star_border' }}
+                    </mat-icon>
+                  </div>
+                  <span class="rating-text">{{ averageRating.toFixed(1) }} / 5.0</span>
+                </div>
+              </div>
+            </mat-card-title>
+          </mat-card-header>
+          <br>
+          <mat-card-content>
+            <!-- Write Review Button (for users who can review) -->
+            <div class="write-review-section" *ngIf="loginService.isLogged() && canReview && !showReviewForm">
+              <button mat-raised-button color="primary" (click)="toggleReviewForm()">
+                <mat-icon>rate_review</mat-icon>
+                Write a Review
+              </button>
+            </div>
+
+            <!-- Review Form -->
+            <div class="review-form-container" *ngIf="showReviewForm">
+              <mat-card class="review-form-card">
+                <h3>{{ isEditingReview ? 'Edit Your Review' : 'Write Your Review' }}</h3>
+                <form [formGroup]="reviewForm">
+                  <!-- Rating -->
+                  <div class="rating-input">
+                    <label>Your Rating:</label>
+                    <div class="star-rating">
+                      <mat-icon *ngFor="let star of [1,2,3,4,5]; let i = index"
+                                [class.selected]="reviewForm.value.rating >= star"
+                                (click)="setRating(star)">
+                        {{ reviewForm.value.rating >= star ? 'star' : 'star_border' }}
+                      </mat-icon>
+                    </div>
+                  </div>
+
+                  <!-- Comment -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Your Review</mat-label>
+                    <textarea 
+                      matInput 
+                      formControlName="comment"
+                      rows="4"
+                      placeholder="Share your experience..."></textarea>
+                    <mat-hint>{{ reviewForm.value.comment?.length || 0 }} / 500</mat-hint>
+                    <mat-error *ngIf="reviewForm.get('comment')?.hasError('required')">
+                      Comment is required
+                    </mat-error>
+                    <mat-error *ngIf="reviewForm.get('comment')?.hasError('minlength')">
+                      Comment must be at least 10 characters
+                    </mat-error>
+                  </mat-form-field>
+
+                  <!-- Action Buttons -->
+                  <div class="form-actions">
+                    <button mat-button (click)="cancelReviewForm()">Cancel</button>
+                    <button 
+                      mat-raised-button 
+                      color="primary" 
+                      (click)="submitReview()"
+                      [disabled]="reviewForm.invalid || isSubmittingReview">
+                      <mat-spinner *ngIf="isSubmittingReview" diameter="20"></mat-spinner>
+                      <span *ngIf="!isSubmittingReview">
+                        {{ isEditingReview ? 'Update Review' : 'Submit Review' }}
+                      </span>
+                    </button>
+                  </div>
+                </form>
+              </mat-card>
+            </div>
+
+            <!-- User's Own Review (if exists) -->
+            <div class="user-review-container" *ngIf="userReview && !showReviewForm">
+              <h3>Your Review</h3>
+              <mat-card class="review-item user-review">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <mat-icon class="avatar-icon">account_circle</mat-icon>
+                    <div>
+                      <strong>{{ userReview.userName }}</strong>
+                      <span class="review-date">{{ formatReviewDate(userReview.date) }}</span>
+                    </div>
+                  </div>
+                  <div class="review-actions">
+                    <button mat-icon-button class="review-btn" (click)="startEditReview()">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button class="review-btn" (click)="deleteReview()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="review-rating">
+                  <mat-icon *ngFor="let filled of getStarArray(userReview.rating)" 
+                            [class.filled]="filled">
+                    {{ filled ? 'star' : 'star_border' }}
+                  </mat-icon>
+                </div>
+                <p class="review-comment">{{ userReview.comment }}</p>
+              </mat-card>
+            </div>
+
+            <!-- Other Reviews -->
+            <div class="reviews-list" *ngIf="reviews.length > 0">
+              <h3 *ngIf="userReview">Other Reviews</h3>
+              <mat-card class="review-item" *ngFor="let review of reviews">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <mat-icon class="avatar-icon">account_circle</mat-icon>
+                    <div>
+                      <strong>{{ review.userName }}</strong>
+                      <span class="review-date">{{ formatReviewDate(review.date) }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="review-rating">
+                  <mat-icon *ngFor="let filled of getStarArray(review.rating)" 
+                            [class.filled]="filled">
+                    {{ filled ? 'star' : 'star_border' }}
+                  </mat-icon>
+                </div>
+                <p class="review-comment">{{ review.comment }}</p>
+              </mat-card>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more-container" *ngIf="hasMoreReviews && reviews.length > 0">
+              <button mat-button color="primary" (click)="loadMoreReviews()" [disabled]="isLoadingReviews">
+                <mat-spinner *ngIf="isLoadingReviews" diameter="20"></mat-spinner>
+                <span *ngIf="!isLoadingReviews">Load More Reviews</span>
+              </button>
+            </div>
+
+            <!-- No Reviews Message -->
+            <div class="no-reviews" *ngIf="reviews.length === 0 && !userReview && !isLoadingReviews">
+              <mat-icon>rate_review</mat-icon>
+              <p>No reviews yet. Be the first to review this apartment!</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="reviews-loading" *ngIf="isLoadingReviews && reviews.length === 0">
+              <mat-spinner diameter="40"></mat-spinner>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
   </div>
