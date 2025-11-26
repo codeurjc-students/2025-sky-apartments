@@ -9,9 +9,9 @@
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 	<groupId>com.skyapartments</groupId>
-	<artifactId>user</artifactId>
+	<artifactId>review</artifactId>
 	<version>0.2.0</version>
-	<name>user</name>
+	<name>review</name>
 
 	<packaging>jar</packaging>
 	<dependencies>
@@ -38,6 +38,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.12.6</version>
@@ -49,7 +59,7 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
@@ -58,15 +68,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-
+		
 	</dependencies>
 
 	<build>

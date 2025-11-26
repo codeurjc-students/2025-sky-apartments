@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "15541366-8d9c-462b-a7df-18b3f8762b13",
+		"_postman_id": "5ece3a39-67a0-4492-8d72-8dc6f260b1b6",
 		"name": "Sky Apartments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39879168",
-		"_collection_link": "https://fb5555.postman.co/workspace/Cognite~4eda5167-7c4d-4007-8e59-72fea7804591/collection/39879168-15541366-8d9c-462b-a7df-18b3f8762b13?action=share&source=collection_link&creator=39879168"
+		"_collection_link": "https://fb5555.postman.co/workspace/Cognite~4eda5167-7c4d-4007-8e59-72fea7804591/collection/39879168-5ece3a39-67a0-4492-8d72-8dc6f260b1b6?action=share&source=collection_link&creator=39879168"
 	},
 	"item": [
 		{
@@ -16,9 +16,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlApartment}}/api/v1/apartments/?page=0&pageSize=10",
+							"raw": "{{baseUrl}}/api/v1/apartments/?page=0&pageSize=10",
 							"host": [
-								"{{baseUrlApartment}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -46,9 +46,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlApartment}}/api/v1/apartments/search?services=wifi&services=piscina&minCapacity=7&startDate=2025-08-25&endDate=2025-08-25",
+							"raw": "{{baseUrl}}/api/v1/apartments/search?services=wifi&services=piscina&minCapacity=7&startDate=2025-08-25&endDate=2025-08-25",
 							"host": [
-								"{{baseUrlApartment}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -88,9 +88,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlApartment}}/api/v1/apartments/1",
+							"raw": "{{baseUrl}}/api/v1/apartments/1",
 							"host": [
-								"{{baseUrlApartment}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -108,9 +108,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlApartment}}/api/v1/apartments/services",
+							"raw": "{{baseUrl}}/api/v1/apartments/services",
 							"host": [
-								"{{baseUrlApartment}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -161,7 +161,7 @@
 									"type": "text"
 								},
 								{
-									"key": "image",
+									"key": "images",
 									"type": "file",
 									"src": []
 								}
@@ -220,16 +220,16 @@
 									"type": "text"
 								},
 								{
-									"key": "image",
+									"key": "images",
 									"type": "file",
 									"src": "/C:/Users/eloys/Downloads/entity_diagram.png"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{baseUrlApartment}}/api/v1/apartments/1",
+							"raw": "{{baseUrl}}/api/v1/apartments/1",
 							"host": [
-								"{{baseUrlApartment}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -274,9 +274,9 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{baseUrlApartment}}/api/v1/apartments/9/availability?startDate=2025-08-27&endDate=2025-09-10",
+							"raw": "{{baseUrl}}/api/v1/apartments/9/availability?startDate=2025-08-27&endDate=2025-09-10",
 							"host": [
-								"{{baseUrlApartment}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -319,12 +319,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/users",
+							"raw": "{{baseUrl}}/api/v1/users",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"users"
 							]
 						}
@@ -338,7 +339,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"carlos.fernandez@example.com\",\r\n  \"password\": \"Password@1234\"\r\n}\r\n",
+							"raw": "{\r\n  \"username\": \"user@example.com\",\r\n  \"password\": \"Password@1234\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -346,12 +347,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/auth/login",
+							"raw": "{{baseUrl}}/api/v1/auth/login",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"auth",
 								"login"
 							]
@@ -403,9 +405,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrlUser}}/api/v1/auth/logout",
+							"raw": "{{baseUrl}}/api/v1/auth/logout",
 							"host": [
-								"{{baseUrlUser}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -423,9 +425,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlUser}}/api/v1/users/1",
+							"raw": "{{baseUrl}}/api/v1/users/1",
 							"host": [
-								"{{baseUrlUser}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -452,9 +454,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrlUser}}/api/v1/users/1",
+							"raw": "{{baseUrl}}/api/v1/users/1",
 							"host": [
-								"{{baseUrlUser}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -476,9 +478,9 @@
 							"raw": "{\r\n  \"name\": \"Carlos\",\r\n  \"surname\": \"Fernandez\",\r\n  \"email\": \"carlos.fernandez@example.com\",\r\n  \"phoneNumber\": \"612345678\",\r\n  \"password\": \"Password@1234\",\r\n  \"repeatPassword\": \"Password@1234\"\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{baseUrlUser}}/api/v1/users/1",
+							"raw": "{{baseUrl}}/api/v1/users/1",
 							"host": [
-								"{{baseUrlUser}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -496,9 +498,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlUser}}/api/v1/users/me",
+							"raw": "{{baseUrl}}/api/v1/users/me",
 							"host": [
-								"{{baseUrlUser}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -521,12 +523,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlBooking}}/api/bookings/user/1",
+							"raw": "{{baseUrl}}/api/v1/bookings/user/1",
 							"host": [
-								"{{baseUrlBooking}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"bookings",
 								"user",
 								"1"
@@ -541,9 +544,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlBooking}}/api/v1/bookings/apartment/1",
+							"raw": "{{baseUrl}}/api/v1/bookings/apartment/1",
 							"host": [
-								"{{baseUrlBooking}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -563,7 +566,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"userId\": 1,\r\n  \"apartmentId\": 10,\r\n  \"guests\": 2,\r\n  \"startDate\": \"2025-09-20\",\r\n  \"endDate\": \"2025-09-25\"\r\n}\r\n",
+							"raw": "{\r\n  \"userId\": 1,\r\n  \"apartmentId\": 10,\r\n  \"guests\": 2,\r\n  \"startDate\": \"2026-09-20\",\r\n  \"endDate\": \"2026-09-25\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -571,9 +574,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrlBooking}}/api/v1/bookings",
+							"raw": "{{baseUrl}}/api/v1/bookings",
 							"host": [
-								"{{baseUrlBooking}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -590,12 +593,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/bookings/1",
+							"raw": "{{baseUrl}}/api/v1/bookings/1",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"bookings",
 								"1"
 							]
@@ -609,9 +613,9 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrlBooking}}/api/v1/bookings/1/dates?startDate=2025-09-01&endDate=2025-09-01",
+							"raw": "{{baseUrl}}/api/v1/bookings/1/dates?startDate=2025-09-01&endDate=2025-09-01",
 							"host": [
-								"{{baseUrlBooking}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
@@ -629,6 +633,222 @@
 									"key": "endDate",
 									"value": "2025-09-01"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Review",
+			"item": [
+				{
+					"name": "Reviews by apartment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/apartment/4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"apartment",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": 1,\r\n  \"apartmentId\": 5,\r\n  \"bookingId\": 5,\r\n  \"comment\": \"This apartment is amazing!\",\r\n  \"rating\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Pruebaaaaa",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "Frente al mar",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "150.0",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "7",
+									"type": "text"
+								},
+								{
+									"key": "services",
+									"value": "wifi",
+									"type": "text"
+								},
+								{
+									"key": "services",
+									"value": "piscina",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/eloys/Downloads/swagger.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "reviewId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "ttttttttttttttttt",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "can review",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/can-review?userId=1&apartmentId=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"can-review"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								},
+								{
+									"key": "apartmentId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Apartment Rating",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/apartment/4/rating",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"apartment",
+								"4",
+								"rating"
 							]
 						}
 					},
@@ -663,15 +883,7 @@
 	],
 	"variable": [
 		{
-			"key": "baseUrlApartment",
-			"value": "http://localhost:8080"
-		},
-		{
-			"key": "baseUrlUser",
-			"value": ""
-		},
-		{
-			"key": "baseUrlBooking",
+			"key": "baseUrl",
 			"value": ""
 		}
 	]

@@ -51,6 +51,16 @@
             "projectName": "api-gateway",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ReviewApplication<review>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.skyapartments.review.ReviewApplication",
+            "projectName": "review",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
