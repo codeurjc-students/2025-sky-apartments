@@ -54,7 +54,7 @@ describe('ProfileComponent', () => {
     price: 100,
     services: new Set(['WiFi', 'Pool']),
     capacity: 4,
-    imageUrl: 'https://example.com/image.jpg'
+    imagesUrl: ['https://example.com/image.jpg']
   };
 
   const mockBooking: BookingDTO = {

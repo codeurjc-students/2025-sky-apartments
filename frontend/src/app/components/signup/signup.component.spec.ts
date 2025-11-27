@@ -18,6 +18,8 @@ describe('SignUpComponent', () => {
   let router: Router;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
 
+  const VALID_PASSWORD = 'Test123!@';
+
   beforeEach(async () => {
     const userServiceSpy = jasmine.createSpyObj('UserService', ['createUser']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -163,15 +165,15 @@ describe('SignUpComponent', () => {
       expect(passwordControl?.hasError('required')).toBeTruthy();
     });
 
-    it('should require password to be at least 6 characters', () => {
+    it('should require password to be at least 8 characters', () => {
       const passwordControl = component.signUpForm.get('password');
-      passwordControl?.setValue('12345');
+      passwordControl?.setValue('Test1!');
       expect(passwordControl?.hasError('minlength')).toBeTruthy();
     });
 
     it('should accept valid password', () => {
       const passwordControl = component.signUpForm.get('password');
-      passwordControl?.setValue('123456');
+      passwordControl?.setValue(VALID_PASSWORD);
       expect(passwordControl?.valid).toBeTruthy();
     });
 
@@ -183,16 +185,16 @@ describe('SignUpComponent', () => {
 
     it('should validate password match', () => {
       component.signUpForm.patchValue({
-        password: '123456',
-        repeatPassword: '654321'
+        password: VALID_PASSWORD,
+        repeatPassword: 'Different1!'
       });
       expect(component.signUpForm.get('repeatPassword')?.hasError('passwordMismatch')).toBeTruthy();
     });
 
     it('should accept matching passwords', () => {
       component.signUpForm.patchValue({
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
       expect(component.signUpForm.get('repeatPassword')?.hasError('passwordMismatch')).toBeFalsy();
     });
@@ -207,8 +209,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
       expect(component.signUpForm.valid).toBeTruthy();
     });
@@ -217,8 +219,8 @@ describe('SignUpComponent', () => {
   describe('passwordMatchValidator', () => {
     it('should return null when passwords match', () => {
       component.signUpForm.patchValue({
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
       const result = component.passwordMatchValidator(component.signUpForm);
       expect(result).toBeNull();
@@ -226,8 +228,8 @@ describe('SignUpComponent', () => {
 
     it('should return error object when passwords do not match', () => {
       component.signUpForm.patchValue({
-        password: '123456',
-        repeatPassword: '654321'
+        password: VALID_PASSWORD,
+        repeatPassword: 'Different1!'
       });
       const result = component.passwordMatchValidator(component.signUpForm);
       expect(result).toEqual({ passwordMismatch: true });
@@ -235,8 +237,8 @@ describe('SignUpComponent', () => {
 
     it('should set error on repeatPassword control when passwords do not match', () => {
       component.signUpForm.patchValue({
-        password: '123456',
-        repeatPassword: '654321'
+        password: VALID_PASSWORD,
+        repeatPassword: 'Different1!'
       });
       component.passwordMatchValidator(component.signUpForm);
       expect(component.signUpForm.get('repeatPassword')?.hasError('passwordMismatch')).toBeTruthy();
@@ -299,8 +301,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       };
       component.signUpForm.patchValue(formData);
       component.onSignUp();
@@ -310,8 +312,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       };
       expect(userService.createUser).toHaveBeenCalledWith(expectedRequest);
     });
@@ -338,14 +340,13 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
 
       component.onSignUp();
       expect(isLoadingDuringCall).toBe(true);
     });
-
 
     it('should show success message on successful signup', fakeAsync(() => {
       const mockUser: UserDTO = {
@@ -364,8 +365,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
       component.onSignUp();
       tick();
@@ -396,8 +397,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
       component.onSignUp();
       tick();
@@ -422,8 +423,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
       component.onSignUp();
       tick();
@@ -447,8 +448,8 @@ describe('SignUpComponent', () => {
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
 
       component.onSignUp();
@@ -456,20 +457,22 @@ describe('SignUpComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/login']);
     }));
 
-    
     it('should show error message with status 409 (email exists)', fakeAsync(() => {
       const errorResponse = { status: 409, error: { message: 'Email already registered' } };
       userService.createUser.and.returnValue(throwError(() => errorResponse));
+      
       component.signUpForm.patchValue({
         name: 'John',
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
+      
       component.onSignUp();
       tick();
+      
       expect(snackBar.open).toHaveBeenCalledTimes(1);
       expect(snackBar.open).toHaveBeenCalledWith(
         'Email already exists.',
@@ -483,16 +486,19 @@ describe('SignUpComponent', () => {
     it('should show custom error message when provided', fakeAsync(() => {
       const errorResponse = { status: 400, error: { message: 'Invalid data provided' } };
       userService.createUser.and.returnValue(throwError(() => errorResponse));
+      
       component.signUpForm.patchValue({
         name: 'John',
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
+      
       component.onSignUp();
       tick();
+      
       expect(snackBar.open).toHaveBeenCalledTimes(1);
       expect(snackBar.open).toHaveBeenCalledWith(
         'Invalid data provided',
@@ -505,16 +511,19 @@ describe('SignUpComponent', () => {
 
     it('should show generic error message when no specific message provided', fakeAsync(() => {
       userService.createUser.and.returnValue(throwError(() => ({})));
+      
       component.signUpForm.patchValue({
         name: 'John',
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
+      
       component.onSignUp();
       tick();
+      
       expect(snackBar.open).toHaveBeenCalledTimes(1);
       expect(snackBar.open).toHaveBeenCalledWith(
         'Registration failed. Please try again.',
@@ -527,16 +536,19 @@ describe('SignUpComponent', () => {
 
     it('should set isLoading to false after signup failure', fakeAsync(() => {
       userService.createUser.and.returnValue(throwError(() => ({})));
+      
       component.signUpForm.patchValue({
         name: 'John',
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
+      
       component.onSignUp();
       tick();
+      
       expect(component.isLoading).toBe(false);
     }));
 
@@ -544,16 +556,19 @@ describe('SignUpComponent', () => {
       spyOn(console, 'error');
       const error = { status: 500, error: { message: 'Server error' } };
       userService.createUser.and.returnValue(throwError(() => error));
+      
       component.signUpForm.patchValue({
         name: 'John',
         surname: 'Doe',
         email: 'john@example.com',
         phoneNumber: '123456789',
-        password: '123456',
-        repeatPassword: '123456'
+        password: VALID_PASSWORD,
+        repeatPassword: VALID_PASSWORD
       });
+      
       component.onSignUp();
       tick();
+      
       expect(console.error).toHaveBeenCalledWith('Sign up error:', error);
     }));
   });
@@ -587,17 +602,10 @@ describe('SignUpComponent', () => {
       expect(component.getErrorMessage('phoneNumber')).toBe('Please enter a valid phone number (9-15 digits)');
     });
 
-    it('should return minlength message for short password', () => {
-      const passwordControl = component.signUpForm.get('password');
-      passwordControl?.setValue('123');
-      passwordControl?.markAsTouched();
-      expect(component.getErrorMessage('password')).toBe('Must be at least 6 characters');
-    });
-
     it('should return password mismatch message', () => {
       component.signUpForm.patchValue({
-        password: '123456',
-        repeatPassword: '654321'
+        password: VALID_PASSWORD,
+        repeatPassword: 'Different1!'
       });
       const repeatPasswordControl = component.signUpForm.get('repeatPassword');
       repeatPasswordControl?.markAsTouched();

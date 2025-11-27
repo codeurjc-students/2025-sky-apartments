@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.s;
 
 import com.skyapartments.booking.dto.BookingRequestDTO;
 import com.skyapartments.booking.model.Booking;
@@ -359,7 +358,7 @@ public class Bookinge2eTest {
 
     @Test
     @Order(16)
-    public void createBooking_ShouldCreateBooking_WhenValidDataAndAdminAuthenticated() {
+    public void createBooking_ShouldDenyAccess_WhenValidDataAndAdminAuthenticated() {
 
         BookingRequestDTO bookingRequest = new BookingRequestDTO();
         bookingRequest.setUserId(adminUserId);
@@ -375,10 +374,7 @@ public class Bookinge2eTest {
         .when()
             .post("/api/v1/bookings")
         .then()
-            .statusCode(201)
-            .body("userId", equalTo(adminUserId.intValue()))
-            .body("apartmentId", equalTo(1))
-            .body("state", equalTo("CONFIRMED"));
+            .statusCode(403);
     }
 
     @Test

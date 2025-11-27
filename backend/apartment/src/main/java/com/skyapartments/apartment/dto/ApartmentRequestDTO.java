@@ -30,12 +30,9 @@ public class ApartmentRequestDTO {
     @Min(value = 1, message = "Capacity must be at least 1")
     private int capacity;
 
-    private MultipartFile image;
-
-    @AssertTrue(message = "At least one image is required")
-    public boolean isImagePresent() {
-        return image != null && !image.isEmpty();
-    }
+    @NotNull(message = "At least one image is required")
+    @Size(min = 1, message = "At least one image is required")
+    private List<MultipartFile> images;
 
     public String getName() {
         return name;
@@ -57,8 +54,8 @@ public class ApartmentRequestDTO {
         return capacity;
     }
 
-    public MultipartFile getImage() {
-        return image;
+    public List<MultipartFile> getImages() {
+        return images;
     }
 
     public void setName(String name) {
@@ -81,9 +78,8 @@ public class ApartmentRequestDTO {
         this.capacity = capacity;
     }
 
-    public void setImage(MultipartFile image) {
-        this.image = image;
+    public void setImages(List<MultipartFile> images) {
+        this.images = images;
     }
-
     
 }

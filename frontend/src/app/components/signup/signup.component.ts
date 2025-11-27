@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -46,23 +46,42 @@ export class SignUpComponent {
       surname: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [
+        Validators.required, 
+        Validators.minLength(8), 
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+      ]],
       repeatPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
 
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password');
-    const repeatPassword = form.get('repeatPassword');
+  passwordMatchValidator = (control: AbstractControl): ValidationErrors | null => {
+    const password = control.get('password');
+    const repeatPassword = control.get('repeatPassword');
     
-    if (password && repeatPassword && password.value !== repeatPassword.value) {
+    if (!password || !repeatPassword) {
+      return null;
+    }
+
+    if (password.value !== repeatPassword.value) {
       repeatPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
+    } else {
+      const errors = repeatPassword.errors;
+      if (errors) {
+        delete errors['passwordMismatch'];
+        repeatPassword.setErrors(Object.keys(errors).length > 0 ? errors : null);
+      }
     }
+    
     return null;
   }
 
   onSignUp() {
+    Object.keys(this.signUpForm.controls).forEach(key => {
+      this.signUpForm.get(key)?.markAsTouched();
+    });
+
     if (this.signUpForm.valid) {
       this.isLoading = true;
       const { name, surname, email, phoneNumber, password, repeatPassword } = this.signUpForm.value;
@@ -115,6 +134,11 @@ export class SignUpComponent {
 
   getErrorMessage(field: string): string {
     const control = this.signUpForm.get(field);
+    
+    if (!control?.touched && !control?.dirty) {
+      return '';
+    }
+
     if (control?.hasError('required')) {
       return 'This field is required';
     }
@@ -122,7 +146,12 @@ export class SignUpComponent {
       return 'Please enter a valid email';
     }
     if (control?.hasError('pattern')) {
-      return 'Please enter a valid phone number (9-15 digits)';
+      if (field === 'phoneNumber') {
+        return 'Please enter a valid phone number (9-15 digits)';
+      }
+      if (field === 'password') {
+        return 'Password must contain uppercase, lowercase, number and special character';
+      }
     }
     if (control?.hasError('minlength')) {
       const minLength = control.errors?.['minlength'].requiredLength;

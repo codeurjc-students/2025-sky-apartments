@@ -65,16 +65,55 @@ public class DataBaseInitializer {
         apto9 = apartmentRepository.save(apto9);
         apto10 = apartmentRepository.save(apto10);
 
-        addImageToApartment(apto1.getId(), "static/test-images/apt1.jpg");
-        addImageToApartment(apto2.getId(), "static/test-images/apt2.jpg");
-        addImageToApartment(apto3.getId(), "static/test-images/apt3.jpg");
-        addImageToApartment(apto4.getId(), "static/test-images/apt4.jpg");
-        addImageToApartment(apto5.getId(), "static/test-images/apt5.jpg");
-        addImageToApartment(apto6.getId(), "static/test-images/apt6.jpg");
-        addImageToApartment(apto7.getId(), "static/test-images/apt7.jpg");
-        addImageToApartment(apto8.getId(), "static/test-images/apt8.jpg");
-        addImageToApartment(apto9.getId(), "static/test-images/apt9.jpg");
-        addImageToApartment(apto10.getId(), "static/test-images/apt10.jpg");
+        addImageToApartment(apto1.getId(), "static/test-images/main1.jpg");
+        addImageToApartment(apto1.getId(), "static/test-images/kitchen1.jpg");
+        addImageToApartment(apto1.getId(), "static/test-images/toilet1.jpg");
+        addImageToApartment(apto1.getId(), "static/test-images/room1.jpg");
+        addImageToApartment(apto1.getId(), "static/test-images/ext1.jpg");
+
+        addImageToApartment(apto2.getId(), "static/test-images/main2.jpg");
+        addImageToApartment(apto3.getId(), "static/test-images/main3.jpg");
+        addImageToApartment(apto4.getId(), "static/test-images/main4.jpg");
+        addImageToApartment(apto5.getId(), "static/test-images/main5.jpg");
+        addImageToApartment(apto6.getId(), "static/test-images/main6.jpg");
+        addImageToApartment(apto7.getId(), "static/test-images/main7.jpg");
+        addImageToApartment(apto8.getId(), "static/test-images/main8.jpg");
+        addImageToApartment(apto9.getId(), "static/test-images/main9.jpg");
+        addImageToApartment(apto10.getId(), "static/test-images/main10.jpg");
+
+
+        addImageToApartment(apto2.getId(), "static/test-images/kitchen2.jpg");
+        addImageToApartment(apto3.getId(), "static/test-images/kitchen3.jpg");
+        addImageToApartment(apto4.getId(), "static/test-images/kitchen4.jpg");
+        addImageToApartment(apto5.getId(), "static/test-images/kitchen5.jpg");
+        addImageToApartment(apto6.getId(), "static/test-images/kitchen6.jpg");
+        addImageToApartment(apto7.getId(), "static/test-images/kitchen7.jpg");
+        addImageToApartment(apto8.getId(), "static/test-images/kitchen8.jpg");
+        addImageToApartment(apto9.getId(), "static/test-images/kitchen9.jpg");
+        addImageToApartment(apto10.getId(), "static/test-images/kitchen10.jpg");
+
+        addImageToApartment(apto2.getId(), "static/test-images/room2.jpg");
+        addImageToApartment(apto3.getId(), "static/test-images/room3.jpg");
+        addImageToApartment(apto4.getId(), "static/test-images/room4.jpg");
+        addImageToApartment(apto5.getId(), "static/test-images/room5.jpg");
+        addImageToApartment(apto6.getId(), "static/test-images/room6.jpg");
+        addImageToApartment(apto7.getId(), "static/test-images/room7.jpg");
+        addImageToApartment(apto8.getId(), "static/test-images/room8.jpg");
+        addImageToApartment(apto9.getId(), "static/test-images/room9.jpg");
+        addImageToApartment(apto10.getId(), "static/test-images/room10.jpg");
+
+        addImageToApartment(apto2.getId(), "static/test-images/toilet2.jpg");
+        addImageToApartment(apto3.getId(), "static/test-images/toilet3.jpg");
+        addImageToApartment(apto4.getId(), "static/test-images/toilet4.jpg");
+        addImageToApartment(apto5.getId(), "static/test-images/toilet5.jpg");
+        addImageToApartment(apto6.getId(), "static/test-images/toilet6.jpg");
+        addImageToApartment(apto7.getId(), "static/test-images/toilet7.jpg");
+        addImageToApartment(apto8.getId(), "static/test-images/toilet8.jpg");
+        addImageToApartment(apto9.getId(), "static/test-images/toilet9.jpg");
+        addImageToApartment(apto10.getId(), "static/test-images/toilet10.jpg");
+
+        addImageToApartment(apto2.getId(), "static/test-images/ext2.jpg");
+        addImageToApartment(apto3.getId(), "static/test-images/ext3.jpg");
 
     }
 
@@ -95,7 +134,7 @@ public class DataBaseInitializer {
         String url = imageService.saveImage(multipartFile, apartmentId);
 
         Apartment apartment = apartmentRepository.findById(apartmentId).orElseThrow();
-        apartment.setImageUrl(url);
+        apartment.addImageUrl(url);
         apartmentRepository.save(apartment);
     }
 

@@ -165,11 +165,24 @@ java -Xmx256m -Xms128m \
 BOOKING_PID=$!
 echo "Booking Service PID: $BOOKING_PID"
 
+echo "Starting Review Service..."
+java -Xmx256m -Xms128m \
+  -Dserver.port=8081 \
+  -Dserver.ssl.enabled=false \
+  -Dspring.datasource.url=jdbc:mysql://mysql-reviews:3306/${MYSQL_BOOKINGS_DB:-reviewsdb} \
+  -Dspring.datasource.username=${MYSQL_USER:-user} \
+  -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
+  -Deureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/ \
+  -jar booking.jar \
+  > /app/logs/booking.log 2>&1 &
+REVIEW_PID=$!
+echo "Booking Service PID: $REVIEW_PID"
+
 echo "Waiting for microservices to start and register with Eureka..."
 sleep 20
 
 echo "Checking all services are running..."
-for pid_name in "EUREKA_PID:eureka" "USER_PID:user" "APARTMENT_PID:apartment" "BOOKING_PID:booking"; do
+for pid_name in "EUREKA_PID:eureka" "USER_PID:user" "APARTMENT_PID:apartment" "BOOKING_PID:booking" "REVIEW_PID:review"; do
   pid_var=$(echo $pid_name | cut -d: -f1)
   service_name=$(echo $pid_name | cut -d: -f2)
   pid=$(eval echo \$$pid_var)

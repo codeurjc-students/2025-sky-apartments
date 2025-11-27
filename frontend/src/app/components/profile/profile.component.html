@@ -152,7 +152,7 @@
                 <div class="bookings-list" *ngIf="!isLoadingBookings">
                   <div class="booking-card" *ngFor="let booking of userBookings">
                     <div class="booking-image">
-                      <img [src]="booking.apartment?.imageUrl" [alt]="booking.apartment?.name">
+                      <img [src]="booking.apartment?.imagesUrl?.[0]" [alt]="booking.apartment?.name">
                     </div>
                     <div class="booking-info">
                       <h3>{{ booking.apartment?.name }}</h3>
@@ -176,6 +176,9 @@
                       </div>
                       <mat-chip [ngClass]="getStatusClass(booking.state)">
                         {{ booking.state }}
+                      </mat-chip>
+                      <mat-chip [routerLink]="['/apartment/', booking.apartment?.id]" class="chip-gradient" style="margin: 20px; background-color: #667eea6f;">
+                        View Apartment
                       </mat-chip>
                     </div>
                     <div class="booking-actions">
@@ -252,7 +255,7 @@
 
                 <div class="apartments-grid" *ngIf="!isLoadingAdminData">
                   <mat-card class="apartment-admin-card" *ngFor="let apartment of allApartments">
-                    <img mat-card-image [src]="apartment.imageUrl" [alt]="apartment.name">
+                    <img mat-card-image [src]="apartment.imagesUrl[0]" [alt]="apartment.name">
                     <mat-card-content>
                       <h3>{{ apartment.name }}</h3>
                       <div class="apartment-meta">
@@ -276,7 +279,7 @@
                   </mat-card>
                   
                 </div>
-                <div class="load-more-container">
+                <div *ngIf="aptHasMore && allApartments.length > 0" class="load-more-container">
                   <button 
                     mat-raised-button
                     class="load-more-btn"

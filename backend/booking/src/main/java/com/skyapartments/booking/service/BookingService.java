@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.skyapartments.booking.dto.ApartmentDTO;
 import com.skyapartments.booking.dto.BookingDTO;
 import com.skyapartments.booking.dto.BookingRequestDTO;
+import com.skyapartments.booking.dto.UserDTO;
 import com.skyapartments.booking.exception.BusinessValidationException;
 import com.skyapartments.booking.exception.ResourceNotFoundException;
 import com.skyapartments.booking.model.Booking;
@@ -29,11 +30,13 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserClient userClient;
     private final ApartmentClient apartmentClient;
+    private final EmailService emailService;
 
-    public BookingService(BookingRepository bookingRepository, UserClient userClient, ApartmentClient apartmentClient){
+    public BookingService(BookingRepository bookingRepository, UserClient userClient, ApartmentClient apartmentClient, EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.userClient = userClient;
         this.apartmentClient = apartmentClient;
+        this.emailService = emailService;
     } 
 
     public Page<BookingDTO> getBookingsByUserId(Long userId, Pageable pageable, String userEmail) {
@@ -52,26 +55,31 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingDTO createBooking (BookingRequestDTO request, String userEmail) {
-        Long userId = userClient.getUserIdByEmail(userEmail);
-        if (!request.getUserId().equals(userId)) {
+    public BookingDTO createBooking(BookingRequestDTO request, String userEmail) {
+        UserDTO user = userClient.findByEmail(userEmail);
+        if (!request.getUserId().equals(user.getId())) {
             throw new SecurityException("User email does not match user ID");
         }
+        
         ApartmentDTO apartment = apartmentClient.getApartment(request.getApartmentId());
         if (apartment == null) {
             throw new ResourceNotFoundException("Apartment not found");
         }
+        
         if (request.getEndDate().isBefore(request.getStartDate())) {
             throw new BusinessValidationException("End date must be after start date");
         }
+        
         if (request.getEndDate().isBefore(LocalDate.now())) {
             throw new BusinessValidationException("End date must be after today");
         }
+        
         // Check for overlapping bookings
         boolean overlaps = bookingRepository.findByApartmentIdAndStateNot(
                         request.getApartmentId(), BookingState.CANCELLED)
                 .stream()
-                .anyMatch(b -> !request.getStartDate().isAfter(b.getEndDate()) && !request.getEndDate().isBefore(b.getStartDate()));
+                .anyMatch(b -> !request.getStartDate().isAfter(b.getEndDate()) && 
+                            !request.getEndDate().isBefore(b.getStartDate()));
         if (overlaps) {
             throw new BusinessValidationException("The apartment is not available for the selected dates");
         }
@@ -84,15 +92,20 @@ public class BookingService {
         booking.setState(BookingState.CONFIRMED);
         booking.setCost(calculateCost(apartment, request.getStartDate(), request.getEndDate()));
         booking.setGuests(request.getGuests());
-        return new BookingDTO(bookingRepository.save(booking));
+        
+        BookingDTO savedBooking = new BookingDTO(bookingRepository.save(booking));
+        
+        emailService.sendBookingConfirmation(user.getEmail(), savedBooking, apartment, user);
+        
+        return savedBooking;
     }
 
     @Transactional
     public BookingDTO cancelBooking(Long bookingId, String userEmail) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-        Long userId = userClient.getUserIdByEmail(userEmail);
-        if (!booking.getUserId().equals(userId)) {
+        UserDTO user = userClient.findByEmail(userEmail);
+        if (!booking.getUserId().equals(user.getId())) {
             throw new SecurityException("User email does not match booking owner");
         }
 
@@ -100,8 +113,15 @@ public class BookingService {
             throw new BusinessValidationException("Booking is already cancelled");
         }
 
+        ApartmentDTO apartment = apartmentClient.getApartment(booking.getApartmentId());
+        if (apartment == null) {
+            throw new ResourceNotFoundException("Apartment not found");
+        }
+
         booking.setState(BookingState.CANCELLED);
         bookingRepository.save(booking);
+
+        emailService.sendBookingCancellation(user.getEmail(),new BookingDTO(booking), apartment, user);
 
         return new BookingDTO(booking);
     }
@@ -116,8 +136,8 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        Long userId = userClient.getUserIdByEmail(userEmail);
-        if (!booking.getUserId().equals(userId)) {
+        UserDTO user = userClient.findByEmail(userEmail);
+        if (!booking.getUserId().equals(user.getId())) {
             throw new SecurityException("User email does not match booking owner");
         }
         if (booking.getState() == BookingState.CANCELLED) {
@@ -153,6 +173,9 @@ public class BookingService {
         booking.setCost(calculateCost(apartment, newStartDate, newEndDate));
         bookingRepository.save(booking);
 
+        emailService.sendBookingUpdate(userEmail,new BookingDTO(booking), apartment, user);
+
+
         return new BookingDTO(booking);
     }
 
@@ -160,7 +183,8 @@ public class BookingService {
         return bookingRepository.findUnavailableApartments(startDate, endDate);
     }
 
-    @Scheduled(cron = "0 0 0 * * *") //Everyday at midnight
+    //@Scheduled(cron = "0 0 0 * * *") //Everyday at midnight
+    @Scheduled(fixedRate = 60000) //For testing purposes, every minute
     @Transactional
     public void markCompletedBookings() {
         LocalDate today = LocalDate.now();
@@ -169,5 +193,11 @@ public class BookingService {
             booking.setState(BookingState.COMPLETED);
         }
         bookingRepository.saveAll(pastBookings);
+    }
+
+    public List<BookingDTO> getActiveBookingsByUserAndApartment(Long userId, Long apartmentId) {
+        List<Booking> bookings = bookingRepository.findByUserIdAndApartmentIdAndState(
+                userId, apartmentId, BookingState.COMPLETED);
+        return bookings.stream().map(booking -> new BookingDTO(booking)).toList();
     }
 }

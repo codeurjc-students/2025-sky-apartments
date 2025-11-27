@@ -8,9 +8,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {  MatSnackBarModule } from '@angular/material/snack-bar';
+import {  MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
+import { ContactMessageDTO } from '../../dtos/contactMessage.dto';
+import { ContactService } from '../../services/contact/contact.service';
 
 @Component({
   selector: 'app-home',
@@ -41,7 +43,9 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
+    private contactService: ContactService,
+    private snackBar: MatSnackBar
   ) {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required]],
@@ -114,7 +118,54 @@ export class HomeComponent implements OnInit {
   }
 
   onSubmitContact() {
-    //TODO: Implement contact form submission logic
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSendingMessage = true;
+
+    const contactMessage: ContactMessageDTO = {
+      name: this.contactForm.value.name!,
+      email: this.contactForm.value.email!,
+      subject: this.contactForm.value.subject!,
+      message: this.contactForm.value.message!
+    };
+
+    this.contactService.sendContactMessage(contactMessage).subscribe({
+      next: (response) => {
+        this.isSendingMessage = false;
+        
+        this.snackBar.open('Message sent successfully! We\'ll get back to you soon.', 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        });
+        
+        // Resetear el formulario
+        this.contactForm.reset();
+        Object.keys(this.contactForm.controls).forEach(key => {
+          this.contactForm.get(key)?.setErrors(null);
+        });
+      },
+      error: (error) => {
+        this.isSendingMessage = false;
+        console.error('Error sending message:', error);
+        
+        let errorMessage = 'Failed to send message. Please try again later.';
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 
   getContactErrorMessage(field: string): string {

@@ -65,6 +65,27 @@ services:
       retries: 5
       start_period: 30s
 
+  mysql-reviews:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_REVIEWS_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3304:3306"
+    volumes:
+      - mysql_reviews_data:/var/lib/mysql
+    networks:
+      - apartments-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   minio:
     image: minio/minio
     command: server /data --console-address ":9001"
@@ -214,6 +235,8 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       OTLP_ENDPOINT: ${OTLP_ENDPOINT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     depends_on:
       mysql-bookings:
         condition: service_healthy
@@ -227,6 +250,35 @@ services:
       - apartments-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  review:
+    build:
+      context: ../backend
+      dockerfile: review/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-reviews:3306/${MYSQL_REVIEWS_DB}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT}
+    depends_on:
+      mysql-reviews:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    ports:
+      - "8081:8081"
+    networks:
+      - apartments-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -246,6 +298,7 @@ volumes:
   mysql_users_data:
   mysql_apartments_data:
   mysql_bookings_data:
+  mysql_reviews_data:
   minio_data:
 
 networks:

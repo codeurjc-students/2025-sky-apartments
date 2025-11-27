@@ -35,8 +35,10 @@ public class Apartment {
 
     private BigDecimal price;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "apartment_images", joinColumns = @JoinColumn(name = "apartment_id"))
     @Column(name = "image_url")
-    private String imageUrl;
+    private List<String> imageUrls = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> services;
@@ -70,14 +72,20 @@ public class Apartment {
         this.price = price;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl (String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void addImageUrl(String imageUrl) {
+        if (this.imageUrls == null) {
+            this.imageUrls = new ArrayList<>();
+        }
+        this.imageUrls.add(imageUrl);
     }
 
+    public void setImagesUrl (List<String> imagesUrl) {
+        this.imageUrls = imagesUrl;
+    }
     public Set<String> getServices() {
         return services;
     }
@@ -116,6 +124,10 @@ public class Apartment {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
 }

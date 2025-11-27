@@ -26,32 +26,36 @@
         <div class="image-section">
           <h3>
             <mat-icon>image</mat-icon>
-            Apartment Image
+            Apartment Images
           </h3>
           
           <div class="image-upload-container">
-            <div class="image-preview" *ngIf="imagePreview">
-              <img [src]="imagePreview" alt="Apartment preview" />
-              <button 
-                mat-icon-button 
-                class="remove-image-btn"
-                (click)="removeImage()"
-                type="button"
-                *ngIf="imageFile || mode === 'create'"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
+            <!-- Images Grid -->
+            <div class="images-grid" *ngIf="imagePreviews.length > 0">
+              <div class="image-preview-item" *ngFor="let preview of imagePreviews; let i = index">
+                <img [src]="preview" alt="Apartment image {{ i + 1 }}" />
+                <button 
+                  mat-icon-button 
+                  class="remove-image-btn"
+                  (click)="removeImage(i)"
+                  type="button"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+                <div class="image-number">{{ i + 1 }}</div>
+              </div>
             </div>
 
-            <div class="upload-placeholder" *ngIf="!imagePreview">
+            <div class="upload-placeholder" *ngIf="imagePreviews.length === 0">
               <mat-icon>add_photo_alternate</mat-icon>
-              <p>No image selected</p>
+              <p>No images selected</p>
             </div>
 
             <input 
               type="file" 
               id="fileInput" 
               accept="image/*" 
+              multiple
               (change)="onFileSelected($event)"
               style="display: none"
             />
@@ -64,10 +68,13 @@
               type="button"
             >
               <mat-icon>upload</mat-icon>
-              {{ imagePreview ? 'Change Image' : 'Upload Image' }}
+              {{ imagePreviews.length > 0 ? 'Add More Images' : 'Upload Images' }}
             </button>
             
-            <p class="image-hint">Maximum size: 5MB. Formats: JPG, PNG, GIF</p>
+            <p class="image-hint">
+              Maximum size: 5MB per image. Formats: JPG, PNG, GIF. 
+              <strong>{{ imagePreviews.length }}</strong> image(s) selected
+            </p>
           </div>
         </div>
 

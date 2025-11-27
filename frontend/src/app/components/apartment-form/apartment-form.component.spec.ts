@@ -40,7 +40,7 @@ describe('ApartmentFormComponent', () => {
     price: 100,
     capacity: 4,
     services: new Set(['WiFi', 'AC']),
-    imageUrl: 'test-image.jpg'
+    imagesUrl: ['test-image.jpg']
   };
 
   const mockServices = ['WiFi', 'AC', 'Kitchen', 'Parking'];
@@ -104,8 +104,9 @@ describe('ApartmentFormComponent', () => {
       expect(component.capacity).toBeNull();
       expect(component.selectedServices.size).toBe(0);
       expect(component.availableServices).toEqual([]);
-      expect(component.imageFile).toBeNull();
-      expect(component.imagePreview).toBeNull();
+      expect(component.imageFiles).toEqual([]);
+      expect(component.imagePreviews).toEqual([]);
+      expect(component.originalImageUrls).toEqual([]);
       expect(component.newService).toBe('');
       expect(component.loading).toBe(false);
       expect(component.apartmentId).toBeNull();
@@ -253,7 +254,8 @@ describe('ApartmentFormComponent', () => {
       expect(component.capacity).toBe(4);
       expect(component.selectedServices.has('WiFi')).toBe(true);
       expect(component.selectedServices.has('AC')).toBe(true);
-      expect(component.imagePreview).toBe('test-image.jpg');
+      expect(component.originalImageUrls).toEqual(['test-image.jpg']);
+      expect(component.imagePreviews).toEqual(['test-image.jpg']);
     });
   });
 
@@ -262,17 +264,21 @@ describe('ApartmentFormComponent', () => {
     let mockEvent: any;
 
     beforeEach(() => {
+      component.imageFiles = [];
+      component.imagePreviews = [];
       mockFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
       mockEvent = {
         target: {
-          files: [mockFile]
+          files: [mockFile],
+          value: 'test.jpg'
         }
       };
     });
 
-    it('should set imageFile on valid image', () => {
+    it('should add image file to array on valid image', () => {
       component.onFileSelected(mockEvent);
-      expect(component.imageFile).toBe(mockFile);
+      expect(component.imageFiles.length).toBe(1);
+      expect(component.imageFiles[0]).toBe(mockFile);
     });
 
     it('should show warning for non-image file', () => {
@@ -282,10 +288,11 @@ describe('ApartmentFormComponent', () => {
       component.onFileSelected(mockEvent);
       
       expect(snackBar.open).toHaveBeenCalledWith(
-        'Please select a valid image file',
+        'Please select valid image files only',
         'Close',
         jasmine.objectContaining({ panelClass: ['snackbar-warning'] })
       );
+      expect(component.imageFiles.length).toBe(0);
     });
 
     it('should show warning for files larger than 5MB', () => {
@@ -295,41 +302,71 @@ describe('ApartmentFormComponent', () => {
       component.onFileSelected(mockEvent);
       
       expect(snackBar.open).toHaveBeenCalledWith(
-        'File size must be less than 5MB',
+        jasmine.stringContaining('is too large'),
         'Close',
         jasmine.objectContaining({ panelClass: ['snackbar-warning'] })
       );
+      expect(component.imageFiles.length).toBe(0);
     });
 
     it('should create image preview', (done) => {
       component.onFileSelected(mockEvent);
       
       setTimeout(() => {
-        expect(component.imagePreview).toBeTruthy();
+        expect(component.imagePreviews.length).toBeGreaterThan(0);
         done();
       }, 100);
+    });
+
+    it('should handle multiple files', () => {
+      const file1 = new File([''], 'test1.jpg', { type: 'image/jpeg' });
+      const file2 = new File([''], 'test2.jpg', { type: 'image/jpeg' });
+      mockEvent.target.files = [file1, file2];
+      
+      component.onFileSelected(mockEvent);
+      
+      expect(component.imageFiles.length).toBe(2);
+    });
+
+    it('should clear input value after selection', () => {
+      component.onFileSelected(mockEvent);
+      expect(mockEvent.target.value).toBe('');
     });
   });
 
   describe('removeImage', () => {
-    it('should clear imageFile', () => {
-      component.imageFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
-      component.removeImage();
-      expect(component.imageFile).toBeNull();
+    it('should remove newly added image from arrays', () => {
+      component.originalImageUrls = [];
+      component.imageFiles = [new File([''], 'test.jpg', { type: 'image/jpeg' })];
+      component.imagePreviews = ['preview1'];
+      
+      component.removeImage(0);
+      
+      expect(component.imageFiles.length).toBe(0);
+      expect(component.imagePreviews.length).toBe(0);
     });
 
-    it('should clear imagePreview in create mode', () => {
-      component.mode = 'create';
-      component.imagePreview = 'test.jpg';
-      component.removeImage();
-      expect(component.imagePreview).toBeNull();
+    it('should remove original image from arrays', () => {
+      component.originalImageUrls = ['original1.jpg', 'original2.jpg'];
+      component.imagePreviews = ['original1.jpg', 'original2.jpg'];
+      component.imageFiles = [];
+      
+      component.removeImage(0);
+      
+      expect(component.originalImageUrls).toEqual(['original2.jpg']);
+      expect(component.imagePreviews).toEqual(['original2.jpg']);
     });
 
-    it('should keep imagePreview in edit mode', () => {
-      component.mode = 'edit';
-      component.imagePreview = 'test.jpg';
-      component.removeImage();
-      expect(component.imagePreview).toBe('test.jpg');
+    it('should handle mixed original and new images', () => {
+      component.originalImageUrls = ['original.jpg'];
+      component.imagePreviews = ['original.jpg', 'new.jpg'];
+      component.imageFiles = [new File([''], 'new.jpg', { type: 'image/jpeg' })];
+      
+      // Remove new image
+      component.removeImage(1);
+      
+      expect(component.imageFiles.length).toBe(0);
+      expect(component.imagePreviews).toEqual(['original.jpg']);
     });
   });
 
@@ -359,8 +396,20 @@ describe('ApartmentFormComponent', () => {
 
   describe('addNewService', () => {
     beforeEach(() => {
-      component.availableServices = mockServices;
+      component.availableServices = [...mockServices];
       snackBar.open.calls.reset();
+    });
+
+    it('should add new service to available services', () => {
+      component.newService = 'Pool';
+      component.addNewService();
+      expect(component.availableServices).toContain('Pool');
+    });
+
+    it('should select newly added service', () => {
+      component.newService = 'Pool';
+      component.addNewService();
+      expect(component.selectedServices.has('Pool')).toBe(true);
     });
 
     it('should clear newService input after adding', () => {
@@ -421,6 +470,7 @@ describe('ApartmentFormComponent', () => {
       component.price = 100;
       component.capacity = 4;
       component.selectedServices.add('WiFi');
+      component.imagePreviews = ['test.jpg'];
     });
 
     it('should return false if name is empty', () => {
@@ -460,22 +510,12 @@ describe('ApartmentFormComponent', () => {
       expect(component.isFormValid()).toBe(false);
     });
 
-    it('should return false in create mode without image', () => {
-      component.mode = 'create';
-      component.imageFile = null;
+    it('should return false if no images', () => {
+      component.imagePreviews = [];
       expect(component.isFormValid()).toBe(false);
     });
 
-    it('should return true in create mode with all fields', () => {
-      component.mode = 'create';
-      component.imageFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
-      expect(component.isFormValid()).toBe(true);
-    });
-
-    it('should return true in edit mode without new image', () => {
-      component.mode = 'edit';
-      component.imageFile = null;
-      component.imagePreview = 'existing.jpg';
+    it('should return true with all valid fields', () => {
       expect(component.isFormValid()).toBe(true);
     });
   });
@@ -495,8 +535,16 @@ describe('ApartmentFormComponent', () => {
       component.price = 100;
       component.capacity = 4;
       component.selectedServices.add('WiFi');
-      component.imageFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
+      component.imageFiles = [new File([''], 'test.jpg', { type: 'image/jpeg' })];
+      component.imagePreviews = ['preview'];
       snackBar.open.calls.reset();
+      
+      // Mock global fetch for urlToFile
+      spyOn(window, 'fetch').and.returnValue(
+        Promise.resolve({
+          blob: () => Promise.resolve(new Blob(['test'], { type: 'image/jpeg' }))
+        } as Response)
+      );
     });
 
     it('should not save if form is invalid', async () => {
@@ -514,8 +562,9 @@ describe('ApartmentFormComponent', () => {
     it('should show success message and navigate after create', fakeAsync(() => {
       spyOn(router, 'navigate');
       component.mode = 'create';
+      component.originalImageUrls = [];
       component.onSave();
-      tick();
+      tick(200);
       
       expect(snackBar.open).toHaveBeenCalledWith(
         'Apartment created successfully',
@@ -529,8 +578,9 @@ describe('ApartmentFormComponent', () => {
       spyOn(router, 'navigate');
       component.mode = 'edit';
       component.apartmentId = 1;
+      component.originalImageUrls = [];
       component.onSave();
-      tick();
+      tick(200);
       
       expect(snackBar.open).toHaveBeenCalledWith(
         'Apartment updated successfully',
@@ -547,8 +597,9 @@ describe('ApartmentFormComponent', () => {
       );
       
       component.mode = 'create';
+      component.originalImageUrls = [];
       component.onSave();
-      tick();
+      tick(200);
       
       expect(router.navigate).toHaveBeenCalledWith(['/error'], {
         queryParams: {
@@ -566,8 +617,9 @@ describe('ApartmentFormComponent', () => {
       
       component.mode = 'edit';
       component.apartmentId = 1;
+      component.originalImageUrls = [];
       component.onSave();
-      tick();
+      tick(200);
       
       expect(router.navigate).toHaveBeenCalledWith(['/error'], {
         queryParams: {
@@ -575,6 +627,17 @@ describe('ApartmentFormComponent', () => {
           code: 500
         }
       });
+    }));
+
+    it('should show error if no images after processing', fakeAsync(() => {
+      component.imageFiles = [];
+      component.originalImageUrls = [];
+      component.imagePreviews = []; // This will make isFormValid return false
+      
+      component.onSave();
+      tick();
+      
+      expect(apartmentService.createApartment).not.toHaveBeenCalled();
     }));
   });
 

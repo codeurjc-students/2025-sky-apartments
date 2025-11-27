@@ -129,7 +129,7 @@ describe('ApartmentService (Integration)', () => {
         price: 150,
         capacity: 2,
         services: new Set(['WIFI', 'POOL']),
-        image: new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })
+        images: [new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })]
       };
 
       service.createApartment(mockApartment).subscribe({
@@ -159,7 +159,7 @@ describe('ApartmentService (Integration)', () => {
         price: -100,
         capacity: 0,
         services: new Set(),
-        image: new File([''], 'test.jpg', { type: 'image/jpeg' })
+        images: [new File([''], 'test.jpg', { type: 'image/jpeg' })]
       };
 
       service.createApartment(invalidApartment).subscribe({
@@ -183,7 +183,7 @@ describe('ApartmentService (Integration)', () => {
         price: 200,
         capacity: 3,
         services: new Set(['WIFI']),
-        image: new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })
+        images: [new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })]
       };
 
       service.updateApartment(apartmentId, updateData).subscribe({
@@ -211,7 +211,7 @@ describe('ApartmentService (Integration)', () => {
         price: 100,
         capacity: 2,
         services: new Set(),
-        image: new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })
+        images: [new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })]
       };
 
       service.updateApartment(invalidId, updateData).subscribe({
@@ -235,7 +235,7 @@ describe('ApartmentService (Integration)', () => {
         price: 100,
         capacity: 2,
         services: new Set(['WIFI']),
-        image: new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })
+        images: [new File(['dummy content'], 'dummy.jpg', { type: 'image/jpeg' })]
       };
 
       service.createApartment(mockApartment).subscribe({

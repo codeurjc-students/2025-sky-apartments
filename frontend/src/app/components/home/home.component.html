@@ -5,7 +5,7 @@
       <div class="carousel-wrapper">
         <div class="carousel-slides" [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
           <div class="carousel-slide" *ngFor="let apartment of carouselApartments" (click)="viewApartment(apartment.id)">
-            <img [src]="apartment.imageUrl" [alt]="apartment.name">
+            <img [src]="apartment.imagesUrl[0]" [alt]="apartment.name">
             <div class="carousel-overlay">
               <div class="carousel-content">
                 <h2>{{ apartment.name }}</h2>
@@ -52,7 +52,7 @@
       
       <div class="featured-grid">
         <mat-card class="apartment-card" *ngFor="let apartment of featuredApartments">
-          <img mat-card-image [src]="apartment.imageUrl" [alt]="apartment.name" (click)="viewApartment(apartment.id)">
+          <img mat-card-image [src]="apartment.imagesUrl[0]" [alt]="apartment.name" (click)="viewApartment(apartment.id)">
           <mat-card-content>
             <h3>{{ apartment.name }}</h3>
             <p class="description">{{ apartment.description }}</p>
@@ -136,7 +136,7 @@
               <mat-icon>email</mat-icon>
               <div>
                 <h4>Email</h4>
-                <p>info&#64;skyapartments.com</p>
+                <p>skyapartmentsmad&#64;gmail.com</p>
               </div>
             </div>
           </div>

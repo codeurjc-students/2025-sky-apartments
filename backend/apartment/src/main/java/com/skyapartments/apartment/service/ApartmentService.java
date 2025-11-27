@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.skyapartments.apartment.dto.ApartmentDTO;
 import com.skyapartments.apartment.dto.ApartmentRequestDTO;
@@ -51,15 +52,16 @@ public class ApartmentService {
         Apartment apartment = new Apartment(apartmentRequestDTO);
         apartment = apartmentRepository.save(apartment);
 
-        // Upload image
-        if (apartmentRequestDTO.getImage() != null && !apartmentRequestDTO.getImage().isEmpty()) {
-            try {
-                String imageUrl = imageService.saveImage(apartmentRequestDTO.getImage(), apartment.getId());
-                apartment.setImageUrl(imageUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("Error uploading image: " + e.getMessage(), e);
+        // Upload images
+        if (apartmentRequestDTO.getImages() != null && !apartmentRequestDTO.getImages().isEmpty()) {
+            for (MultipartFile imageFile : apartmentRequestDTO.getImages()) {
+                try {
+                    String imageUrl = imageService.saveImage(imageFile, apartment.getId());
+                    apartment.addImageUrl(imageUrl);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error uploading image: " + e.getMessage(), e);
+                }
             }
-            
         }
         return new ApartmentDTO(apartmentRepository.save(apartment));
     }
@@ -82,18 +84,21 @@ public class ApartmentService {
         apartment.setCapacity(apartmentRequestDTO.getCapacity());
         apartment.setServices(apartmentRequestDTO.getServices());
 
-        // Delete old image
-        imageService.deleteImage(apartment.getImageUrl());
-    
-        apartment.setImageUrl(null);
+        // Delete old images
+        for (String oldImage : apartment.getImageUrls()) {
+            imageService.deleteImage(oldImage);
+        }
+        apartment.setImageUrls(null);
 
-        // Upload new image
-        if (apartmentRequestDTO.getImage() != null) {
-            try {
-                String imageUrl = imageService.saveImage(apartmentRequestDTO.getImage(), apartment.getId());
-                apartment.setImageUrl(imageUrl);
-            } catch (Exception e) {
+        // Upload new images
+        if (apartmentRequestDTO.getImages() != null) {
+            for (MultipartFile file : apartmentRequestDTO.getImages()) {
+                try {
+                    String imageUrl = imageService.saveImage(file, apartment.getId());
+                    apartment.addImageUrl(imageUrl);
+                } catch (Exception e) {
                     throw new RuntimeException("Error uploading image: " + e.getMessage(), e);
+                }
             }
         }
         return new ApartmentDTO(apartmentRepository.save(apartment));
@@ -104,8 +109,10 @@ public class ApartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Apartment not found"));
 
         // Delete images from S3
-        if (apartment.getImageUrl() != null) {
-            imageService.deleteImage(apartment.getImageUrl());
+        if (apartment.getImageUrls() != null) {
+            for (String imageUrl : apartment.getImageUrls()) {
+                imageService.deleteImage(imageUrl);
+            }
         }
         apartmentRepository.deleteById(id);
     }

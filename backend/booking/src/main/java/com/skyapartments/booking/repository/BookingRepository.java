@@ -35,4 +35,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByEndDateBeforeAndState(LocalDate today, BookingState state);
 
+    List<Booking> findByUserIdAndApartmentIdAndState(Long userId, Long apartmentId, BookingState cancelled);
+
 }

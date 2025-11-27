@@ -97,9 +97,11 @@ export class ApartmentService {
     if (dto.services) {
       dto.services.forEach((service) => formData.append('services', String(service)));
     }
-    if (dto.image) {
-      formData.append('image', dto.image);
+    
+    if (dto.images && dto.images.length > 0) {
+      dto.images.forEach((image) => formData.append('images', image));
     }
+    
     return formData;
   }
 
