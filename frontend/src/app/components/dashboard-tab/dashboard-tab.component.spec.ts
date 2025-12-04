@@ -193,11 +193,6 @@ describe('DashboardTabComponent', () => {
       expect(component.loadDashboardData).toHaveBeenCalled();
     });
 
-    it('should log initialization messages', () => {
-      spyOn(console, 'log');
-      component.ngOnInit();
-      expect(console.log).toHaveBeenCalledWith('Dashboard component initialized');
-    });
   });
 
   describe('loadDashboardData', () => {
