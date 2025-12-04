@@ -200,24 +200,18 @@ export class DashboardTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Dashboard component initialized');
-    console.log('BookingService:', this.bookingService);
-    console.log('ApartmentService:', this.apartmentService);
     this.loadDashboardData();
   }
 
   loadDashboardData(): void {
     this.loading = true;
-    console.log('Starting to load dashboard data...');
     
     // First, load all apartments
     this.apartmentService.getAllApartments(0, 100).subscribe({
       next: (apartments) => {
-        console.log('Apartments loaded:', apartments.length);
         this.apartments = apartments;
         
         if (apartments.length === 0) {
-          console.log('No apartments found');
           this.loading = false;
           this.calculateStatistics();
           this.generateOccupancyChart();
@@ -232,13 +226,10 @@ export class DashboardTabComponent implements OnInit {
         
         forkJoin(bookingRequests).subscribe({
           next: (bookingsArrays) => {
-            console.log('Bookings loaded:', bookingsArrays);
             // Flatten all bookings into a single array and filter out null values
             this.allBookings = bookingsArrays
               .flat()
               .filter(booking => booking !== null && booking !== undefined);
-            console.log('Total bookings:', this.allBookings.length);
-            
             // Load ratings for all apartments
             this.loadApartmentRatings();
           },
@@ -302,7 +293,6 @@ export class DashboardTabComponent implements OnInit {
         this.generateRatingChart();
         
         this.loading = false;
-        console.log('Dashboard data loaded successfully');
       },
       error: (error) => {
         console.error('Error loading ratings:', error);
