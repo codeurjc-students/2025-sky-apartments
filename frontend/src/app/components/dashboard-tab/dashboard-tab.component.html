@@ -14,6 +14,31 @@
 
   <!-- Dashboard Content -->
   <div *ngIf="!loading && apartments.length > 0">
+    <!-- Period Selector -->
+    <mat-card class="period-selector-card">
+      <mat-card-content>
+        <div class="period-selector-content">
+          <div class="period-label">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Select Period</span>
+          </div>
+          <mat-form-field appearance="outline" class="period-select">
+            <mat-label>Period</mat-label>
+            <mat-select [(ngModel)]="selectedPeriod" (selectionChange)="onPeriodChange()">
+              <mat-option value="7">Last 7 days</mat-option>
+              <mat-option value="30">Last 30 days</mat-option>
+              <mat-option value="90">Last 90 days</mat-option>
+              <mat-option value="180">Last 6 months</mat-option>
+              <mat-option value="-7">Next 7 days</mat-option>
+              <mat-option value="-30">Next 30 days</mat-option>
+              <mat-option value="-90">Next 90 days</mat-option>
+              <mat-option value="-180">Next 6 months</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- Statistics Cards -->
     <div class="stats-grid">
       <mat-card class="stat-card">
@@ -63,27 +88,28 @@
           </div>
         </mat-card-content>
       </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon duration">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ averageBookingDuration.toFixed(1) }}</h3>
+            <p>Avg. Booking Duration (days)</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <!-- Occupancy Chart -->
     <mat-card class="chart-card">
       <mat-card-header>
         <mat-card-title>
-          <div class="chart-header">
-            <h2>
-              <mat-icon>show_chart</mat-icon>
-              Occupancy Over Time
-            </h2>
-            <mat-form-field appearance="outline" class="period-select">
-              <mat-label>Period</mat-label>
-              <mat-select [(ngModel)]="selectedPeriod" (selectionChange)="onPeriodChange()">
-                <mat-option value="7">Last 7 days</mat-option>
-                <mat-option value="30">Last 30 days</mat-option>
-                <mat-option value="90">Last 90 days</mat-option>
-                <mat-option value="180">Last 6 months</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+          <h2>
+            <mat-icon>show_chart</mat-icon>
+            Occupancy Over Time
+          </h2>
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
@@ -115,6 +141,28 @@
             [data]="bookingsChartData"
             [options]="bookingsChartOptions"
             [type]="bookingsChartType"
+          ></canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Rating Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <h2>
+            <mat-icon>star</mat-icon>
+            Top Apartments by Rating
+          </h2>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="ratingChartData"
+            [options]="ratingChartOptions"
+            [type]="ratingChartType"
           ></canvas>
         </div>
       </mat-card-content>
