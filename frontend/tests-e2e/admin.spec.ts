@@ -51,7 +51,7 @@ test.describe('Admin User Journey', () => {
       
       // Verify all statistics cards are present
       const statCards = page.locator('.stat-card');
-      await expect(statCards).toHaveCount(4);
+      await expect(statCards).toHaveCount(5);
       
       // Verify specific statistics
       await expect(page.locator('text=Total Bookings')).toBeVisible();
@@ -96,7 +96,7 @@ test.describe('Admin User Journey', () => {
       
       // Verify chart canvas exists
       const charts = page.locator('.chart-container canvas');
-      await expect(charts).toHaveCount(2); // Occupancy + Bookings charts
+      await expect(charts).toHaveCount(3); // Occupancy + Bookings charts + Ratings chart
     });
 
     test('should handle empty dashboard state', async ({ page }) => {
