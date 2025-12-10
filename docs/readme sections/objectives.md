@@ -27,4 +27,4 @@ The project will be developed using modern web technologies, ensuring scalabilit
 - End-to-end testing with Selenium
 
 ---
-[👉 Go back](/README.md)
+[👉 Go back](ProjectStart.md)
