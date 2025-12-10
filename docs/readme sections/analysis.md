@@ -19,7 +19,7 @@
 
 ## 🔹 Entities & Relations
 
-![Entity diagram](../images/entity_diagram.png)
+![Entity diagram](../images/entity_diagram_2.png)
 
 ## 🔐 Permissions
 
@@ -60,4 +60,4 @@
 - Last-minute advance notice
 
 ---
-[👉 Go back](/README.md)
+[👉 Go back](ProjectStart.md)

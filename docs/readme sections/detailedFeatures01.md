@@ -2,7 +2,7 @@
 
 This document provides a comprehensive list of all planned features for Sky Apartments, indicating their implementation status.
 
-## ✅ Implemented Features (Version 0.1)
+## ✅ Implemented Features (up to Version 0.2)
 
 ### Anonymous Users
 - ✅ View complete apartment catalog
@@ -22,6 +22,8 @@ This document provides a comprehensive list of all planned features for Sky Apar
 - ✅ Make reservations on available apartments
 - ✅ View complete booking history
 - ✅ Cancel active reservations
+- ✅ Receive booking confirmation
+- ✅ Review past stays and rate apartments (1-5 stars)
 
 ### Administrators
 - ✅ Secure admin login using configuration credentials
@@ -61,13 +63,13 @@ This document provides a comprehensive list of all planned features for Sky Apar
 ## 🚧 Planned Features (Future Versions)
 
 ### User Experience Enhancements
-- ⏳ Interactive calendar with real-time availability visualization
-- ⏳ Email notifications for booking confirmations
+- ✅ Interactive calendar with real-time availability visualization
+- ✅ Email notifications for booking confirmations, cancellations, updates
 - ⏳ Booking reminders before check-in date
 
 ### Rating and Review System
-- ⏳ Users can rate apartments after their stay (1-5 stars)
-- ⏳ Display average rating on apartment cards
+- ✅ Users can rate apartments after their stay (1-5 stars)
+- ✅ Display average rating on apartment cards
 - ⏳ Filter apartments by minimum rating
 
 ### Dynamic Pricing
@@ -82,11 +84,12 @@ This document provides a comprehensive list of all planned features for Sky Apar
 - ⏳ Price history and analytics
 
 ### Statistics and Analytics (Admin)
-- ⏳ Revenue per month (chart)
-- ⏳ Average booking duration
+- ✅ Revenue per month (chart)
+- ✅ Average booking duration
+- ✅ Top 10 apartments by rating
 
 ### Enhanced Media Management
-- ⏳ Support for multiple images per apartment (gallery)
+- ✅ Support for multiple images per apartment (gallery)
 
 ## 📊 Implementation Progress
 
@@ -98,8 +101,8 @@ This document provides a comprehensive list of all planned features for Sky Apar
 | Search & Filters | 100% ✅ |
 | Booking System | 100% ✅ |
 | Map Integration | 100% ✅ |
-| Rating & Reviews | 0% ⏳ |
-| Statistics | 60% ⏳ |
+| Rating & Reviews | 100% ✅ |
+| Statistics | 100% ✅ |
 | Dynamic Pricing | 0% ⏳ |
 
 ---
