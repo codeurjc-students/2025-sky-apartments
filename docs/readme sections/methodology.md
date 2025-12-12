@@ -32,4 +32,4 @@ The project will follow an iterative and incremental development model with the 
 ![Gantt chart for project`s phases](../images/gantt_chart.png)
 
 ---
-[👉 Go back](/README.md)
+[👉 Go back](ProjectStart.md)
