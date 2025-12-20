@@ -1,6 +1,7 @@
 package com.skyapartments.apartment.service;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,14 +24,21 @@ public class ImageService {
 
     private final S3Client s3Client;
     private final ApartmentRepository apartmentRepository;
-    private final String bucketName = "apartments-images";
+    private final String bucketName;
+    private final String externalUrl;
 
-    public ImageService(S3Client s3Client, ApartmentRepository apartmentRepository) {
+    public ImageService(
+        S3Client s3Client,
+        ApartmentRepository apartmentRepository,
+        @Value("${minio.bucket}") String bucketName,
+        @Value("${minio.external-url}") String externalUrl) {
         this.s3Client = s3Client;
         this.apartmentRepository = apartmentRepository;
+        this.bucketName = bucketName;
+        this.externalUrl = externalUrl;
     }
 
-    @PostConstruct
+   @PostConstruct
     public void init() {
         try {
             s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
@@ -53,7 +61,7 @@ public class ImageService {
                         .build(),
                 RequestBody.fromBytes(file.getBytes()));
 
-        return "http://localhost:9000/" + bucketName + "/" + key;
+        return externalUrl + "/" + bucketName + "/" + key;
     }
 
     public void deleteImage(String imageUrl) {
@@ -62,17 +70,17 @@ public class ImageService {
     }
 
     public boolean imageExists(String imageUrl) {
-    String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
-    try {
-        s3Client.headObject(HeadObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build());
-        return true;
-    } catch (Exception e) {
-        return false;
+        String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
+        try {
+            s3Client.headObject(HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
-}
 
 }
 
