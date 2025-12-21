@@ -170,7 +170,7 @@ echo "Starting Review Service..."
 java -Xmx256m -Xms128m \
   -Dserver.port=8081 \
   -Dserver.ssl.enabled=false \
-  -Dspring.datasource.url=jdbc:mysql://mysql-reviews:3306/${MYSQL_BOOKINGS_DB:-reviewsdb} \
+  -Dspring.datasource.url=jdbc:mysql://mysql-reviews:3306/${MYSQL_REVIEWS_DB:-reviewsdb} \
   -Dspring.datasource.username=${MYSQL_USER:-user} \
   -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
   -Deureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/ \
