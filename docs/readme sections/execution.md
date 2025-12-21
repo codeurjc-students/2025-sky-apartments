@@ -54,7 +54,7 @@ docker compose version
 ```
 
    This command will:
-   - Download the Sky Apartments image from DockerHub (tag: `0.1`)
+   - Download the Sky Apartments image from DockerHub (tag: `0.2`)
    - Download the MySQL image
    - Create and start containers
    - Set up the network between them
@@ -84,7 +84,7 @@ docker compose version
 
 The docker-compose.yml file is also published as an OCI artifact:
 ```bash
-docker compose -f oci://eloydsdlh/apartments-compose:main-20251107-160911-26997c0 up
+docker compose -f oci://eloydsdlh/apartments-compose:0.2 up
 ```
 
 ## Accessing the Application
@@ -123,7 +123,7 @@ The database includes 10 sample apartments with:
 - **Description**
 - **Number of maximum guests**
 - **Amenities:** Different combinations of terrace, balcony, parking, pool, etc.
-- **Image:** Representative photo for each apartment
+- **Images:** Representative photos for each apartment
 - **Price per night**
 
 #### Sample Bookings
@@ -131,6 +131,11 @@ The database includes 10 sample apartments with:
 Some sample bookings are preloaded to demonstrate:
 - Active reservations
 - Past reservations
+
+#### Sample reviews
+
+Several reviews are included to showcase the review system.
+
 
 ## Managing the Application
 

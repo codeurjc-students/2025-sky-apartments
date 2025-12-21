@@ -7,6 +7,7 @@ export default defineConfig({
   use: {
     headless: true,
     baseURL: 'http://localhost:4200',
+    ignoreHTTPSErrors: true
 
   },
 });
