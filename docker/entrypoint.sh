@@ -50,6 +50,7 @@ wait_for_mysql() {
 wait_for_mysql mysql-users 3306 "usersdb" || exit 1
 wait_for_mysql mysql-apartments 3306 "apartmentsdb" || exit 1
 wait_for_mysql mysql-bookings 3306 "bookingsdb" || exit 1
+wait_for_mysql mysql-reviews 3306 "reviewsdb" || exit 1
 
 wait_for_service() {
   local host=$1
@@ -173,10 +174,10 @@ java -Xmx256m -Xms128m \
   -Dspring.datasource.username=${MYSQL_USER:-user} \
   -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
   -Deureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/ \
-  -jar booking.jar \
-  > /app/logs/booking.log 2>&1 &
+  -jar review.jar \
+  > /app/logs/review.log 2>&1 &
 REVIEW_PID=$!
-echo "Booking Service PID: $REVIEW_PID"
+echo "Review Service PID: $REVIEW_PID"
 
 echo "Waiting for microservices to start and register with Eureka..."
 sleep 20
