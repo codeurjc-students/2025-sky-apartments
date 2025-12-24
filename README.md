@@ -58,7 +58,13 @@ Version 0.2 of Sky Apartments has extend the core functionalities of the applica
 
 [![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://youtu.be/CsTjzuhjU8M)
 
-*Video showcasing the main features of version 0.1*
+*Video showcasing the main features of version 0.2*
+
+## 🚀 Access Link
+
+[Access Sky Apartments Live](https://16.170.206.187:443)
+
+> 📝 **Note:** Since the application uses a self-signed certificate for HTTPS (port 443) through the API Gateway, you might need to accept the browser security warning to proceed.
 
 ---
 
