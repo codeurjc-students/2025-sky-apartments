@@ -8,8 +8,9 @@
 4. [Architecture](#️-architecture)
 5. [Quality Assurance](#-quality-assurance)
 6. [Deployment and Distribution](#deployment-and-distribution)
-7. [Development Process](#-development-process)
-8. [Code Execution and Environment Setup](#️-code-execution-and-environment-setup)
+7. [Cloud Deployment (AWS)](#️-cloud-deployment-aws)
+8. [Development Process](#-development-process)
+9. [Code Execution and Environment Setup](#️-code-execution-and-environment-setup)
 
 ---
 
@@ -31,6 +32,7 @@ The architecture is **microservices-based**, organized into multiple independent
   - **Apartment Service:** Manages apartment-related operations
   - **User Service:** Handles user authentication and management
   - **Booking Service:** Processes reservation operations
+  - **Review Service:** Manages user reviews and ratings
   - **Eureka Server:** Service discovery and registry
   - **API Gateway:** Single entry point for client requests
 - **Database:** MySQL, accessed by each microservice via JPA/Hibernate.
@@ -76,6 +78,7 @@ The application uses the following technologies for its execution:
     - **spring-boot-starter-data-jpa** — Enables integration with JPA and Hibernate for database access and object-relational mapping.
     - **spring-boot-devtools** — Adds hot reload and development-time features to speed up backend development.
 
+- **[spring-boot-starter-mail](https://docs.spring.io/spring-boot/reference/io/email.html)** — Enables email sending capabilities from the backend services.
 - **[Spring Cloud Netflix Eureka](https://spring.io/projects/spring-cloud-netflix)** — Service discovery solution that allows microservices to register themselves and discover other services dynamically. The Eureka Server acts as a registry for all microservices in the application.
 - **[Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway)** — API Gateway that provides a single entry point for all client requests, routing them to the appropriate microservices. Operates on HTTPS port 443.
 - **[Spring Security](https://spring.io/projects/spring-security)** — Framework for authentication and authorization. Used across all microservices to secure endpoints and validate JWT tokens.
@@ -117,14 +120,14 @@ The following tools and IDEs are used to develop the application. Only the ones 
 
 The following diagram illustrates the core domain entities and their relationships:
 
-![Domain Model Diagram](/docs/images/domain_model.png)
+![Domain Model Diagram](/docs/images/entity_diagram_2.png)
 ---
 
 ### **Server Architecture**
 
 The backend follows a microservices architecture with multiple independent services communicating through REST APIs:
 
-![Server Architecture Diagram](/docs/images/server_architecture.png)
+![Server Architecture Diagram](/docs/images/server_architecture_v2.png)
 
 ---
 
@@ -132,7 +135,7 @@ The backend follows a microservices architecture with multiple independent servi
 
 The frontend is built with Angular 19 following a component-based architecture:
 
-![Client Architecture Diagram](/docs/images/client_architecture.png)
+![Client Architecture Diagram](/docs/images/client_architecture_v2.png)
 
 ---
 
@@ -166,12 +169,17 @@ The backend is organized as a Maven multi-module project with the following modu
    - Registers with Eureka Server for service discovery
    - Secured with JWT authentication
 
-4. **Eureka Server**
+4. **Review Service**
+   - Manages user reviews and ratings for apartments
+   - Registers with Eureka Server for service discovery
+   - Secured with JWT authentication
+
+5. **Eureka Server**
    - Service registry and discovery server
    - All microservices register themselves on startup
    - Enables dynamic service location
 
-5. **API Gateway**
+6. **API Gateway**
    - Single entry point for all client requests (HTTPS port 443)
    - Routes requests to appropriate microservices
    - Handles load balancing and request filtering
@@ -205,6 +213,8 @@ A generated **HTML version** of the documentation is available for direct viewin
 
 📄 **[View REST API Documentation of Booking MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-booking.html)**
 
+📄 **[View REST API Documentation of Review MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-review.html)**
+
 ### **Distributed Tracing**
 
 The application uses **Jaeger** for distributed tracing, allowing developers to visualize request flows across microservices and identify performance bottlenecks. Traces include information about:
@@ -224,7 +234,7 @@ The backend microservices have undergone several layers of automated testing to 
 #### **Types of Test**
 
 - **Unit Tests** — Validating the logic of individual service classes in isolation.  
-  - Example: `ApartmentService`, `UserService`, and `BookingService` tested using **Mockito** to mock the repository layer.
+  - Example: `ApartmentService`, `UserService`, `BookingService` and `ReviewService` tested using **Mockito** to mock the repository layer.
 - **Integration Tests** — Testing service behavior with a real database connection.  
   - Example: Each microservice tested using **Testcontainers** with a **MySQL** container to validate database interactions.
 - **End-to-End (E2E) Tests** — Validating the full API functionality through the API Gateway with all microservices running.  
@@ -332,12 +342,12 @@ This generates a coverage report in `frontend/coverage/frontend` folder.
 
 |Type      |Coverage|
 |----------|--------|
-|Lines     | 93.8%   |
-|Functions | 94.28%   |
-|Branches  | 81.76%   |
-|Statements| 93.84%   |
+|Lines     | 88.23%   |
+|Functions | 88.12%   |
+|Branches  | 79.04%   |
+|Statements| 87.89%   |
 
-![Frontend Coverage Report](/docs/coverage-report/frontend_Unit_Integration.jpg)
+![Frontend Coverage Report](/docs/coverage-report/frontend_Unit_Integration_2.jpg)
 
 #### **End-to-End (E2E) Tests**
 
@@ -361,7 +371,7 @@ To open the interactive report:
 npx playwright show-report
 ```
 
-![📸 Playwright report screenshot](/docs/coverage-report/frontend_e2e.png)
+![📸 Playwright report screenshot](/docs/coverage-report/frontend_e2e_2.png)
 
 ---
 
@@ -372,7 +382,7 @@ The application follows a containerized deployment strategy using **Docker** and
 ### **🔹 Packaging Strategy**
 
 The application is packaged as a **unified Docker image** that contains:
-- **All backend microservices**: Eureka Server, API Gateway, User Service, Apartment Service, and Booking Service
+- **All backend microservices**: Eureka Server, API Gateway, User Service, Apartment Service, Booking Service and Review Service
 - **Frontend application**: Angular SPA built as static files and served through the backend
 
 This approach simplifies deployment by providing a single artifact that encapsulates the entire application.
@@ -383,7 +393,7 @@ While the application logic is packaged in a single image, the complete system r
 
 **Core Services:**
 - **Application Container**: Runs all microservices and serves the frontend
-- **MySQL Containers**: Separate database instances for User, Apartment, and Booking services
+- **MySQL Containers**: Separate database instances for User, Apartment, Booking and Review services
 - **MinIO Container**: S3-compatible object storage for apartment images and media
 - **Jaeger Container**: Distributed tracing system for monitoring
 
@@ -409,7 +419,7 @@ The application image and Docker Compose files are distributed through **DockerH
 The `docker-compose.yml` file is also published as an OCI artifact on DockerHub, allowing users to pull the complete orchestration configuration:
 ```bash
 # Pull and use the compose file directly from DockerHub
-docker compose -f oci://eloydsdlh/apartments-compose:main-20251107-160911-26997c0 up
+docker compose -f oci://eloydsdlh/apartments-compose:0.2 up
 ```
 
 ### **🔹 Deployment Options**
@@ -427,7 +437,7 @@ docker compose up -d
 **Option 2: Docker Compose with specific version**
 ```bash
 # Pull a specific version
-docker pull eloydsdlh/apartments-app:0.1
+docker pull eloydsdlh/apartments-app:0.2
 
 # Update docker-compose.yml to use the desired version
 docker compose up -d
@@ -441,6 +451,7 @@ docker run -d \
   -e MYSQL_USERS_DB=user_db \
   -e MYSQL_APARTMENTS_DB=apartment_db \
   -e MYSQL_BOOKINGS_DB=booking_db \
+  -e MYSQL_REVIEWS_DB=review_db \
   --name skyapartments \
   eloydsdlh/apartments-app:latest
 ```
@@ -468,7 +479,80 @@ The current Docker-based approach provides:
 
 **Docker Compose OCI Artifact:**
 - URL: `https://hub.docker.com/r/eloydsdlh/apartments-compose`
-- Tags available: `latest`, `dev`, `0.1`, etc.
+- Tags available: `latest`, `dev`, `0.1`, `0.2`, etc.
+
+---
+
+## ☁️ Cloud Deployment (AWS)
+
+The production environment is hosted on **Amazon Web Services (AWS)**, using an **EC2 instance** to provide a dedicated infrastructure isolated from the development environment. The deployment follows the same principles as the Azure setup, leveraging **Docker Compose** and **OCI artifacts** to ensure a reproducible and consistent production runtime.
+
+### **1. Infrastructure Provisioning**
+
+The cloud infrastructure was provisioned using the **AWS Management Console**, creating an EC2 instance with the following specifications:
+
+* **Service:** Amazon EC2
+* **Region:** `eu-north-1` (Sweden)
+* **Instance Type:** `m7i-flex.large` (2 vCPUs, 8 GiB RAM)
+* **Operating System:** Ubuntu Server 22.04 LTS
+* **Networking:** Public IPv4 with Security Group rules allowing HTTP and HTTPS traffic
+
+The instance was configured with the following **Security Group** inbound rules:
+
+| Protocol | Port | Source |
+|--------|------|--------|
+| SSH | 22 | Personal IP |
+| HTTP | 80 | 0.0.0.0/0 |
+| HTTPS | 443 | 0.0.0.0/0 |
+
+> 📝 **Note:** AWS does not use resource groups like Azure; resources are logically grouped using tags.
+
+---
+
+### **2. Server Setup & Runtime**
+
+After connecting to the EC2 instance via SSH:
+
+```bash
+ssh -i skyapartments.pem ubuntu@ec2-16-170-206-187.eu-north-1.compute.amazonaws.com
+```
+or
+```bash
+ssh -i skyapartments.pem ubuntu@16.170.206.187
+```
+
+The server was configured with the Docker runtime:
+
+**1. Engine:** Installed `docker.io` and `docker-compose-v2`.
+
+**2. Permissions:** Configured the `docker` user group, allowing Docker commands to be executed without root privileges.
+
+**3. Persistence:** Docker uses **local volumes** on the EC2 instance to persist MySQL databases and MinIO object storage across container restarts and application updates.
+
+---
+
+### **3. Deployment using OCI Artifact**
+
+The application is deployed using the **OCI Docker Compose artifact** published to DockerHub. This guarantees that the same artifact validated during CI/CD is executed in production.
+
+```bash
+# Set environment variables for the cloud environment
+export MINIO_EXTERNAL_URL=https://16.170.206.187:443/minio
+
+# Run the application using the remote OCI Compose artifact
+docker compose -f oci://eloydsdlh/apartments-compose:0.2 up -d
+```
+
+---
+
+### **4. Access Link**
+
+The application is fully deployed and accessible through the following public endpoint:
+
+🚀 **Access Sky Apartments Live**  
+https://16.170.206.187:443
+
+> 📝 **Note:** The application is served over HTTPS (port 443) using a **self-signed TLS certificate**. As a result, browsers may display a security warning that must be acknowledged before accessing the application.
 
 
 ---
@@ -641,7 +725,7 @@ Multiple Docker Compose files are provided for different purposes:
 
 #### **`docker-compose.yml`** (Production/Stable Version)
 - Runs the latest published stable release.
-- Image tag points to version `0.1` on DockerHub.
+- Image tag points to version `0.2` on DockerHub.
 - Includes MySQL containers for each microservice.
 - Includes MinIO for object storage.
 - Includes Jaeger for distributed tracing.
@@ -751,7 +835,7 @@ docker compose up
 ```
 
 This will:
-- Pull the latest stable image (`0.1`) from DockerHub
+- Pull the latest stable image (`0.2`) from DockerHub
 - Start MySQL containers for all microservices
 - Start MinIO for object storage
 - Start Eureka Server for service discovery
@@ -820,6 +904,16 @@ docker run --name mysql-booking \
   -e MYSQL_PASSWORD=password \
   -p 3309:3306 \
   -d mysql:8.0
+
+# Review Service Database
+docker run --name mysql-review \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=review_db \
+  -e MYSQL_USER=user \
+  -e MYSQL_PASSWORD=password \
+  -p 3310:3306 \
+  -d mysql:8.0
+
 ```
 
 ### 🔹 MinIO Setup
@@ -854,7 +948,11 @@ mvn spring-boot:run
 cd booking
 mvn spring-boot:run
 
-# 5. Start API Gateway (in a new terminal)
+# 5. Start Booking Service (in a new terminal)
+cd review
+mvn spring-boot:run
+
+# 6. Start API Gateway (in a new terminal)
 cd api-gateway
 mvn spring-boot:run
 ```
@@ -864,6 +962,7 @@ mvn spring-boot:run
 - User Service: `http://localhost:8080`
 - Apartment Service: `http://localhost:8082`
 - Booking Service: `http://localhost:8083`
+- Review Service: `http://localhost:8081`
 - API Gateway: `https://localhost:443`
 
 ### 🔹 Frontend Execution
@@ -908,6 +1007,7 @@ mvn test -Dtest='*UnitTest'
 mvn test -Dtest='*UnitTest' -pl apartment
 mvn test -Dtest='*UnitTest' -pl user
 mvn test -Dtest='*UnitTest' -pl booking
+mvn test -Dtest='*UnitTest' -pl review
 ```
 
 **Integration Tests:**
@@ -935,6 +1035,7 @@ cd ../backend
 mvn test -Dtest='*e2eTest' -pl apartment
 mvn test -Dtest='*e2eTest' -pl user
 mvn test -Dtest='*e2eTest' -pl booking
+mvn test -Dtest='*e2eTest' -pl review
 
 # Stop services
 cd ../docker
@@ -1017,13 +1118,13 @@ Releases are created through **GitHub Releases** and automatically trigger the C
 
 The application images are available on DockerHub:
 
-- **Stable release**: `eloydsdlh/apartments-app:0.1`
+- **Stable release**: `eloydsdlh/apartments-app:0.2`
 - **Latest stable**: `eloydsdlh/apartments-app:latest`
 - **Development**: `eloydsdlh/apartments-app:dev`
 
 Pull and run any version:
 ```bash
-docker pull /apartments-app:0.1
+docker pull /apartments-app:0.2
 docker compose up
 ```
 ---
