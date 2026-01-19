@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +38,7 @@ import com.skyapartments.booking.model.Booking;
 import com.skyapartments.booking.model.BookingState;
 import com.skyapartments.booking.repository.ApartmentClient;
 import com.skyapartments.booking.repository.BookingRepository;
+import com.skyapartments.booking.repository.FilterRepository;
 import com.skyapartments.booking.repository.UserClient;
 import com.skyapartments.booking.service.BookingService;
 import com.skyapartments.booking.service.EmailService;
@@ -47,9 +50,10 @@ public class BookingServiceUnitTest {
     private UserClient userClient = mock(UserClient.class);
     private ApartmentClient apartmentClient = mock(ApartmentClient.class);
     private EmailService emailService = mock(EmailService.class);
+    private FilterRepository filterRepository = mock(FilterRepository.class);
     
     public BookingServiceUnitTest () {
-        bookingService = new BookingService(bookingRepository, userClient, apartmentClient, emailService);
+        bookingService = new BookingService(bookingRepository, userClient, apartmentClient, emailService, filterRepository);
     }
 
     @Test
@@ -194,7 +198,7 @@ public class BookingServiceUnitTest {
         assertEquals(1L, result.getUserId());
         assertEquals(2L, result.getApartmentId());
         assertEquals(BookingState.CONFIRMED.name(), result.getState());
-        assertEquals(BigDecimal.valueOf(200), result.getCost());
+        assertEquals(BigDecimal.valueOf(200).setScale(2), result.getCost());
 
         verify(userClient).findByEmail(email);
         verify(apartmentClient).getApartment(2L);
@@ -655,6 +659,288 @@ public class BookingServiceUnitTest {
         assertEquals(ex.getMessage(), "User email does not match booking owner");
         verify(bookingRepository, never()).save(any());
         verifyNoInteractions(apartmentClient);
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    public void getUnavailableApartments_ShouldReturnSetOfApartmentIds() {
+        // given
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(5);
+        Set<Long> unavailableIds = Set.of(1L, 2L, 3L);
+
+        when(bookingRepository.findUnavailableApartments(startDate, endDate))
+                .thenReturn(unavailableIds);
+
+        // when
+        Set<Long> result = bookingService.getUnavailableApartments(startDate, endDate);
+
+        // then
+        assertThat(result).hasSize(3);
+        assertThat(result).contains(1L, 2L, 3L);
+        verify(bookingRepository).findUnavailableApartments(startDate, endDate);
+    }
+
+    @Test
+    public void getUnavailableApartments_ShouldReturnEmptySet_WhenNoBookings() {
+        // given
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(5);
+
+        when(bookingRepository.findUnavailableApartments(startDate, endDate))
+                .thenReturn(Set.of());
+
+        // when
+        Set<Long> result = bookingService.getUnavailableApartments(startDate, endDate);
+
+        // then
+        assertThat(result).isEmpty();
+        verify(bookingRepository).findUnavailableApartments(startDate, endDate);
+    }
+
+    @Test
+    public void markCompletedBookings_ShouldMarkBookingsAsCompleted_WhenEndDatePassed() {
+        // given
+        LocalDate today = LocalDate.now();
+        
+        Booking booking1 = new Booking();
+        booking1.setId(1L);
+        booking1.setState(BookingState.CONFIRMED);
+        booking1.setEndDate(today.minusDays(1));
+
+        Booking booking2 = new Booking();
+        booking2.setId(2L);
+        booking2.setState(BookingState.CONFIRMED);
+        booking2.setEndDate(today.minusDays(5));
+
+        List<Booking> pastBookings = List.of(booking1, booking2);
+
+        when(bookingRepository.findByEndDateBeforeAndState(today, BookingState.CONFIRMED))
+                .thenReturn(pastBookings);
+        when(bookingRepository.saveAll(pastBookings)).thenReturn(pastBookings);
+
+        // when
+        bookingService.markCompletedBookings();
+
+        // then
+        assertThat(booking1.getState()).isEqualTo(BookingState.COMPLETED);
+        assertThat(booking2.getState()).isEqualTo(BookingState.COMPLETED);
+        verify(bookingRepository).findByEndDateBeforeAndState(today, BookingState.CONFIRMED);
+        verify(bookingRepository).saveAll(pastBookings);
+    }
+
+    @Test
+    public void markCompletedBookings_ShouldDoNothing_WhenNoPastBookings() {
+        // given
+        LocalDate today = LocalDate.now();
+        
+        when(bookingRepository.findByEndDateBeforeAndState(today, BookingState.CONFIRMED))
+                .thenReturn(List.of());
+
+        // when
+        bookingService.markCompletedBookings();
+
+        // then
+        verify(bookingRepository).findByEndDateBeforeAndState(today, BookingState.CONFIRMED);
+        verify(bookingRepository).saveAll(List.of());
+    }
+
+    @Test
+    public void sendCheckInReminders_ShouldSendEmails_WhenBookingsExist() {
+        // given
+        LocalDate nextWeek = LocalDate.now().plusDays(7);
+        
+        Booking booking1 = new Booking();
+        booking1.setId(1L);
+        booking1.setUserId(10L);
+        booking1.setApartmentId(20L);
+        booking1.setStartDate(nextWeek);
+        booking1.setState(BookingState.CONFIRMED);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2L);
+        booking2.setUserId(11L);
+        booking2.setApartmentId(21L);
+        booking2.setStartDate(nextWeek);
+        booking2.setState(BookingState.CONFIRMED);
+
+        UserDTO user1 = new UserDTO();
+        user1.setId(10L);
+        user1.setEmail("user1@example.com");
+
+        UserDTO user2 = new UserDTO();
+        user2.setId(11L);
+        user2.setEmail("user2@example.com");
+
+        ApartmentDTO apartment1 = new ApartmentDTO();
+        apartment1.setId(20L);
+
+        ApartmentDTO apartment2 = new ApartmentDTO();
+        apartment2.setId(21L);
+
+        when(bookingRepository.findByStartDateAndState(nextWeek, BookingState.CONFIRMED))
+                .thenReturn(List.of(booking1, booking2));
+        when(userClient.getUser(10L)).thenReturn(user1);
+        when(userClient.getUser(11L)).thenReturn(user2);
+        when(apartmentClient.getApartment(20L)).thenReturn(apartment1);
+        when(apartmentClient.getApartment(21L)).thenReturn(apartment2);
+
+        // when
+        bookingService.sendCheckInReminders();
+
+        // then
+        verify(bookingRepository).findByStartDateAndState(nextWeek, BookingState.CONFIRMED);
+        verify(userClient).getUser(10L);
+        verify(userClient).getUser(11L);
+        verify(apartmentClient).getApartment(20L);
+        verify(apartmentClient).getApartment(21L);
+        verify(emailService).sendCheckInReminder(eq("user1@example.com"), any(BookingDTO.class), eq(apartment1), eq(user1));
+        verify(emailService).sendCheckInReminder(eq("user2@example.com"), any(BookingDTO.class), eq(apartment2), eq(user2));
+    }
+
+    @Test
+    public void sendCheckInReminders_ShouldDoNothing_WhenNoUpcomingBookings() {
+        // given
+        LocalDate nextWeek = LocalDate.now().plusDays(7);
+        
+        when(bookingRepository.findByStartDateAndState(nextWeek, BookingState.CONFIRMED))
+                .thenReturn(List.of());
+
+        // when
+        bookingService.sendCheckInReminders();
+
+        // then
+        verify(bookingRepository).findByStartDateAndState(nextWeek, BookingState.CONFIRMED);
+        verifyNoInteractions(userClient);
+        verifyNoInteractions(apartmentClient);
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    public void sendCheckInReminders_ShouldContinue_WhenExceptionOccursForOneBooking() {
+        // given
+        LocalDate nextWeek = LocalDate.now().plusDays(7);
+        
+        Booking booking1 = new Booking();
+        booking1.setId(1L);
+        booking1.setUserId(10L);
+        booking1.setApartmentId(20L);
+        booking1.setStartDate(nextWeek);
+        booking1.setState(BookingState.CONFIRMED);
+
+        Booking booking2 = new Booking();
+        booking2.setId(2L);
+        booking2.setUserId(11L);
+        booking2.setApartmentId(21L);
+        booking2.setStartDate(nextWeek);
+        booking2.setState(BookingState.CONFIRMED);
+
+        UserDTO user2 = new UserDTO();
+        user2.setId(11L);
+        user2.setEmail("user2@example.com");
+
+        ApartmentDTO apartment2 = new ApartmentDTO();
+        apartment2.setId(21L);
+
+        when(bookingRepository.findByStartDateAndState(nextWeek, BookingState.CONFIRMED))
+                .thenReturn(List.of(booking1, booking2));
+        when(userClient.getUser(10L)).thenThrow(new RuntimeException("User service error"));
+        when(userClient.getUser(11L)).thenReturn(user2);
+        when(apartmentClient.getApartment(21L)).thenReturn(apartment2);
+
+        // when
+        bookingService.sendCheckInReminders();
+
+        // then
+        verify(bookingRepository).findByStartDateAndState(nextWeek, BookingState.CONFIRMED);
+        verify(userClient).getUser(10L);
+        verify(userClient).getUser(11L);
+        verify(apartmentClient).getApartment(21L);
+        verify(emailService).sendCheckInReminder(eq("user2@example.com"), any(BookingDTO.class), eq(apartment2), eq(user2));
+        verify(emailService, never()).sendCheckInReminder(any(), argThat(dto -> dto.getId().equals(1L)), any(), any());
+    }
+
+    @Test
+    public void getActiveBookingsByUserAndApartment_ShouldReturnCompletedBookings() {
+        // given
+        Long userId = 1L;
+        Long apartmentId = 2L;
+
+        Booking booking1 = new Booking();
+        booking1.setId(10L);
+        booking1.setUserId(userId);
+        booking1.setApartmentId(apartmentId);
+        booking1.setState(BookingState.COMPLETED);
+        booking1.setStartDate(LocalDate.now().minusDays(10));
+        booking1.setEndDate(LocalDate.now().minusDays(5));
+
+        Booking booking2 = new Booking();
+        booking2.setId(11L);
+        booking2.setUserId(userId);
+        booking2.setApartmentId(apartmentId);
+        booking2.setState(BookingState.COMPLETED);
+        booking2.setStartDate(LocalDate.now().minusDays(20));
+        booking2.setEndDate(LocalDate.now().minusDays(15));
+
+        when(bookingRepository.findByUserIdAndApartmentIdAndState(userId, apartmentId, BookingState.COMPLETED))
+                .thenReturn(List.of(booking1, booking2));
+
+        // when
+        List<BookingDTO> result = bookingService.getActiveBookingsByUserAndApartment(userId, apartmentId);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(10L);
+        assertThat(result.get(1).getId()).isEqualTo(11L);
+        assertThat(result.get(0).getState()).isEqualTo(BookingState.COMPLETED.name());
+        assertThat(result.get(1).getState()).isEqualTo(BookingState.COMPLETED.name());
+        verify(bookingRepository).findByUserIdAndApartmentIdAndState(userId, apartmentId, BookingState.COMPLETED);
+    }
+
+    @Test
+    public void getActiveBookingsByUserAndApartment_ShouldReturnEmptyList_WhenNoBookings() {
+        // given
+        Long userId = 1L;
+        Long apartmentId = 2L;
+
+        when(bookingRepository.findByUserIdAndApartmentIdAndState(userId, apartmentId, BookingState.COMPLETED))
+                .thenReturn(List.of());
+
+        // when
+        List<BookingDTO> result = bookingService.getActiveBookingsByUserAndApartment(userId, apartmentId);
+
+        // then
+        assertThat(result).isEmpty();
+        verify(bookingRepository).findByUserIdAndApartmentIdAndState(userId, apartmentId, BookingState.COMPLETED);
+    }
+
+    @Test
+    public void createBooking_ShouldThrowBusinessValidationException_WhenEndDateBeforeToday() {
+        // given
+        BookingRequestDTO request = buildValidRequest();
+        request.setStartDate(LocalDate.now().minusDays(5));
+        request.setEndDate(LocalDate.now().minusDays(2));
+        String email = "test@example.com";
+        
+        UserDTO user = new UserDTO();
+        user.setId(1L);
+        user.setEmail(email);
+        
+        ApartmentDTO apartment = new ApartmentDTO();
+        apartment.setId(2L);
+        apartment.setPrice(BigDecimal.valueOf(100));
+
+        when(userClient.findByEmail(email)).thenReturn(user);
+        when(apartmentClient.getApartment(2L)).thenReturn(apartment);
+
+        // when + then
+        BusinessValidationException ex = assertThrows(
+                BusinessValidationException.class,
+                () -> bookingService.createBooking(request, email)
+        );
+
+        assertThat(ex.getMessage()).contains("End date must be after today");
+        verify(bookingRepository, never()).save(any());
         verifyNoInteractions(emailService);
     }
 
