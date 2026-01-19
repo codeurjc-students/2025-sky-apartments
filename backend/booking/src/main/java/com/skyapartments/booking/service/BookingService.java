@@ -1,6 +1,7 @@
 package com.skyapartments.booking.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +19,10 @@ import com.skyapartments.booking.exception.BusinessValidationException;
 import com.skyapartments.booking.exception.ResourceNotFoundException;
 import com.skyapartments.booking.model.Booking;
 import com.skyapartments.booking.model.BookingState;
+import com.skyapartments.booking.model.Filter;
 import com.skyapartments.booking.repository.ApartmentClient;
 import com.skyapartments.booking.repository.BookingRepository;
+import com.skyapartments.booking.repository.FilterRepository;
 import com.skyapartments.booking.repository.UserClient;
 
 import jakarta.transaction.Transactional;
@@ -31,12 +34,14 @@ public class BookingService {
     private final UserClient userClient;
     private final ApartmentClient apartmentClient;
     private final EmailService emailService;
+    private final FilterRepository filterRepository;
 
-    public BookingService(BookingRepository bookingRepository, UserClient userClient, ApartmentClient apartmentClient, EmailService emailService) {
+    public BookingService(BookingRepository bookingRepository, UserClient userClient, ApartmentClient apartmentClient, EmailService emailService, FilterRepository filterRepository) {
         this.bookingRepository = bookingRepository;
         this.userClient = userClient;
         this.apartmentClient = apartmentClient;
         this.emailService = emailService;
+        this.filterRepository = filterRepository;
     } 
 
     public Page<BookingDTO> getBookingsByUserId(Long userId, Pageable pageable, String userEmail) {
@@ -127,8 +132,67 @@ public class BookingService {
     }
 
     private BigDecimal calculateCost(ApartmentDTO apartment, LocalDate startDate, LocalDate endDate) {
-        long days = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
-        return apartment.getPrice().multiply(BigDecimal.valueOf(days));
+        // Get all active filters
+        List<Filter> activeFilters = filterRepository.findByActivatedTrueOrderByIdAsc();
+        
+        BigDecimal totalCost = BigDecimal.ZERO;
+        
+        // Calculate price for each night
+        LocalDate currentDate = startDate;
+        while (currentDate.isBefore(endDate)) {
+            BigDecimal nightPrice = calculateNightPrice(
+                apartment.getPrice(), 
+                activeFilters, 
+                currentDate,
+                startDate,
+                endDate
+            );
+            totalCost = totalCost.add(nightPrice);
+            currentDate = currentDate.plusDays(1);
+        }
+        
+        return totalCost.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateNightPrice(BigDecimal basePrice,
+                                      List<Filter> filters,
+                                      LocalDate date,
+                                      LocalDate checkInDate,
+                                      LocalDate checkOutDate) {
+
+        BigDecimal totalAdjustment = BigDecimal.ZERO;
+
+        for (Filter filter : filters) {
+
+            if (!filter.isApplicableOnDate(date)) {
+                continue;
+            }
+
+            if (!filter.meetsCondition(checkInDate, checkOutDate)) {
+                continue;
+            }
+
+            BigDecimal adjustment = calculateAdjustment(basePrice, filter);
+            totalAdjustment = totalAdjustment.add(adjustment);
+        }
+
+        BigDecimal finalPrice = basePrice.add(totalAdjustment);
+        return finalPrice.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateAdjustment(BigDecimal basePrice, Filter filter) {
+
+        BigDecimal percentage = filter.getValue().divide(
+            BigDecimal.valueOf(100),
+            4,
+            RoundingMode.HALF_UP
+        );
+
+        BigDecimal adjustment = basePrice.multiply(percentage);
+
+        return filter.getIncrement()
+                ? adjustment
+                : adjustment.negate();
     }
 
     @Transactional
@@ -183,8 +247,8 @@ public class BookingService {
         return bookingRepository.findUnavailableApartments(startDate, endDate);
     }
 
-    //@Scheduled(cron = "0 0 0 * * *") //Everyday at midnight
-    @Scheduled(fixedRate = 60000) //For testing purposes, every minute
+    @Scheduled(cron = "0 0 0 * * *") //Everyday at midnight
+    //@Scheduled(fixedRate = 60000)
     @Transactional
     public void markCompletedBookings() {
         LocalDate today = LocalDate.now();
@@ -195,9 +259,37 @@ public class BookingService {
         bookingRepository.saveAll(pastBookings);
     }
 
+    @Scheduled(cron = "0 0 9 * * *") // Everyday at 9 AM
+    //@Scheduled(fixedRate = 60000)
+    @Transactional
+    public void sendCheckInReminders() {
+        LocalDate nextWeek = LocalDate.now().plusDays(7);
+        List<Booking> upcomingBookings = bookingRepository.findByStartDateAndState(nextWeek, BookingState.CONFIRMED);
+        
+        for (Booking booking : upcomingBookings) {
+            try {
+                
+                BookingDTO bookingDTO = new BookingDTO(booking);
+                UserDTO userDTO = userClient.getUser(booking.getUserId());
+                ApartmentDTO apartmentDTO = apartmentClient.getApartment(booking.getApartmentId());
+                
+                // Send the reminder email
+                emailService.sendCheckInReminder(userDTO.getEmail(), bookingDTO, apartmentDTO, userDTO);
+                
+                
+            } catch (Exception e) {
+                System.err.println("Error sending check-in reminder for booking " + booking.getId() + ": " + e.getMessage());
+            }
+        }
+    }
+
     public List<BookingDTO> getActiveBookingsByUserAndApartment(Long userId, Long apartmentId) {
         List<Booking> bookings = bookingRepository.findByUserIdAndApartmentIdAndState(
                 userId, apartmentId, BookingState.COMPLETED);
         return bookings.stream().map(booking -> new BookingDTO(booking)).toList();
+    }
+
+    public Boolean hasBookings(Long apartmentId) {
+        return bookingRepository.existsByApartmentId(apartmentId);
     }
 }
