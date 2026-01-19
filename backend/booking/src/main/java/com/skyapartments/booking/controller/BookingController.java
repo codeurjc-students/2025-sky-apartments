@@ -104,7 +104,7 @@ public class BookingController {
         return ResponseEntity.ok(updatedBooking);
     }
 
-    @GetMapping("/unavailable")
+    @GetMapping("/private/unavailable")
     @Hidden
     public Set<Long> findUnavailableApartments(
             @RequestParam LocalDate startDate,
@@ -113,7 +113,8 @@ public class BookingController {
         return bookingService.getUnavailableApartments(startDate, endDate);
     }
 
-    @GetMapping("/active/user/{userId}/apartment/{apartmentId}")
+    @Hidden
+    @GetMapping("/private/active/user/{userId}/apartment/{apartmentId}")
     public ResponseEntity<List<BookingDTO>> getActiveBookingsByUserAndApartment(
             @PathVariable Long userId,
             @PathVariable Long apartmentId
@@ -123,6 +124,13 @@ public class BookingController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(bookings);
+    }
+
+    @Hidden
+    @GetMapping("/private/apartment/{apartmentId}")
+    public ResponseEntity<Boolean> hasBookigs (@PathVariable Long apartmentId) {
+        Boolean hasBookings = bookingService.hasBookings(apartmentId);
+        return ResponseEntity.ok(hasBookings);
     }
     
 }
