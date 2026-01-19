@@ -226,7 +226,7 @@ public class Filter {
         
         int currentDayOfWeek = date.getDayOfWeek().getValue(); // 1=Monday, 7=Sunday
         
-        // Dividir por comas y verificar cada día
+        
         String[] days = weekDays.split(",");
         for (String day : days) {
             try {
@@ -234,7 +234,6 @@ public class Filter {
                     return true;
                 }
             } catch (NumberFormatException e) {
-                // Si hay un formato inválido, continuar con el siguiente
                 continue;
             }
         }
