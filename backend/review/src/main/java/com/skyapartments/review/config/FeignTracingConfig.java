@@ -22,7 +22,6 @@ public class FeignTracingConfig {
     @Bean
     public RequestInterceptor feignRequestInterceptor() {
         return requestTemplate -> {
-            // Inyecta el contexto de tracing actual en los headers
             propagator.inject(tracer.currentSpan().context(), requestTemplate, RequestTemplate::header);
         };
     }

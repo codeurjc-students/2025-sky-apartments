@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

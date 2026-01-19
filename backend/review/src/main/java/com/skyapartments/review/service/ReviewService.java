@@ -1,9 +1,7 @@
 package com.skyapartments.review.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -149,7 +147,7 @@ public class ReviewService {
         try {
             bookings = bookingClient.getActiveBookingsByUserAndApartment(userId, apartmentId);
         } catch (FeignException.NotFound e) {
-            return false; // No hay reservas
+            return false; // There are no bookings
         }
 
         if (bookings == null || bookings.isEmpty()) {

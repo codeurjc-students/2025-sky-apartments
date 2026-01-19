@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.skyapartments.apartment.config.FeignTracingConfig;
 
 
-@FeignClient(name = "booking", path = "/api/v1/bookings", configuration = FeignTracingConfig.class)
+@FeignClient(name = "booking", path = "/api/v1/bookings/private", configuration = FeignTracingConfig.class)
 public interface BookingClient {
 
     @GetMapping("/unavailable")
@@ -19,4 +19,7 @@ public interface BookingClient {
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     );
+
+    @GetMapping("/apartment/{apartmentId}")
+    Boolean hasBookings (@RequestParam("apartmentId") Long apartmentId);
 }
