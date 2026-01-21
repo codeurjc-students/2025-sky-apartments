@@ -1382,7 +1382,6 @@ public class Reviewe2eTest {
     @Test
     @Order(64)
     public void edgeCase_ConcurrentRequestsToSameEndpoint() {
-        // Este test simula múltiples requests concurrentes
         for (int i = 0; i < 5; i++) {
             given()
             .when()
