@@ -122,6 +122,10 @@ jobs:
             working-directory: ./backend/review
             run: mvn test -Dtest='*Review*e2eTest'
 
+          - name: Run Filter E2E Tests
+            working-directory: ./backend/booking
+            run: mvn test -Dtest='*Filter*e2eTest'
+
           - name: Run Booking E2E Tests
             working-directory: ./backend/booking
             run: mvn test -Dtest='*Booking*e2eTest'
