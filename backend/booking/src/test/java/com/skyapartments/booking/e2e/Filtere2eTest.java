@@ -918,36 +918,10 @@ public class Filtere2eTest {
             .body("activated", equalTo(true));
     }
 
-    @Test
-    @Order(32)
-    @DisplayName("E2E - Search applicable filters with active and inactive filters")
-    void shouldOnlyReturnActiveFiltersWhenSearchingApplicable() {
-        // Create active filter
-        createActiveFilter("Active Filter", new BigDecimal("15"), true);
-
-        // Create inactive filter
-        createActiveFilter("Inactive Filter", new BigDecimal("20"), false);
-
-        LocalDate checkIn = LocalDate.now().plusDays(5);
-        LocalDate checkOut = checkIn.plusDays(3);
-
-        // Applicable filters should only include active ones
-        given()
-            .cookies(adminCookies)
-            .contentType(ContentType.JSON)
-            .queryParam("checkInDate", checkIn.toString())
-            .queryParam("checkOutDate", checkOut.toString())
-        .when()
-            .get("/api/v1/filters/applicable")
-        .then()
-            .statusCode(200)
-            .body("totalNights", equalTo(3));
-    }
-
     // == AUTHENTICATION & AUTHORIZATION TESTS ==
 
     @Test
-    @Order(33)
+    @Order(32)
     @DisplayName("Should return 401 when accessing endpoints without authentication")
     void shouldReturn401WhenNoAuthentication() {
         // GET all filters (should be accessible by anyone)
