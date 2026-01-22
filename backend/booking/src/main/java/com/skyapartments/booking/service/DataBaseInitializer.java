@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 import com.skyapartments.booking.model.Booking;
+import com.skyapartments.booking.model.BookingState;
 import com.skyapartments.booking.model.ConditionType;
 import com.skyapartments.booking.model.DateType;
 import com.skyapartments.booking.model.Filter;
@@ -31,7 +32,7 @@ public class DataBaseInitializer {
         bookingRepository.save(new Booking(1L, 1L, LocalDate.of(2025, 1, 10), LocalDate.of(2025, 1, 15), new BigDecimal("500.00"), 2));
         bookingRepository.save(new Booking(2L, 1L, LocalDate.of(2025, 2, 5), LocalDate.of(2025, 2, 12), new BigDecimal("750.00"), 4));
         bookingRepository.save(new Booking(3L, 3L, LocalDate.of(2025, 3, 20), LocalDate.of(2025, 3, 22), new BigDecimal("200.00"), 1));
-        bookingRepository.save(new Booking(1L, 4L, LocalDate.of(2025, 4, 1), LocalDate.of(2025, 4, 10), new BigDecimal("1200.00"), 3));
+        Booking b1 = bookingRepository.save(new Booking(1L, 4L, LocalDate.of(2025, 4, 1), LocalDate.of(2025, 4, 10), new BigDecimal("1200.00"), 3));
         bookingRepository.save(new Booking(1L, 5L, LocalDate.of(2025, 11, 15), LocalDate.of(2025, 11, 18), new BigDecimal("400.00"), 2));
 
         bookingRepository.save(new Booking(3L, 2L, LocalDate.of(2025, 1, 20), LocalDate.of(2025, 1, 25), new BigDecimal("600.00"), 3));
@@ -69,7 +70,8 @@ public class DataBaseInitializer {
         bookingRepository.save(new Booking(2L, 3L, LocalDate.of(2025, 5, 20), LocalDate.of(2025, 5, 25), new BigDecimal("650.00"), 2));
         bookingRepository.save(new Booking(3L, 7L, LocalDate.of(2025, 6, 5), LocalDate.of(2025, 6, 10), new BigDecimal("700.00"), 3));
         bookingRepository.save(new Booking(4L, 2L, LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 31), new BigDecimal("850.00"), 2));
-
+        b1.setState(BookingState.COMPLETED);
+        bookingRepository.save(b1);
 
         // 1. WEEKEND FILTER (+20%)
         Filter weekendFilter = new Filter();
