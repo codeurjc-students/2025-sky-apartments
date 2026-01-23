@@ -878,8 +878,8 @@ public class Bookinge2eTest {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
             "apartmentId", 1L,
-            "startDate", "2026-01-01",
-            "endDate", "2026-01-02",
+            "startDate", "2027-01-01",
+            "endDate", "2027-01-02",
             "guests", 1
         );
 
@@ -900,8 +900,8 @@ public class Bookinge2eTest {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
             "apartmentId", 1L,
-            "startDate", "2026-02-01",
-            "endDate", "2026-02-02",
+            "startDate", "2027-02-01",
+            "endDate", "2027-02-02",
             "guests", 10 
         );
 
