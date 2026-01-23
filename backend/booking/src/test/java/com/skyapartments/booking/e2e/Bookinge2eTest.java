@@ -973,8 +973,8 @@ public class Bookinge2eTest {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
             "apartmentId", 1L,
-            "startDate", "2025-05-01",
-            "endDate", "2025-05-05",
+            "startDate", "2027-05-01",
+            "endDate", "2027-05-05",
             "guests", 2
         );
 
@@ -1025,14 +1025,14 @@ public class Bookinge2eTest {
 
         given()
             .cookies(userCookies)
-            .queryParam("startDate", "2025-06-10")
-            .queryParam("endDate", "2025-06-15")
+            .queryParam("startDate", "2026-06-10")
+            .queryParam("endDate", "2026-06-15")
         .when()
             .put("/api/v1/bookings/{bookingId}/dates", bookingId)
         .then()
             .statusCode(200)
-            .body("startDate", equalTo("2025-06-10"))
-            .body("endDate", equalTo("2025-06-15"));
+            .body("startDate", equalTo("2026-06-10"))
+            .body("endDate", equalTo("2026-06-15"));
 
         given()
             .cookies(userCookies)

@@ -65,6 +65,8 @@ jobs:
               echo "EUREKA_SERVER_URL=${{ secrets.EUREKA_SERVER_URL }}" >> .env
               echo "OTLP_ENDPOINT=${{ secrets.OTLP_ENDPOINT }}" >> .env
               echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+              echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+              echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
 
           - name: Start all services with Docker Compose
             working-directory: ./docker
