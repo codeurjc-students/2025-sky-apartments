@@ -4,10 +4,16 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 import { LoginService } from '../../services/user/login.service';
+
+interface AuthResponse {
+  status: 'SUCCESS' | 'FAILURE';
+  message: string;
+  error?: string;
+}
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -15,6 +21,12 @@ describe('LoginComponent', () => {
   let loginService: jasmine.SpyObj<LoginService>;
   let router: Router;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
+
+  // Mock of AuthResponse
+  const mockAuthResponse: AuthResponse = {
+    status: 'SUCCESS',
+    message: 'Login successful'
+  };
 
   beforeEach(async () => {
     const loginServiceSpy = jasmine.createSpyObj('LoginService', ['logIn', 'reqIsLogged']);
@@ -158,7 +170,7 @@ describe('LoginComponent', () => {
     });
 
     it('should call loginService with correct credentials when form is valid', () => {
-      loginService.logIn.and.returnValue(of({}));
+      loginService.logIn.and.returnValue(of(mockAuthResponse));
       component.loginForm.patchValue({
         email: 'test@example.com',
         password: '123456'
@@ -168,7 +180,7 @@ describe('LoginComponent', () => {
     });
 
     it('should set isLoading to true when login starts', () => {
-      loginService.logIn.and.returnValue(of({}));
+      loginService.logIn.and.returnValue(of(mockAuthResponse));
       component.loginForm.patchValue({
         email: 'test@example.com',
         password: '123456'
@@ -177,7 +189,7 @@ describe('LoginComponent', () => {
       let isLoadingDuringCall = false;
       loginService.logIn.and.callFake(() => {
         isLoadingDuringCall = component.isLoading;
-        return of({});
+        return of(mockAuthResponse);
       });
       
       component.onLogin();
@@ -185,7 +197,7 @@ describe('LoginComponent', () => {
     });
 
     it('should call reqIsLogged on successful login', fakeAsync(() => {
-      loginService.logIn.and.returnValue(of({}));
+      loginService.logIn.and.returnValue(of(mockAuthResponse));
       component.loginForm.patchValue({
         email: 'test@example.com',
         password: '123456'
@@ -196,7 +208,7 @@ describe('LoginComponent', () => {
     }));
 
     it('should show success message on successful login', fakeAsync(() => {
-      loginService.logIn.and.returnValue(of({}));
+      loginService.logIn.and.returnValue(of(mockAuthResponse));
       component.loginForm.patchValue({
         email: 'test@example.com',
         password: '123456'
@@ -214,7 +226,7 @@ describe('LoginComponent', () => {
     }));
 
     it('should navigate back on successful login', fakeAsync(() => {
-      loginService.logIn.and.returnValue(of({}));
+      loginService.logIn.and.returnValue(of(mockAuthResponse));
       component.loginForm.patchValue({
         email: 'test@example.com',
         password: '123456'
@@ -225,7 +237,7 @@ describe('LoginComponent', () => {
     }));
 
     it('should set isLoading to false after successful login', fakeAsync(() => {
-      loginService.logIn.and.returnValue(of({}));
+      loginService.logIn.and.returnValue(of(mockAuthResponse));
       component.loginForm.patchValue({
         email: 'test@example.com',
         password: '123456'
