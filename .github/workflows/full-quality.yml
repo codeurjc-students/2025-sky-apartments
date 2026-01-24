@@ -147,68 +147,25 @@ jobs:
               docker ps -a
               echo ""
               echo "=== Eureka Server logs ==="
-              EUREKA_CONTAINER=$(docker ps -aq -f name=eureka)
-              if [ ! -z "$EUREKA_CONTAINER" ]; then
-                docker logs $EUREKA_CONTAINER | tail -100
-              else
-                echo "No Eureka container found"
-              fi
+              docker logs $(docker ps -aq -f name=eureka-server) --tail 200 2>&1 || echo "No Eureka container found"
               echo ""
               echo "=== API Gateway logs ==="
-              GATEWAY_CONTAINER=$(docker ps -aq -f name=api-gateway)
-              if [ ! -z "$GATEWAY_CONTAINER" ]; then
-                docker logs $GATEWAY_CONTAINER | tail -100
-              else
-                echo "No API Gateway container found"
-              fi
+              docker logs $(docker ps -aq -f name=api-gateway) --tail 200 2>&1 || echo "No API Gateway container found"
               echo ""
-              echo "=== MySQL logs ==="
-              MYSQL_CONTAINER=$(docker ps -aq -f name=mysql-apartments)
-              if [ ! -z "$MYSQL_CONTAINER" ]; then
-                docker logs $MYSQL_CONTAINER | tail -50
-              else
-                echo "No MySQL container found"
-              fi
-              echo ""
-              echo "=== MinIO logs ==="
-              MINIO_CONTAINER=$(docker ps -aq -f name=minio | head -1)
-              if [ ! -z "$MINIO_CONTAINER" ]; then
-                docker logs $MINIO_CONTAINER | tail -50
-              else
-                echo "No MinIO container found"
-              fi
-              echo ""
-              echo "=== User Service logs ==="
-              USER_CONTAINER=$(docker ps -aq -f name=user)
-              if [ ! -z "$USER_CONTAINER" ]; then
-                docker logs $USER_CONTAINER | tail -100
-              else
-                echo "No User service container found"
-              fi
+              echo "=== MySQL Bookings logs ==="
+              docker logs $(docker ps -aq -f name=mysql-bookings) --tail 100 2>&1 || echo "No MySQL Bookings container found"
               echo ""
               echo "=== Booking Service logs ==="
-              BOOKING_CONTAINER=$(docker ps -aq -f name=booking)
-              if [ ! -z "$BOOKING_CONTAINER" ]; then
-                docker logs $BOOKING_CONTAINER | tail -100
-              else
-                echo "No Booking service container found"
-              fi
+              docker logs $(docker ps -aq -f name=booking) --tail 200 2>&1 || echo "No Booking service container found"
               echo ""
               echo "=== Apartment Service logs ==="
-              APARTMENT_CONTAINER=$(docker ps -aq -f name=apartment)
-              if [ ! -z "$APARTMENT_CONTAINER" ]; then
-                docker logs $APARTMENT_CONTAINER | tail -100
-              else
-                echo "No Apartment service container found"
-              fi
+              docker logs $(docker ps -aq -f name=apartment) --tail 200 2>&1 || echo "No Apartment service container found"
+              echo ""
+              echo "=== User Service logs ==="
+              docker logs $(docker ps -aq -f name=user) --tail 200 2>&1 || echo "No User service container found"
               echo ""
               echo "=== Review Service logs ==="
-              REVIEW_CONTAINER=$(docker ps -aq -f name=review)
-              if [ ! -z "$REVIEW_CONTAINER" ]; then
-                docker logs $REVIEW_CONTAINER | tail -100
-              else
-                echo "No Review service container found"
-              fi
+              docker logs $(docker ps -aq -f name=review) --tail 200 2>&1 || echo "No Review service container found"
               
           - name: Stop services
             if: always()
