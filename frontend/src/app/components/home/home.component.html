@@ -10,7 +10,7 @@
               <div class="carousel-content">
                 <h2>{{ apartment.name }}</h2>
                 <p>{{ apartment.description }}</p>
-                <div class="price">${{ apartment.price }}/night</div>
+                <div class="price">from ${{ apartment.price }}/night</div>
                 <button mat-raised-button color="primary" class="view-btn">
                   View Details
                   <mat-icon>arrow_forward</mat-icon>
@@ -61,7 +61,7 @@
                 <mat-icon>people</mat-icon>
                 <span>{{ apartment.capacity }} guests</span>
               </div>
-              <div class="price-tag">${{ apartment.price }}/night</div>
+              <div class="price-tag">from ${{ apartment.price }}/night</div>
             </div>
           </mat-card-content>
           <mat-card-actions>
