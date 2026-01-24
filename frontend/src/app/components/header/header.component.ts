@@ -63,9 +63,17 @@ export class HeaderComponent {
     this.router.navigate(['/profile'], { fragment: 'apartments' });
   }
 
+  onBookingCalendar() {
+    this.router.navigate(['/profile'], { fragment: 'bookings' });
+  }
+
+  onFiltersManagement() {
+    this.router.navigate(['/profile'], { fragment: 'filters' });
+  }
+
   onLogout() {
     this.loginService.logOut().subscribe({
-      next: () => window.location.reload(),
+      next: () => this.reloadPage(),
       error: err => {
         console.error('Logout failed', err);
         const errorCode = err.status || 500;
@@ -78,6 +86,10 @@ export class HeaderComponent {
         });
       }
     });
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 
   onBook() {

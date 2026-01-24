@@ -7,6 +7,8 @@
   padding: 0;
   height: auto;
   min-height: 64px;
+  display: flex;
+  flex-direction: column;
 }
 
 .header-container {
@@ -16,7 +18,6 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 24px;
-  width: 100%;
   height: 64px;
 }
 
@@ -24,6 +25,7 @@
 .logo-section {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .logo-link {
@@ -49,6 +51,7 @@
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
 /* Navigation Menu */
@@ -56,6 +59,9 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  flex: 1;
+  justify-content: center;
+  margin: 0 16px;
 }
 
 .nav-link {
@@ -69,6 +75,7 @@
   transition: all 0.3s ease;
   font-weight: 500;
   font-size: 15px;
+  white-space: nowrap;
 }
 
 .nav-link mat-icon {
@@ -92,6 +99,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .book-button {
@@ -106,6 +114,8 @@
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
 }
 
 .book-button mat-icon {
@@ -143,8 +153,10 @@
 }
 
 .signup-button {
+  
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   background: white !important;
   color: #667eea !important;
@@ -160,6 +172,7 @@
   font-size: 20px;
   width: 20px;
   height: 20px;
+
 }
 
 .signup-button:hover {
@@ -224,23 +237,31 @@
   font-size: 18px;
   border: 3px solid white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .profile-info {
   flex: 1;
   color: white;
+  min-width: 0;
 }
 
 .profile-name {
   margin: 0;
   font-weight: 600;
   font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-email {
   margin: 4px 0 0;
   font-size: 13px;
   opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Mobile Navigation */
@@ -263,9 +284,9 @@
 }
 
 .mobile-nav.open {
-  max-height: 300px;
-  padding: 16px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  max-height: 500px;
+  padding: 8px 16px 16px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .mobile-nav-link {
@@ -295,29 +316,29 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  .nav-link span {
+    display: none;
+  }
+
+  .header-container {
+    padding: 0 16px;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+  }
+
+  .nav-menu {
+    gap: 4px;
+    margin: 0 8px;
+  }
+}
+
+@media (max-width: 900px) {
+
   .desktop-nav {
     display: none;
-  }
-
-  .mobile-menu-button {
-    display: block;
-  }
-
-  .mobile-nav {
-    display: flex;
-  }
-
-  .book-button span {
-    display: none;
-  }
-
-  .book-button mat-icon {
-    margin: 0;
-  }
-
-  .book-button {
-    padding: 0 12px;
   }
 
   .login-button span,
@@ -325,23 +346,75 @@
     display: none;
   }
 
-  .login-button mat-icon,
-  .signup-button mat-icon {
+  .login-button,
+  .signup-button {
+    padding: 0;
+    width: 40px;
+    min-width: 40px;
+    justify-content: center;
+  }
+  
+  .mobile-menu-button {
+    display: flex;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .nav-menu {
     margin: 0;
   }
 
-  .login-button,
-  .signup-button {
-    padding: 0 12px;
-    min-width: 40px;
-  }
-
   .logo-text {
-    font-size: 20px;
+    margin-right: 5px;
   }
 
+}
+
+@media (max-width: 768px) {
   .header-container {
-    padding: 0 16px;
+    padding: 0 26px;
+  }
+
+  .book-button span {
+    display: none;
+  }
+
+  .book-button {
+    padding: 0;
+    width: 40px;
+    min-width: 40px;
+    justify-content: center;
+  }
+
+  .login-button span,
+  .signup-button span {
+    display: none;
+  }
+
+  .login-button,
+  .signup-button,
+  .book-button {
+    padding: 0;
+    width: 40px;
+    min-width: 40px;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .login-button mat-icon,
+  .signup-button mat-icon,
+  .book-button mat-icon {
+    margin: 0;
+  }
+
+  .actions-section {
+    gap: 8px;
+  }
+
+  .mobile-nav.open {
+    padding: 8px 12px 12px 12px;
   }
 }
 
@@ -350,7 +423,53 @@
     display: none;
   }
 
+  .logo-icon {
+    margin-right: 0;
+  }
+
+  .header-container {
+    padding: 0 12px;
+  }
+
   .actions-section {
-    gap: 8px;
+    gap: 6px;
+  }
+
+  .profile-button .profile-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header-container {
+    padding: 0 8px;
+  }
+
+  .book-button,
+  .login-button,
+  .signup-button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .hide-mobile {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+
+  .book-button mat-icon,
+  .login-button mat-icon,
+  .signup-button mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
