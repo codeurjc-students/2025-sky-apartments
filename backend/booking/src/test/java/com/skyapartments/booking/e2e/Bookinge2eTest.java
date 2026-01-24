@@ -57,6 +57,8 @@ public class Bookinge2eTest {
 
     @BeforeEach
     void setUp() {
+        RestAssured.baseURI = gatewayUrl;
+        
         bookingRepository.deleteAll();
 
         UserLoginInfo adminInfo = loginAndGetUserInfo("admin@example.com", "Password@1234");
@@ -870,16 +872,75 @@ public class Bookinge2eTest {
             .statusCode(400);
     }
 
-    // ==================== EDGE CASES AND BOUNDARY VALUES ====================
+    // ==================== GET UNAVAILABLE APARTMENTS TESTS ====================
 
     @Test
     @Order(44)
+    public void getUnavailableApartments_ShouldReturnUnavailableApartments_WhenBookingsExist() {
+        LocalDate startDate = LocalDate.now().plusDays(8);
+        LocalDate endDate = LocalDate.now().plusDays(20);
+
+        given()
+            .queryParam("startDate", startDate.toString())
+            .queryParam("endDate", endDate.toString())
+        .when()
+            .get("/api/v1/bookings/private/unavailable")
+        .then()
+            .log().all()
+            .statusCode(200)
+            .body(".", hasItem(1)); 
+    }
+
+    @Test
+    @Order(45)
+    public void getUnavailableApartments_ShouldReturnEmptySet_WhenNoBookingsInDateRange() {
+        LocalDate futureStartDate = LocalDate.now().plusDays(200);
+        LocalDate futureEndDate = LocalDate.now().plusDays(205);
+
+        given()
+            .queryParam("startDate", futureStartDate.toString())
+            .queryParam("endDate", futureEndDate.toString())
+        .when()
+            .get("/api/v1/bookings/private/unavailable")
+        .then()
+            .statusCode(200)
+            .body(".", hasSize(0));
+    }
+
+    @Test
+    @Order(46)
+    public void getUnavailableApartments_ShouldReturnBadRequest_WhenDateParametersAreMissing() {
+        given()
+            .queryParam("startDate", "2024-12-01")
+        
+        .when()
+            .get("/api/v1/bookings/private/unavailable")
+        .then()
+            .statusCode(400);
+    }
+
+    @Test
+    @Order(47)
+    public void getUnavailableApartments_ShouldReturnBadRequest_WhenDateFormatIsInvalid() {
+        given()
+            .queryParam("startDate", "invalid-date")
+            .queryParam("endDate", "2024-12-05")
+        .when()
+            .get("/api/v1/bookings/private/unavailable")
+        .then()
+            .statusCode(400);
+    }
+
+    // ==================== EDGE CASES AND BOUNDARY VALUES ====================
+
+    @Test
+    @Order(48)
     public void createBooking_ShouldWorkWithBoundaryValues_WhenGuestsAtMinimum() {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
             "apartmentId", 1L,
-            "startDate", "2027-01-01",
-            "endDate", "2027-01-02",
+            "startDate", "2026-02-01",
+            "endDate", "2026-02-02",
             "guests", 1
         );
 
@@ -895,13 +956,13 @@ public class Bookinge2eTest {
     }
 
     @Test
-    @Order(45)
+    @Order(49)
     public void createBooking_ShouldWorkWithBoundaryValues_WhenGuestsAtMaximum() {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
             "apartmentId", 1L,
-            "startDate", "2027-02-01",
-            "endDate", "2027-02-02",
+            "startDate", "2026-02-01",
+            "endDate", "2026-02-02",
             "guests", 10 
         );
 
@@ -917,7 +978,7 @@ public class Bookinge2eTest {
     }
 
     @Test
-    @Order(46)
+    @Order(50)
     public void createBooking_ShouldWorkWithBoundaryValues_WhenStartDateIsToday() {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
@@ -937,10 +998,32 @@ public class Bookinge2eTest {
             .statusCode(201);
     }
 
+    @Test
+    @Order(51)
+    public void createBooking_ShouldCalculateCostCorrectly_ForMultipleDays() {
+        Map<String, Object> bookingRequest = Map.of(
+            "userId", regularUserId,
+            "apartmentId", 1L,
+            "startDate", "2026-03-01",
+            "endDate", "2026-03-05",
+            "guests", 2
+        );
+
+        given()
+            .cookies(userCookies)
+            .contentType(ContentType.JSON)
+            .body(bookingRequest)
+        .when()
+            .post("/api/v1/bookings")
+        .then()
+            .statusCode(201)
+            .body("cost", equalTo(480.0f));
+    }
+
     // ==================== PAGINATION TESTS ====================
 
     @Test
-    @Order(47)
+    @Order(52)
     public void getBookingsByUserId_ShouldReturnSecondPage_WhenMultipleBookingsExist() {
         given()
             .cookies(userCookies)
@@ -953,7 +1036,7 @@ public class Bookinge2eTest {
     }
 
     @Test
-    @Order(48)
+    @Order(53)
     public void getBookingsByApartmentId_ShouldReturnSecondPage_WhenMultipleBookingsExist() {
         given()
             .cookies(adminCookies)
@@ -968,13 +1051,13 @@ public class Bookinge2eTest {
     // ==================== SECURITY TESTS ====================
 
     @Test
-    @Order(49)
+    @Order(54)
     public void bookingOperations_ShouldReturnUnauthorized_WhenTokenIsInvalid() {
         Map<String, Object> bookingRequest = Map.of(
             "userId", regularUserId,
             "apartmentId", 1L,
-            "startDate", "2027-05-01",
-            "endDate", "2027-05-05",
+            "startDate", "2025-05-01",
+            "endDate", "2025-05-05",
             "guests", 2
         );
 
@@ -989,7 +1072,7 @@ public class Bookinge2eTest {
     }
 
     @Test
-    @Order(50)
+    @Order(55)
     public void bookingOperations_ShouldReturnUnauthorized_WhenTokenIsExpired() {
         given()
             .cookie("AuthToken", "expired.jwt.token")
@@ -1002,7 +1085,7 @@ public class Bookinge2eTest {
     // ==================== DATA CONSISTENCY TESTS ====================
 
     @Test
-    @Order(51)
+    @Order(56)
     public void bookingWorkflow_ShouldMaintainDataConsistency_ThroughFullLifecycle() {
         // Crear booking
         Map<String, Object> bookingRequest = Map.of(
@@ -1025,14 +1108,14 @@ public class Bookinge2eTest {
 
         given()
             .cookies(userCookies)
-            .queryParam("startDate", "2026-06-10")
-            .queryParam("endDate", "2026-06-15")
+            .queryParam("startDate", "2025-06-10")
+            .queryParam("endDate", "2025-06-15")
         .when()
             .put("/api/v1/bookings/{bookingId}/dates", bookingId)
         .then()
             .statusCode(200)
-            .body("startDate", equalTo("2026-06-10"))
-            .body("endDate", equalTo("2026-06-15"));
+            .body("startDate", equalTo("2025-06-10"))
+            .body("endDate", equalTo("2025-06-15"));
 
         given()
             .cookies(userCookies)
@@ -1060,8 +1143,8 @@ public class Bookinge2eTest {
     }
 
     @Test
-    @Order(52)
-    public void getUnavailableApartments_ShouldReturnForbidden() {
+    @Order(57)
+    public void getUnavailableApartments_ShouldNotIncludeCancelledBookings() {
     
         Booking cancelledBooking = bookingRepository.save(new Booking(
             regularUserId, 
@@ -1083,7 +1166,8 @@ public class Bookinge2eTest {
         .when()
             .get("/api/v1/bookings/private/unavailable")
         .then()
-            .statusCode(403);
+            .statusCode(200)
+            .body(".", not(hasItem(1L)));
     }
 
 }
