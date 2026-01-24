@@ -15,6 +15,7 @@ import { ApartmentService } from '../../services/apartment/apartment.service';
 import { UserDTO } from '../../dtos/user.dto';
 import { BookingDTO } from '../../dtos/booking.dto';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
+import Swal from 'sweetalert2';
 
 describe('ProfileComponent', () => {
   let component: ProfileComponent;
@@ -472,21 +473,37 @@ describe('ProfileComponent', () => {
     }));
 
     it('should delete apartment successfully', fakeAsync(() => {
-      spyOn<any>(component, 'showMessage');
+
+      spyOn(Swal, 'fire').and.returnValue(
+        Promise.resolve({ isConfirmed: true } as any)
+      ) as jasmine.Spy;
+      
+      const showMessageSpy = spyOn<any>(component, 'showMessage');
       mockApartmentService.deleteApartment.and.returnValue(of(void 0));
       mockApartmentService.getAllApartments.and.returnValue(of([]));
-      spyOn(window, 'confirm').and.returnValue(true);
 
       component.deleteApartment(1);
+    
       tick();
-
+      
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+        title: 'Are you sure?',
+        text: 'Do you want to delete this apartment?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }));
+      
       expect(mockApartmentService.deleteApartment).toHaveBeenCalledWith(1);
-      expect((component as any).showMessage).toHaveBeenCalledWith(
+      expect(showMessageSpy).toHaveBeenCalledWith(
         'Apartment deleted successfully',
         'success'
       );
+      expect(mockApartmentService.getAllApartments).toHaveBeenCalled();
     }));
-
     it('should not delete apartment if not confirmed', () => {
       spyOn(window, 'confirm').and.returnValue(false);
 
