@@ -12,6 +12,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
+import { ReviewService } from '../../services/review/review.service';
 
 @Component({
   selector: 'app-apartment-list',
@@ -36,14 +37,17 @@ export class ApartmentListComponent implements OnInit {
   availableServices: string[] = [];
   selectedServices: Set<string> = new Set();
   selectedCapacity: number = 1;
+  selectedMinRating: number = 0;
   currentPage: number = 0;
   pageSize: number = 10;
   hasMore: boolean = true;
   loading: boolean = false;
   initialLoading: boolean = true;
+  apartmentRatings: Map<number, number> = new Map();
 
   constructor(
     private apartmentService: ApartmentService,
+    private reviewService: ReviewService,
     private router: Router
   ) {}
 
@@ -84,42 +88,79 @@ export class ApartmentListComponent implements OnInit {
     };
 
     this.apartmentService.searchApartments(options).subscribe({
-      next: (response) => {
-        if (!response || response.length === 0) {
-          this.hasMore = false;
-          if (this.currentPage === 0) {
-            this.apartments = [];
-          }
-        } else {
-          if (reset) {
-            this.apartments = response;
+        next: (response) => {
+          if (!response || response.length === 0) {
+            this.hasMore = false;
+            if (this.currentPage === 0) {
+              this.apartments = [];
+            }
           } else {
-            this.apartments = [...this.apartments, ...response];
-          }
-          
-          this.hasMore = response.length === this.pageSize;
-        }
-        this.loading = false;
-        this.initialLoading = false;
-      },
-      error: (error) => {
-        if (error.status === 204) {
-          this.hasMore = false;
-          if (this.currentPage === 0) {
-            this.apartments = [];
+            // Load ratings for the fetched apartments
+            this.loadRatingsForApartments(response).then(() => {
+              // Filter apartments based on selected minimum rating
+              const filteredApartments = response.filter(apt => {
+                const rating = this.apartmentRatings.get(apt.id) || 0;
+                return rating >= this.selectedMinRating;
+              });
+
+              if (reset) {
+                this.apartments = filteredApartments;
+              } else {
+                this.apartments = [...this.apartments, ...filteredApartments];
+              }
+              
+              this.hasMore = response.length === this.pageSize;
+            });
           }
           this.loading = false;
           this.initialLoading = false;
-        } else {
-          this.router.navigate(['/error'], {
-            queryParams: {
-              message: 'Failed to load apartments',
-              code: error.status || 500
+        },
+        error: (error) => {
+          if (error.status === 204) {
+            this.hasMore = false;
+            if (this.currentPage === 0) {
+              this.apartments = [];
             }
-          });
+            this.loading = false;
+            this.initialLoading = false;
+          } else {
+            this.router.navigate(['/error'], {
+              queryParams: {
+                message: 'Failed to load apartments',
+                code: error.status || 500
+              }
+            });
+          }
         }
-      }
-    });
+      });
+  }
+
+  private async loadRatingsForApartments(apartments: ApartmentDTO[]): Promise<void> {
+    const ratingPromises = apartments.map(apt => 
+      this.reviewService.getApartmentRating(apt.id).toPromise()
+        .then(rating => {
+          this.apartmentRatings.set(apt.id, rating || 0);
+        })
+        .catch(() => {
+          this.apartmentRatings.set(apt.id, 0);
+        })
+    );
+    
+    await Promise.all(ratingPromises);
+  }
+
+  onRatingChange(): void {
+    if (this.selectedMinRating < 0) {
+      this.selectedMinRating = 0;
+    }
+    if (this.selectedMinRating > 5) {
+      this.selectedMinRating = 5;
+    }
+    this.searchApartments(true);
+  }
+
+  getRating(apartmentId: number): number {
+    return this.apartmentRatings.get(apartmentId) || 0;
   }
 
   onServiceToggle(service: string): void {
