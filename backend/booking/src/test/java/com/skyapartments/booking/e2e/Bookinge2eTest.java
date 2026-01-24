@@ -27,7 +27,13 @@ import java.time.LocalDate;
 import java.util.Map;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false"
+    }
+)
 @TestMethodOrder(OrderAnnotation.class)
 public class Bookinge2eTest {
 

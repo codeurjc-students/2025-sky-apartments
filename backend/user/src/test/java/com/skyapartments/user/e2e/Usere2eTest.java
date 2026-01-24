@@ -26,7 +26,13 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false"
+    }
+)
 @TestMethodOrder(OrderAnnotation.class)
 public class Usere2eTest {
 

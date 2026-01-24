@@ -28,7 +28,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false"
+    }
+)
 @TestMethodOrder(OrderAnnotation.class)
 public class Reviewe2eTest {
 
