@@ -887,13 +887,13 @@ describe('FilterService', () => {
         } as FilterDTO
       ];
 
-      // Crear todos los filtros en paralelo
+      // Create all filters in parallel
       forkJoin(filters.map(filter => service.create(filter))).subscribe({
         next: (createdFilters) => {
-          // Guardar los IDs para limpieza posterior
+          // Save the created filter IDs for cleanup
           createdFilterIds.push(...createdFilters.map(f => f.id!));
           
-          // Obtener todos los filtros
+          // Get all filters and verify
           service.findAll(0, 100).subscribe({
             next: (allFilters) => {
               const myFilters = allFilters.filter(f => 
@@ -901,7 +901,7 @@ describe('FilterService', () => {
               );
               expect(myFilters.length).toBe(3);
               
-              // Verificar tipos específicos
+              // Verify specific filter types
               const summerFilter = myFilters.find(f => f.name === 'Summer');
               const weekendFilter = myFilters.find(f => f.name === 'Weekend');
               const longStayFilter = myFilters.find(f => f.name === 'Long Stay');
