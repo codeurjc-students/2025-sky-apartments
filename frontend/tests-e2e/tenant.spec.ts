@@ -482,7 +482,7 @@ test.describe('Regular User Journey', () => {
       
       // Verify booking details section
       await expect(page.getByRole('heading', { name: 'Booking Details' })).toBeVisible();
-      await expect(page.locator('text=Check-in')).toBeVisible();
+      await expect(page.locator('text=Check-in:')).toBeVisible();
       await expect(page.locator('text=Check-out')).toBeVisible();
       await expect(page.locator('text=Number of Nights')).toBeVisible();
       await expect(page.locator('text=Number of Guests')).toBeVisible();
@@ -577,7 +577,7 @@ test.describe('Regular User Journey', () => {
       await page.waitForSelector('.price-row.total');
       
       // Verify number of nights is displayed
-      await expect(page.locator('text="3 nights"')).toBeVisible();
+      await expect(page.locator('span.value.highlight', { hasText: '3 nights' })).toBeVisible();
       
       // Total should be visible
       const totalPrice = page.locator('.price-row.total .value');
@@ -683,43 +683,41 @@ test.describe('Regular User Journey', () => {
 
     test('should navigate through main menu (logged-in user)', async ({ page }) => {
       await page.goto('/');
-    
+
       // ---------- MAIN NAVIGATION ----------
       await page.click('a[routerlink="/home"]');
       await expect(page).toHaveURL(/\/#hero|\/$/);
-    
+
       await page.click('a[routerlink="/apartments"]');
       await expect(page).toHaveURL(/\/apartments/);
-    
+
       await page.click('a[fragment="about"]');
       await page.waitForTimeout(500);
-    
+
       await page.click('a[fragment="contact"]');
       await page.waitForTimeout(500);
-    
+
       // ---------- PROFILE MENU ----------
       const profileButton = page.locator('button.profile-button');
       await expect(profileButton).toBeVisible();
-  
+
+      // ---- My Profile ----
       await profileButton.click();
-      
-      const overlayPane = page.locator('.cdk-overlay-container .cdk-overlay-pane');
-      await overlayPane.waitFor({ state: 'visible', timeout: 5000 });
-      
-      const myProfileItem = overlayPane.getByRole('menuitem', { name: /My Profile/i });
-      const myBookingsItem = overlayPane.getByRole('menuitem', { name: /My bookings/i });
-      
+
+      const myProfileItem = page.getByRole('menuitem', { name: /My Profile/i });
       await expect(myProfileItem).toBeVisible();
-      await expect(myBookingsItem).toBeVisible();
-      
       await myProfileItem.click();
-    
+
       await expect(page).toHaveURL(/\/profile(#personal)?/);
-    
+
+      // ---- My Bookings ----
       await page.goBack();
       await profileButton.click();
-    
+
+      const myBookingsItem = page.getByRole('menuitem', { name: /My bookings/i });
+      await expect(myBookingsItem).toBeVisible();
       await myBookingsItem.click();
+
       await expect(page).toHaveURL(/\/profile#bookings/);
     });
     
