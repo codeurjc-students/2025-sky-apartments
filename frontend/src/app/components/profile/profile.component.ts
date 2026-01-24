@@ -26,6 +26,8 @@ import { ApartmentDTO } from '../../dtos/apartment.dto';
 import { EditBooking } from '../edit-booking/edit-booking.component';
 import Swal from 'sweetalert2';
 import { DashboardTabComponent } from '../dashboard-tab/dashboard-tab.component';
+import { BookingsTabComponent } from '../bookings-tab/bookings-tab.component';
+import { FiltersTabComponent } from '../filters-tab/filters-tab.component';
 
 @Component({
   selector: 'app-profile',
@@ -46,7 +48,9 @@ import { DashboardTabComponent } from '../dashboard-tab/dashboard-tab.component'
     MatSnackBarModule,
     MatSelectModule,
     MatTooltipModule,
-    DashboardTabComponent
+    DashboardTabComponent,
+    BookingsTabComponent,
+    FiltersTabComponent
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
@@ -85,8 +89,6 @@ export class ProfileComponent implements OnInit {
   aptPageSize: number = 10;
   aptHasMore: boolean = true;
   aptLoading: boolean = false;
-
-  //Admin graphics
 
 
   constructor(
@@ -155,8 +157,14 @@ export class ProfileComponent implements OnInit {
           case 'dashboard':
             this.selectedTabIndex = 0;
             break;
-          case 'apartments':
+          case 'bookings':
             this.selectedTabIndex = 1;
+            break;
+          case 'apartments':
+            this.selectedTabIndex = 2;
+            break;
+          case 'filters':
+            this.selectedTabIndex = 3;
             break;
         }
       } else {
@@ -265,26 +273,33 @@ export class ProfileComponent implements OnInit {
 
   loadAdminData() {
     this.isLoadingAdminData = true;
-    
-    // Load all apartments
     this.aptLoading = true;
+    
     this.apartmentService.getAllApartments(this.aptCurrentPage, this.aptPageSize).subscribe({
       next: (apartments) => {
-        if (apartments && apartments.length > 0) {
-          this.aptHasMore = apartments.length === this.aptPageSize;
+        if (!apartments || apartments.length === 0) {
+          this.aptHasMore = false;
+        } else if (apartments.length < this.aptPageSize) {
+          this.allApartments = [...this.allApartments, ...apartments];
+          this.aptHasMore = false;
         } else {
-          this.aptHasMore = false;
+          this.allApartments = [...this.allApartments, ...apartments];
+          this.aptHasMore = true;
         }
-        if (apartments.length != this.aptPageSize) {
-          this.aptHasMore = false;
-        }
+        
         this.aptLoading = false;
-        this.allApartments = [... this.allApartments, ...apartments];
         this.isLoadingAdminData = false;
       },
       error: (error) => {
-        console.error('Error loading apartments:', error);
+        this.aptLoading = false;
         this.isLoadingAdminData = false;
+        
+        if (error.status === 204) {
+          this.aptHasMore = false;
+          return;
+        }
+        
+        console.error('Error loading apartments:', error);
         this.router.navigate(['/error'], {
           queryParams: {
             message: error.error?.message || 'Error loading apartments',
@@ -483,8 +498,19 @@ export class ProfileComponent implements OnInit {
     this.router.navigate(['/apartments/new']);
   }
 
-  deleteApartment(apartmentId: number) {
-    if (!confirm('Are you sure you want to delete this apartment?')) return;
+  async deleteApartment(apartmentId: number) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this apartment?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (!result.isConfirmed) return;
 
     this.apartmentService.deleteApartment(apartmentId).subscribe({
       next: () => {
@@ -493,7 +519,8 @@ export class ProfileComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting apartment:', error);
-        this.showMessage('Error deleting apartment', 'error');
+        const errorMessage = error?.error?.message || 'Error deleting apartment';
+        this.showMessage(errorMessage, 'error');
       }
     });
   }
