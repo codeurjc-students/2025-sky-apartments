@@ -26,7 +26,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
         SELECT b.apartmentId
         FROM Booking b
-        WHERE b.state <> 'CANCELED'
+        WHERE b.state <> 'CANCELLED'
         AND b.startDate < :endDate
         AND b.endDate > :startDate
     """)
@@ -37,4 +37,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByUserIdAndApartmentIdAndState(Long userId, Long apartmentId, BookingState cancelled);
 
+    List<Booking> findByStartDateAndState(LocalDate startDate, BookingState state);
+
+    boolean existsByApartmentId(Long apartmentId);
 }

@@ -79,7 +79,7 @@ public class UserController {
     }
 
     @Hidden
-    @GetMapping
+    @GetMapping("/private")
     public ResponseEntity<Long> getUserIdByEmail(
             @Parameter(description = "Email of the user to retrieve") @RequestParam String email) {
     
@@ -88,7 +88,7 @@ public class UserController {
     }
 
     @Hidden
-    @GetMapping("/email")
+    @GetMapping("/private/email")
     public ResponseEntity<UserDTO> getUserByEmail(
             @Parameter(description = "Email of the user to retrieve") @RequestParam String email) {
     
@@ -170,4 +170,3 @@ public class UserController {
         return ResponseEntity.created(location).body(createdUser);
     }
 }
-

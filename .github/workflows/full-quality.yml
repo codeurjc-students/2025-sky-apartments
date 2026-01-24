@@ -65,6 +65,8 @@ jobs:
               echo "EUREKA_SERVER_URL=${{ secrets.EUREKA_SERVER_URL }}" >> .env
               echo "OTLP_ENDPOINT=${{ secrets.OTLP_ENDPOINT }}" >> .env
               echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+              echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+              echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
 
           - name: Start all services with Docker Compose
             working-directory: ./docker
@@ -122,10 +124,10 @@ jobs:
             working-directory: ./backend/review
             run: mvn test -Dtest='*Review*e2eTest'
 
-          - name: Run Booking E2E Tests
+          - name: Run Booking Service E2E Tests
             working-directory: ./backend/booking
-            run: mvn test -Dtest='*Booking*e2eTest'
-              
+            run: mvn test -Dtest='*Filter*e2eTest,*Booking*e2eTest'
+            
           - name: Run Apartment E2E Tests
             working-directory: ./backend/apartment
             run: mvn test -Dtest='*Apartment*e2eTest'
@@ -140,68 +142,49 @@ jobs:
               echo "=== Docker containers status ==="
               docker ps -a
               echo ""
-              echo "=== Eureka Server logs ==="
-              EUREKA_CONTAINER=$(docker ps -aq -f name=eureka)
-              if [ ! -z "$EUREKA_CONTAINER" ]; then
-                docker logs $EUREKA_CONTAINER | tail -100
+              
+              echo "=== Booking Service logs ==="
+              BOOKING_CONTAINER=$(docker ps -q -f name=booking)
+              if [ ! -z "$BOOKING_CONTAINER" ]; then
+                docker logs $BOOKING_CONTAINER --tail 300 2>&1
               else
-                echo "No Eureka container found"
+                echo "No Booking container found"
               fi
               echo ""
-              echo "=== API Gateway logs ==="
-              GATEWAY_CONTAINER=$(docker ps -aq -f name=api-gateway)
-              if [ ! -z "$GATEWAY_CONTAINER" ]; then
-                docker logs $GATEWAY_CONTAINER | tail -100
+              
+              echo "=== Apartment Service logs ==="
+              APARTMENT_CONTAINER=$(docker ps -q -f name=apartment)
+              if [ ! -z "$APARTMENT_CONTAINER" ]; then
+                docker logs $APARTMENT_CONTAINER --tail 300 2>&1
+              else
+                echo "No Apartment container found"
+              fi
+              echo ""
+              
+              echo "=== User Service logs ==="
+              USER_CONTAINER=$(docker ps -q -f name=user)
+              if [ ! -z "$USER_CONTAINER" ]; then
+                docker logs $USER_CONTAINER --tail 300 2>&1
+              else
+                echo "No User container found"
+              fi
+              echo ""
+              
+              echo "=== Review Service logs ==="
+              REVIEW_CONTAINER=$(docker ps -q -f name=review)
+              if [ ! -z "$REVIEW_CONTAINER" ]; then
+                docker logs $REVIEW_CONTAINER --tail 300 2>&1
+              else
+                echo "No Review container found"
+              fi
+              echo ""
+              
+              echo "=== API Gateway logs (full) ==="
+              API_CONTAINER=$(docker ps -q -f name=api-gateway)
+              if [ ! -z "$API_CONTAINER" ]; then
+                docker logs $API_CONTAINER --tail 300 2>&1
               else
                 echo "No API Gateway container found"
-              fi
-              echo ""
-              echo "=== MySQL logs ==="
-              MYSQL_CONTAINER=$(docker ps -aq -f name=mysql-apartments)
-              if [ ! -z "$MYSQL_CONTAINER" ]; then
-                docker logs $MYSQL_CONTAINER | tail -50
-              else
-                echo "No MySQL container found"
-              fi
-              echo ""
-              echo "=== MinIO logs ==="
-              MINIO_CONTAINER=$(docker ps -aq -f name=minio | head -1)
-              if [ ! -z "$MINIO_CONTAINER" ]; then
-                docker logs $MINIO_CONTAINER | tail -50
-              else
-                echo "No MinIO container found"
-              fi
-              echo ""
-              echo "=== User Service logs ==="
-              USER_CONTAINER=$(docker ps -aq -f name=user)
-              if [ ! -z "$USER_CONTAINER" ]; then
-                docker logs $USER_CONTAINER | tail -100
-              else
-                echo "No User service container found"
-              fi
-              echo ""
-              echo "=== Booking Service logs ==="
-              BOOKING_CONTAINER=$(docker ps -aq -f name=booking)
-              if [ ! -z "$BOOKING_CONTAINER" ]; then
-                docker logs $BOOKING_CONTAINER | tail -100
-              else
-                echo "No Booking service container found"
-              fi
-              echo ""
-              echo "=== Apartment Service logs ==="
-              APARTMENT_CONTAINER=$(docker ps -aq -f name=apartment)
-              if [ ! -z "$APARTMENT_CONTAINER" ]; then
-                docker logs $APARTMENT_CONTAINER | tail -100
-              else
-                echo "No Apartment service container found"
-              fi
-              echo ""
-              echo "=== Review Service logs ==="
-              REVIEW_CONTAINER=$(docker ps -aq -f name=review)
-              if [ ! -z "$REVIEW_CONTAINER" ]; then
-                docker logs $REVIEW_CONTAINER | tail -100
-              else
-                echo "No Review service container found"
               fi
               
           - name: Stop services

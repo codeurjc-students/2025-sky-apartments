@@ -10,9 +10,10 @@ import com.skyapartments.review.config.FeignTracingConfig;
 import com.skyapartments.review.dto.BookingDTO;
 
 
-@FeignClient(name = "booking", path = "/api/v1/bookings", configuration = FeignTracingConfig.class)
+@FeignClient(name = "booking", path = "/api/v1/bookings/private", configuration = FeignTracingConfig.class)
 public interface BookingClient {
     
     @GetMapping("/active/user/{userId}/apartment/{apartmentId}")
     List<BookingDTO> getActiveBookingsByUserAndApartment(@PathVariable("userId") Long userId, @PathVariable("apartmentId") Long apartmentId);
 }
+

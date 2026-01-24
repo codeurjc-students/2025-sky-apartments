@@ -108,6 +108,11 @@ public class ApartmentService {
         Apartment apartment = apartmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Apartment not found"));
 
+        Boolean hasBookings = bookingClient.hasBookings(id);
+        if (hasBookings) {
+            throw new BusinessValidationException("Cannot delete apartment with existing bookings");
+        }
+
         // Delete images from S3
         if (apartment.getImageUrls() != null) {
             for (String imageUrl : apartment.getImageUrls()) {

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.skyapartments.review.dto.ReviewDTO;
 import com.skyapartments.review.dto.ReviewRequestDTO;
 import com.skyapartments.review.dto.UpdateReviewRequestDTO;
-import com.skyapartments.review.model.Review;
 import com.skyapartments.review.service.ReviewService;
 
 import jakarta.servlet.http.HttpServletRequest;

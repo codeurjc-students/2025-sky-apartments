@@ -27,7 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false"
+    }
+)
 @TestMethodOrder(OrderAnnotation.class)
 public class ApartmentAPIe2eTest {
 

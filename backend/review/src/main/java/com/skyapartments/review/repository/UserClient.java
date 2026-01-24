@@ -10,10 +10,10 @@ import com.skyapartments.review.dto.UserDTO;
 
 
 
-@FeignClient(name = "user", path = "/api/v1/users", configuration = FeignTracingConfig.class)
+@FeignClient(name = "user", path = "/api/v1/users/private", configuration = FeignTracingConfig.class)
 public interface UserClient {
 
-    @GetMapping("/private/{id}")
+    @GetMapping("/{id}")
     UserDTO getUser(@PathVariable("id") Long userId);
 
     @GetMapping

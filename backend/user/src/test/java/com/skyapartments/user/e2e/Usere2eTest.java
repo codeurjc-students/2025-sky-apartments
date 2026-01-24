@@ -26,7 +26,13 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false"
+    }
+)
 @TestMethodOrder(OrderAnnotation.class)
 public class Usere2eTest {
 
@@ -185,43 +191,19 @@ public class Usere2eTest {
 
     @Test
     @Order(6)
-    public void getUserByEmail_ShouldReturnUser_WhenEmailExists() {
+    public void getUserByEmail_ShouldReturnForbidden() {
         given()
             .queryParam("email", "user@example.com")
         .when()
-            .get("/api/v1/users/email")
+            .get("/api/v1/users/private/email")
         .then()
-            .statusCode(200)
-            .body("email", equalTo("user@example.com"))
-            .body("name", equalTo("Test"))
-            .body("surname", equalTo("User"));
-    }
-
-    @Test
-    @Order(7)
-    public void getUserByEmail_ShouldReturnNotFound_WhenEmailDoesNotExist() {
-        given()
-            .queryParam("email", "nonexistent@example.com")
-        .when()
-            .get("/api/v1/users/email")
-        .then()
-            .statusCode(404);
-    }
-
-    @Test
-    @Order(8)
-    public void getUserByEmail_ShouldReturnBadRequest_WhenEmailParameterIsMissing() {
-        given()
-        .when()
-            .get("/api/v1/users/email")
-        .then()
-            .statusCode(400);
+            .statusCode(403);
     }
 
     // ==================== GET ME TESTS ====================
 
     @Test
-    @Order(9)
+    @Order(7)
     public void getMe_ShouldReturnCurrentUser_WhenUserIsAuthenticated() {
         given()
             .cookies(userCookies)
@@ -233,7 +215,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(10)
+    @Order(8)
     public void getMe_ShouldReturnCurrentUser_WhenAdminIsAuthenticated() {
         given()
             .cookies(adminCookies)
@@ -245,7 +227,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(11)
+    @Order(9)
     public void getMe_ShouldReturnUnauthorized_WhenNoTokenProvided() {
         given()
         .when()
@@ -257,7 +239,7 @@ public class Usere2eTest {
     // ==================== CREATE USER TESTS ====================
 
     @Test
-    @Order(12)
+    @Order(10)
     public void createUser_ShouldCreateUser_WhenValidDataProvided() {
         UserRequestDTO userRequest = new UserRequestDTO();
         userRequest.setName("New");
@@ -282,7 +264,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(13)
+    @Order(11)
     public void createUser_ShouldReturnBadRequest_WhenPasswordsDoNotMatch() {
         UserRequestDTO userRequest = new UserRequestDTO();
         userRequest.setName("New");
@@ -304,7 +286,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(14)
+    @Order(12)
     public void createUser_ShouldReturnBadRequest_WhenEmailAlreadyExists() {
         UserRequestDTO userRequest = new UserRequestDTO();
         userRequest.setName("New");
@@ -326,7 +308,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(15)
+    @Order(13)
     public void createUser_ShouldReturnBadRequest_WhenRequiredFieldsAreMissing() {
         UserRequestDTO userRequest = new UserRequestDTO();
         userRequest.setName("New");
@@ -347,7 +329,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(16)
+    @Order(14)
     public void createUser_ShouldReturnBadRequest_WhenEmailFormatIsInvalid() {
         UserRequestDTO userRequest = new UserRequestDTO();
         userRequest.setName("New");
@@ -368,7 +350,7 @@ public class Usere2eTest {
     // ==================== UPDATE USER TESTS ====================
 
     @Test
-    @Order(17)
+    @Order(15)
     public void updateUser_ShouldUpdateUser_WhenValidDataAndUserIsAuthenticated() {
 
         UpdateUserRequestDTO updateRequest = new UpdateUserRequestDTO();
@@ -392,7 +374,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(18)
+    @Order(16)
     public void updateUser_ShouldUpdateUser_WhenValidDataAndUserIsAdmin() {
         UserRequestDTO updateRequest = new UserRequestDTO();
         updateRequest.setName("Updated");
@@ -417,7 +399,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(19)
+    @Order(17)
     public void updateUser_ShouldReturnNotFound_WhenUserDoesNotExist() {
         long nonExistentId = 99999L;
         UserRequestDTO updateRequest = new UserRequestDTO();
@@ -439,7 +421,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(20)
+    @Order(18)
     public void updateUser_ShouldReturnBadRequest_WhenPasswordsDoNotMatch() {
         UserRequestDTO updateRequest = new UserRequestDTO();
         updateRequest.setName("Updated");
@@ -461,7 +443,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(21)
+    @Order(19)
     public void updateUser_ShouldReturnUnauthorized_WhenNoTokenProvided() {
         UserRequestDTO updateRequest = new UserRequestDTO();
         updateRequest.setName("Updated");
@@ -481,7 +463,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(22)
+    @Order(20)
     public void updateUser_ShouldReturnBadRequest_WhenEmailFormatIsInvalid() {
         UserRequestDTO updateRequest = new UserRequestDTO();
         updateRequest.setName("Updated");
@@ -506,7 +488,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(23)
+    @Order(21)
     public void updateUser_ShouldReturnBadRequest_WhenPasswordFormatIsInvalid() {
         UserRequestDTO updateRequest = new UserRequestDTO();
         updateRequest.setName("Updated");
@@ -532,7 +514,7 @@ public class Usere2eTest {
     // ==================== DELETE USER TESTS ====================
 
     @Test
-    @Order(24)
+    @Order(22)
     public void deleteUser_ShouldDeleteUser_WhenUserExistsAndUserIsAuthenticated() {
         given()
             .cookies(userCookies)
@@ -551,7 +533,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(25)
+    @Order(23)
     public void deleteUser_ShouldDeleteUser_WhenUserExistsAndUserIsAdmin() {
         User tempUser = userRepository.save(new User(
             "Admin Temp", 
@@ -571,7 +553,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(26)
+    @Order(24)
     public void deleteUser_ShouldReturnNotFound_WhenUserDoesNotExist() {
         long nonExistentId = 99999L;
         
@@ -584,7 +566,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(27)
+    @Order(25)
     public void deleteUser_ShouldReturnUnauthorized_WhenNoTokenProvided() {
         given()
         .when()
@@ -594,7 +576,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(28)
+    @Order(26)
     public void deleteUser_ShouldReturnUnauthorized_WhenNotTheUser() {
         User tempUser = userRepository.save(new User(
             "Temp", 
@@ -614,7 +596,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(29)
+    @Order(27)
     public void deleteUser_ShouldReturnBadRequest_WhenIdIsNotLong() {
         given()
             .cookies(userCookies)
@@ -627,7 +609,7 @@ public class Usere2eTest {
     // ==================== AUTHENTICATION TESTS ====================
 
     @Test
-    @Order(30)
+    @Order(28)
     public void login_ShouldReturnAuthResponse_WhenCredentialsAreValid() {
         LoginRequest loginRequest = new LoginRequest("user@example.com", "Password");
 
@@ -642,7 +624,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(31)
+    @Order(29)
     public void login_ShouldReturnUnauthorized_WhenCredentialsAreInvalid() {
         
         LoginRequest loginRequest = new LoginRequest("user@example.com", "wrongpassword");
@@ -656,7 +638,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(32)
+    @Order(30)
     public void login_ShouldReturnBadRequest_WhenUsernameIsMissing() {
     
         LoginRequest loginRequest = new LoginRequest();
@@ -672,7 +654,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(33)
+    @Order(31)
     public void logout_ShouldReturnSuccess_WhenCalled() {
         given()
         .when()
@@ -683,7 +665,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(34)
+    @Order(32)
     public void refreshToken_ShouldReturnUnauthorized_WhenNoRefreshTokenProvided() {
         given()
         .when()
@@ -698,7 +680,7 @@ public class Usere2eTest {
     // ==================== EDGE CASES ====================
 
     @Test
-    @Order(35)
+    @Order(33)
     public void getUserById_ShouldReturnUnauthorized_WhenTokenIsInvalid() {
         given()
             .cookie("AuthToken", "invalid-token")
@@ -709,7 +691,7 @@ public class Usere2eTest {
     }
 
     @Test
-    @Order(36)
+    @Order(34)
     public void createUser_ShouldReturnBadRequest_WhenRequestBodyIsEmpty() {
         given()
             .contentType(ContentType.JSON)
