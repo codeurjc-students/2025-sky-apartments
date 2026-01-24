@@ -120,13 +120,13 @@ jobs:
               echo "Registered services in Eureka:"
               curl -s http://localhost:8761/eureka/apps | grep "<app>" -A 1 | grep "<name>" || echo "Could not fetch service names"
 
-          - name: Run Review E2E Tests
-            working-directory: ./backend/review
-            run: mvn test -Dtest='*Review*e2eTest'
-
           - name: Run Filter E2E Tests
             working-directory: ./backend/booking
             run: mvn test -Dtest='*Filter*e2eTest'
+
+          - name: Run Review E2E Tests
+            working-directory: ./backend/review
+            run: mvn test -Dtest='*Review*e2eTest'
 
           - name: Run Booking E2E Tests
             working-directory: ./backend/booking
