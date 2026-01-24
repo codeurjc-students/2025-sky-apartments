@@ -13,7 +13,18 @@ import { BookingService } from '../../services/booking/booking.service';
 import { BookingRequestDTO } from '../../dtos/bookingRequest.dto';
 import { UserService } from '../../services/user/user.service';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
+import { FilterService } from '../../services/booking/filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
+interface AppliedFilter {
+  id: number;
+  name: string;
+  description: string;
+  increment: boolean;
+  value: number;
+  nightsApplied: number;
+  impact: number;
+}
 
 @Component({
   selector: 'app-booking-confirmation',
@@ -24,7 +35,8 @@ import { ApartmentDTO } from '../../dtos/apartment.dto';
     MatIconModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   templateUrl: './booking-confirmation.component.html',
   styleUrls: ['./booking-confirmation.component.css']
@@ -38,12 +50,20 @@ export class BookingConfirmationComponent implements OnInit {
   checkOut: Date | null = null;
   guests: number = 0;
   numberOfNights: number = 0;
+
+  basePrice: number = 0;
   totalPrice: number = 0;
+  appliedFilters: AppliedFilter[] = [];
+  totalIncrements: number = 0;
+  totalDiscounts: number = 0;
   
   loading: boolean = true;
+  loadingFilters: boolean = false;
   bookingInProgress: boolean = false;
   bookingConfirmed: boolean = false;
   bookingId: number = 0;
+
+  Math = Math; // Expose Math to template
 
   constructor(
     private route: ActivatedRoute,
@@ -51,10 +71,12 @@ export class BookingConfirmationComponent implements OnInit {
     private apartmentService: ApartmentService,
     private bookingService: BookingService,
     private userService: UserService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private filterService: FilterService
   ) {}
 
   ngOnInit(): void {
+    console.log('Initializing BookingConfirmationComponent');
     this.userService.getCurrentUser().subscribe({
       next: (user) => {
         this.user = user;
@@ -80,7 +102,12 @@ export class BookingConfirmationComponent implements OnInit {
         });
         return;
       }
-
+      console.log('Booking parameters:', {
+        apartmentId: this.apartmentId,
+        checkIn: this.checkIn,
+        checkOut: this.checkOut,
+        guests: this.guests
+      });
       this.calculateNights();
       this.loadApartmentDetails();
     });
@@ -98,8 +125,11 @@ export class BookingConfirmationComponent implements OnInit {
     this.apartmentService.getApartmentById(this.apartmentId).subscribe({
       next: (apartment) => {
         this.apartment = apartment;
-        this.totalPrice = apartment.price * this.numberOfNights;
+        this.basePrice = apartment.price * this.numberOfNights;
+        this.totalPrice = this.basePrice;
         this.loading = false;
+        console.log('Apartment details loaded:', apartment);
+        this.loadApplicableFilters();
       },
       error: (error) => {
         this.router.navigate(['/error'], {
@@ -110,6 +140,86 @@ export class BookingConfirmationComponent implements OnInit {
         });
       }
     });
+  }
+
+  loadApplicableFilters(): void {
+    console.log('Loading applicable filters for booking.');
+    if (!this.checkIn || !this.checkOut) return;
+    console.log('Check-in date:', this.checkIn);
+    this.loadingFilters = true;
+    const checkInStr = this.formatDateForAPI(this.checkIn);
+    const checkOutStr = this.formatDateForAPI(this.checkOut);
+
+    this.filterService.getApplicableFilters(checkInStr, checkOutStr).subscribe({
+      next: (response) => {
+        this.appliedFilters = this.processFiltersForDisplay(response);
+        this.calculateTotals();
+        this.loadingFilters = false;
+      },
+      error: (error) => {
+        console.error('Error loading filters:', error);
+        this.router.navigate(['/error'], {
+          queryParams: {
+            message: 'Failed to load applicable filters',
+            code: error.status || 500
+          }
+        });
+      }
+    });
+  }
+
+  processFiltersForDisplay(response: any): AppliedFilter[] {
+    const filtersByNight: Map<number, any> = new Map();
+    
+    // Process each night's filters
+    Object.entries(response.filtersByDate).forEach(([date, filters]) => {
+      (filters as any[]).forEach(filter => {
+        const key = filter.id;
+        if (filtersByNight.has(key)) {
+          filtersByNight.get(key).nightsApplied++;
+        } else {
+          filtersByNight.set(key, {
+            ...filter,
+            nightsApplied: 1
+          });
+        }
+      });
+    });
+
+    // Calculate impact for each filter
+    return Array.from(filtersByNight.values()).map(filter => {
+      const pricePerNight = this.apartment!.price;
+      const impact = (pricePerNight * (filter.value / 100)) * filter.nightsApplied;
+      
+      return {
+        id: filter.id,
+        name: filter.name,
+        description: filter.description || 'No description available',
+        increment: filter.increment,
+        value: filter.value,
+        nightsApplied: filter.nightsApplied,
+        impact: filter.increment ? impact : -impact
+      };
+    }).sort((a, b) => b.impact - a.impact); // Sort by impact
+  }
+
+  calculateTotals(): void {
+    this.totalIncrements = this.appliedFilters
+      .filter(f => f.increment)
+      .reduce((sum, f) => sum + f.impact, 0);
+    
+    this.totalDiscounts = Math.abs(this.appliedFilters
+      .filter(f => !f.increment)
+      .reduce((sum, f) => sum + f.impact, 0));
+    
+    this.totalPrice = this.basePrice + this.totalIncrements - this.totalDiscounts;
+  }
+
+  formatDateForAPI(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   confirmBooking(): void {
@@ -181,6 +291,4 @@ export class BookingConfirmationComponent implements OnInit {
       panelClass: [`snackbar-${type}`]
     });
   }
-
-  
 }

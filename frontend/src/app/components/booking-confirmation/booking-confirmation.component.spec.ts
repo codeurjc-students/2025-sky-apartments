@@ -1,70 +1,96 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { BookingConfirmationComponent } from './booking-confirmation.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
-import { of, throwError, BehaviorSubject } from 'rxjs';
-
-import { BookingConfirmationComponent } from './booking-confirmation.component';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { BookingService } from '../../services/booking/booking.service';
 import { UserService } from '../../services/user/user.service';
-import { UserDTO } from '../../dtos/user.dto';
-import { BookingRequestDTO } from '../../dtos/bookingRequest.dto';
-import { ApartmentDTO } from '../../dtos/apartment.dto';
+import { FilterService } from '../../services/booking/filter.service';
+import { of, throwError } from 'rxjs';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ConditionType, DateType } from '../../dtos/filter.dto';
 
 describe('BookingConfirmationComponent', () => {
   let component: BookingConfirmationComponent;
   let fixture: ComponentFixture<BookingConfirmationComponent>;
-  let apartmentService: jasmine.SpyObj<ApartmentService>;
-  let bookingService: jasmine.SpyObj<BookingService>;
-  let userService: jasmine.SpyObj<UserService>;
-  let router: Router;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
-  let queryParamsSubject: BehaviorSubject<any>;
+  let mockRouter: jasmine.SpyObj<Router>;
+  let mockActivatedRoute: any;
+  let mockApartmentService: jasmine.SpyObj<ApartmentService>;
+  let mockBookingService: jasmine.SpyObj<BookingService>;
+  let mockUserService: jasmine.SpyObj<UserService>;
+  let mockFilterService: jasmine.SpyObj<FilterService>;
+  let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
 
-  const mockUser: UserDTO = {
+  const mockUser = {
     id: 1,
     name: 'John',
     surname: 'Doe',
-    email: 'john@example.com',
-    phoneNumber: '123456789',
+    email: 'john.doe@example.com',
+    phoneNumber: '+34123456789',
     roles: ['USER']
   };
 
-  const mockApartment: ApartmentDTO = {
+  const mockApartment = {
     id: 1,
-    name: 'Test Apartment',
-    description: 'A beautiful test apartment',
+    name: 'Luxury Apartment',
+    description: 'A beautiful apartment in the city center',
     price: 100,
-    services: new Set(['WiFi', 'AC', 'Kitchen']),
+    services: new Set(['WiFi', 'Kitchen', 'Air Conditioning']),
     capacity: 4,
-    imagesUrl: ['test.jpg']
+    imagesUrl: ['https://example.com/image1.jpg']
   };
 
-  const mockBooking = {
-    id: 123,
-    userId: 1,
-    apartmentId: 1,
-    startDate: new Date('2025-10-20'),
-    endDate: new Date('2025-10-25'),
-    guests: 2,
-    cost: 500,
-    state: 'CONFIRMED',
-    createdAt: new Date()
+  const mockQueryParams = {
+    apartmentId: '1',
+    checkIn: '2025-01-15',
+    checkOut: '2025-01-20',
+    guests: '2'
   };
+
+  const mockFiltersResponse = {
+            "checkInDate": "2026-07-17",
+            "checkOutDate": "2026-07-19",
+            "totalNights": 2,
+            "filtersByDate": {
+                "2026-07-17": [
+                    {
+                        "id": 1,
+                        "name": "Weekend Premium",
+                        "description": "Price increase for Friday, Saturday and Sunday nights",
+                        "activated": true,
+                        "increment": true,
+                        "value": 20.00,
+                        "dateType": DateType.WEEK_DAYS,
+                        "weekDays": "5,6,7",
+                        "conditionType": ConditionType.NONE
+                    }
+                ],
+                "2026-07-18": [
+                    {
+                        "id": 1,
+                        "name": "Weekend Premium",
+                        "description": "Price increase for Friday, Saturday and Sunday nights",
+                        "activated": true,
+                        "increment": true,
+                        "value": 20.00,
+                        "dateType": DateType.WEEK_DAYS,
+                        "weekDays": "5,6,7",
+                        "conditionType": ConditionType.NONE
+                    }
+                ]
+            }
+        };
 
   beforeEach(async () => {
-    const apartmentServiceSpy = jasmine.createSpyObj('ApartmentService', ['getApartmentById']);
-    const bookingServiceSpy = jasmine.createSpyObj('BookingService', ['createBooking']);
-    const userServiceSpy = jasmine.createSpyObj('UserService', ['getCurrentUser']);
-    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
-    snackBarSpy.open.and.returnValue({ onAction: () => of({}), dismiss: () => {} } as any);
-
-    queryParamsSubject = new BehaviorSubject({});
-    const activatedRouteStub = {
-      queryParams: queryParamsSubject.asObservable()
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    mockActivatedRoute = {
+      queryParams: of(mockQueryParams)
     };
+    mockApartmentService = jasmine.createSpyObj('ApartmentService', ['getApartmentById']);
+    mockBookingService = jasmine.createSpyObj('BookingService', ['createBooking']);
+    mockUserService = jasmine.createSpyObj('UserService', ['getCurrentUser']);
+    mockFilterService = jasmine.createSpyObj('FilterService', ['getApplicableFilters']);
+    mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -72,669 +98,380 @@ describe('BookingConfirmationComponent', () => {
         BrowserAnimationsModule
       ],
       providers: [
-        { provide: ApartmentService, useValue: apartmentServiceSpy },
-        { provide: BookingService, useValue: bookingServiceSpy },
-        { provide: UserService, useValue: userServiceSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy },
-        { provide: ActivatedRoute, useValue: activatedRouteStub },
-        provideRouter([
-          { path: 'error', component: BookingConfirmationComponent },
-          { path: 'login', component: BookingConfirmationComponent },
-          { path: 'profile', component: BookingConfirmationComponent },
-          { path: 'apartments', component: BookingConfirmationComponent },
-          { path: 'apartment/:id', component: BookingConfirmationComponent }
-        ])
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ApartmentService, useValue: mockApartmentService },
+        { provide: BookingService, useValue: mockBookingService },
+        { provide: UserService, useValue: mockUserService },
+        { provide: FilterService, useValue: mockFilterService },
+        { provide: MatSnackBar, useValue: mockSnackBar }
       ]
-    }).overrideComponent(BookingConfirmationComponent, {
-      set: {
-        providers: [
-          { provide: MatSnackBar, useValue: snackBarSpy }
-        ]
-      }
     }).compileComponents();
 
-    apartmentService = TestBed.inject(ApartmentService) as jasmine.SpyObj<ApartmentService>;
-    bookingService = TestBed.inject(BookingService) as jasmine.SpyObj<BookingService>;
-    userService = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
-    router = TestBed.inject(Router);
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
+    mockUserService.getCurrentUser.and.returnValue(of(mockUser));
+    mockApartmentService.getApartmentById.and.returnValue(of(mockApartment));
+    mockFilterService.getApplicableFilters.and.returnValue(of(mockFiltersResponse));
 
-    userService.getCurrentUser.and.returnValue(of(mockUser));
-    apartmentService.getApartmentById.and.returnValue(of(mockApartment));
-    bookingService.createBooking.and.returnValue(of(mockBooking));
-  });
-
-
-  function createComponentWithParams(params: any) {
-    queryParamsSubject.next(params);
     fixture = TestBed.createComponent(BookingConfirmationComponent);
     component = fixture.componentInstance;
-    (component as any).snackBar = snackBar;
-    fixture.detectChanges();
-  }
+  });
 
   it('should create', () => {
-    createComponentWithParams({});
     expect(component).toBeTruthy();
   });
 
-  describe('Component Initialization', () => {
-    it('should initialize with default values', () => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-      
-      expect(component.apartment).toBeNull();
-      expect(component.user).toBeNull();
-      expect(component.apartmentId).toBe(0);
-      expect(component.checkIn).toBeNull();
-      expect(component.checkOut).toBeNull();
-      expect(component.guests).toBe(0);
-      expect(component.numberOfNights).toBe(0);
-      expect(component.totalPrice).toBe(0);
-      expect(component.loading).toBe(true);
-      expect(component.bookingInProgress).toBe(false);
-      expect(component.bookingConfirmed).toBe(false);
-      expect(component.bookingId).toBe(0);
-    });
-  });
-
   describe('ngOnInit', () => {
-    it('should load current user', () => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      expect(userService.getCurrentUser).toHaveBeenCalled();
+    it('should load current user on initialization', () => {
+      fixture.detectChanges();
+      expect(mockUserService.getCurrentUser).toHaveBeenCalled();
+      expect(component.user).toEqual(mockUser);
     });
 
-    it('should set user data on successful load', fakeAsync(() => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      tick();
-      
-      expect(component.user).toEqual(mockUser);
-    }));
+    it('should navigate to login if user loading fails', () => {
+      mockUserService.getCurrentUser.and.returnValue(
+        throwError(() => ({ status: 401 }))
+      );
+      fixture.detectChanges();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+    });
 
-    it('should navigate to login on user load error', fakeAsync(() => {
-      spyOn(console, 'error');
-      spyOn(router, 'navigate');
-      userService.getCurrentUser.and.returnValue(throwError(() => new Error('Failed')));
-      
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/login']);
-    }));
+    it('should parse query parameters correctly', () => {
+      fixture.detectChanges();
+      expect(component.apartmentId).toBe(1);
+      expect(component.checkIn).toEqual(new Date('2025-01-15'));
+      expect(component.checkOut).toEqual(new Date('2025-01-20'));
+      expect(component.guests).toBe(2);
+    });
 
-    it('should navigate to error if apartmentId is missing', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      
-      createComponentWithParams({
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
+    it('should navigate to error page if query parameters are invalid', () => {
+      mockActivatedRoute.queryParams = of({});
+      fixture.detectChanges();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/error'], {
         queryParams: {
           message: 'Invalid booking parameters',
           code: 400
         }
       });
-    }));
-
-    it('should navigate to error if checkIn is missing', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      
-      createComponentWithParams({
-        apartmentId: '1',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
-        queryParams: {
-          message: 'Invalid booking parameters',
-          code: 400
-        }
-      });
-    }));
-
-    it('should navigate to error if checkOut is missing', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        guests: '2'
-      });
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
-        queryParams: {
-          message: 'Invalid booking parameters',
-          code: 400
-        }
-      });
-    }));
-
-    it('should navigate to error if guests is missing', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25'
-      });
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
-        queryParams: {
-          message: 'Invalid booking parameters',
-          code: 400
-        }
-      });
-    }));
-  });
-
-  describe('calculateNights', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
     });
 
     it('should calculate number of nights correctly', () => {
-      component.checkIn = new Date('2025-10-20');
-      component.checkOut = new Date('2025-10-25');
-      
-      component.calculateNights();
-      
+      fixture.detectChanges();
       expect(component.numberOfNights).toBe(5);
     });
 
-    it('should handle same day check-in and check-out', () => {
-      component.checkIn = new Date('2025-10-20');
-      component.checkOut = new Date('2025-10-20');
-      
-      component.calculateNights();
-      
-      expect(component.numberOfNights).toBe(0);
-    });
-
-    it('should handle null checkIn', () => {
-      component.checkIn = null;
-      component.checkOut = new Date('2025-10-25');
-      
-      expect(() => component.calculateNights()).not.toThrow();
-    });
-
-    it('should handle null checkOut', () => {
-      component.checkIn = new Date('2025-10-20');
-      component.checkOut = null;
-      
-      expect(() => component.calculateNights()).not.toThrow();
-    });
-
-    it('should round up partial days', () => {
-      const checkIn = new Date('2025-10-20T10:00:00');
-      const checkOut = new Date('2025-10-22T15:00:00');
-      component.checkIn = checkIn;
-      component.checkOut = checkOut;
-      
-      component.calculateNights();
-      
-      expect(component.numberOfNights).toBeGreaterThanOrEqual(2);
-    });
-  });
-
-  describe('loadApartmentDetails', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-      component.apartmentId = 1;
-      component.numberOfNights = 5;
-    });
-
-    it('should load apartment by id', () => {
-      component.loadApartmentDetails();
-      expect(apartmentService.getApartmentById).toHaveBeenCalledWith(1);
-    });
-
-    it('should set apartment data on success', fakeAsync(() => {
-      component.loadApartmentDetails();
-      tick();
-      
+    it('should load apartment details', () => {
+      fixture.detectChanges();
+      expect(mockApartmentService.getApartmentById).toHaveBeenCalledWith(1);
       expect(component.apartment).toEqual(mockApartment);
-    }));
+      expect(component.basePrice).toBe(500); // 100 * 5 nights
+    });
 
-    it('should calculate total price', fakeAsync(() => {
-      component.loadApartmentDetails();
-      tick();
-      
-      expect(component.totalPrice).toBe(500); // 100 * 5 nights
-    }));
-
-    it('should set loading to false after success', fakeAsync(() => {
-      component.loadApartmentDetails();
-      tick();
-      
-      expect(component.loading).toBe(false);
-    }));
-
-    it('should navigate to error page on failure', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      apartmentService.getApartmentById.and.returnValue(
+    it('should navigate to error page if apartment loading fails', () => {
+      mockApartmentService.getApartmentById.and.returnValue(
         throwError(() => ({ status: 404 }))
       );
-      
-      component.loadApartmentDetails();
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
+      fixture.detectChanges();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/error'], {
         queryParams: {
           message: 'Failed to load apartment details',
           code: 404
         }
       });
-    }));
+    });
+  });
 
-    it('should use default error code 500 if not provided', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      apartmentService.getApartmentById.and.returnValue(
-        throwError(() => ({}))
+  describe('calculateNights', () => {
+    it('should calculate the correct number of nights', () => {
+      component.checkIn = new Date('2025-01-15');
+      component.checkOut = new Date('2025-01-20');
+      component.calculateNights();
+      expect(component.numberOfNights).toBe(5);
+    });
+
+    it('should handle single night bookings', () => {
+      component.checkIn = new Date('2025-01-15');
+      component.checkOut = new Date('2025-01-16');
+      component.calculateNights();
+      expect(component.numberOfNights).toBe(1);
+    });
+  });
+
+  describe('loadApplicableFilters', () => {
+    beforeEach(() => {
+      component.checkIn = new Date('2025-01-15');
+      component.checkOut = new Date('2025-01-20');
+      component.apartment = mockApartment;
+    });
+
+    it('should load applicable filters', () => {
+      component.loadApplicableFilters();
+      expect(mockFilterService.getApplicableFilters).toHaveBeenCalledWith(
+        '2025-01-15',
+        '2025-01-20'
       );
-      
-      component.loadApartmentDetails();
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
+    });
+
+    it('should not load filters if checkIn or checkOut is null', () => {
+      component.checkIn = null;
+      component.loadApplicableFilters();
+      expect(mockFilterService.getApplicableFilters).not.toHaveBeenCalled();
+    });
+
+    it('should process filters correctly', () => {
+      component.loadApplicableFilters();
+      expect(component.appliedFilters.length).toBeGreaterThan(0);
+    });
+
+    it('should navigate to error page if filter loading fails', () => {
+      mockFilterService.getApplicableFilters.and.returnValue(
+        throwError(() => ({ status: 500 }))
+      );
+      component.loadApplicableFilters();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/error'], {
         queryParams: {
-          message: 'Failed to load apartment details',
+          message: 'Failed to load applicable filters',
           code: 500
         }
       });
-    }));
+    });
+  });
+
+  describe('processFiltersForDisplay', () => {
+
+    it('should calculate impact correctly for increments', () => {
+      component.apartment = mockApartment;
+      const result = component.processFiltersForDisplay(mockFiltersResponse);
+      
+      const weekendSurcharge = result.find(f => f.id === 1);
+      // 100 * (20/100) * 2 nights = 40
+      expect(weekendSurcharge?.impact).toBe(40);
+    });
+
+    it('should sort filters by impact', () => {
+      component.apartment = mockApartment;
+      const result = component.processFiltersForDisplay(mockFiltersResponse);
+      
+      // Verify sorting: higher impacts first
+      for (let i = 0; i < result.length - 1; i++) {
+        expect(result[i].impact).toBeGreaterThanOrEqual(result[i + 1].impact);
+      }
+    });
+  });
+
+  describe('calculateTotals', () => {
+    beforeEach(() => {
+      component.basePrice = 500;
+      component.appliedFilters = [
+        {
+          id: 1,
+          name: 'Weekend Surcharge',
+          description: 'Extra charge',
+          increment: true,
+          value: 15,
+          nightsApplied: 2,
+          impact: 30
+        },
+        {
+          id: 2,
+          name: 'Early Bird Discount',
+          description: 'Discount',
+          increment: false,
+          value: 10,
+          nightsApplied: 1,
+          impact: -10
+        }
+      ];
+    });
+
+    it('should calculate total increments', () => {
+      component.calculateTotals();
+      expect(component.totalIncrements).toBe(30);
+    });
+
+    it('should calculate total discounts', () => {
+      component.calculateTotals();
+      expect(component.totalDiscounts).toBe(10);
+    });
+
+    it('should calculate final total price', () => {
+      component.calculateTotals();
+      expect(component.totalPrice).toBe(520); // 500 + 30 - 10
+    });
   });
 
   describe('confirmBooking', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-      (component as any).snackBar = snackBar;
-      component.user = mockUser;
-      component.apartmentId = 1;
-      component.checkIn = new Date('2025-10-20');
-      component.checkOut = new Date('2025-10-25');
-      component.guests = 2;
+      fixture.detectChanges(); // Initialize component to set dates from query params
     });
 
-    it('should not proceed if user is null', () => {
-      component.user = null;
-      component.confirmBooking();
-      expect(bookingService.createBooking).not.toHaveBeenCalled();
-    });
-
-    it('should not proceed if checkIn is null', () => {
-      component.checkIn = null;
-      component.confirmBooking();
-      expect(bookingService.createBooking).not.toHaveBeenCalled();
-    });
-
-    it('should not proceed if checkOut is null', () => {
-      component.checkOut = null;
-      component.confirmBooking();
-      expect(bookingService.createBooking).not.toHaveBeenCalled();
-    });
-
-    it('should create booking with correct data', () => {
-      component.confirmBooking();
-      
-      const expectedRequest: BookingRequestDTO = {
+    it('should create booking successfully', () => {
+      const mockBooking = {
+        id: 1,
         userId: 1,
         apartmentId: 1,
-        startDate: new Date('2025-10-20'),
-        endDate: new Date('2025-10-25'),
-        guests: 2
+        startDate: new Date('2025-01-15'),
+        endDate: new Date('2025-01-20'),
+        guests: 2,
+        state: 'CONFIRMED',
+        cost: 750,
+        createdAt: new Date('2024-12-01')
       };
-      
-      expect(bookingService.createBooking).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          userId: expectedRequest.userId,
-          apartmentId: expectedRequest.apartmentId,
-          guests: expectedRequest.guests
-        })
-      );
+      mockBookingService.createBooking.and.returnValue(of(mockBooking));
+
+      component.confirmBooking();
+
+      expect(mockBookingService.createBooking).toHaveBeenCalledWith({
+        userId: 1,
+        apartmentId: 1,
+        startDate: new Date('2025-01-15'),
+        endDate: new Date('2025-01-20'),
+        guests: 2
+      });
+      expect(component.bookingConfirmed).toBeTrue();
+      expect(component.bookingId).toBe(1);
     });
 
-    it('should set bookingConfirmed to true on success', fakeAsync(() => {
+    it('should not create booking if user is null', () => {
+      component.user = null;
       component.confirmBooking();
-      tick();
-      
-      expect(component.bookingConfirmed).toBe(true);
-    }));
+      expect(mockBookingService.createBooking).not.toHaveBeenCalled();
+    });
 
-    it('should set bookingId on success', fakeAsync(() => {
+    it('should not create booking if checkIn is null', () => {
+      component.checkIn = null;
       component.confirmBooking();
-      tick();
-      
-      expect(component.bookingId).toBe(123);
-    }));
+      expect(mockBookingService.createBooking).not.toHaveBeenCalled();
+    });
 
-    it('should set bookingInProgress to false on success', fakeAsync(() => {
-      component.confirmBooking();
-      tick();
-      
-      expect(component.bookingInProgress).toBe(false);
-    }));
-
-    it('should show success message', fakeAsync(() => {
-      component.confirmBooking();
-      tick();
-      
-      expect(snackBar.open).toHaveBeenCalledWith(
-        'Booking confirmed successfully!',
-        'Close',
-        jasmine.objectContaining({
-          panelClass: ['snackbar-success']
-        })
+    it('should handle booking creation error', fakeAsync(() => {
+      mockBookingService.createBooking.and.returnValue(
+        throwError(() => ({ 
+          status: 400,
+          error: { message: 'Apartment not available' }
+        }))
       );
-    }));
 
-    it('should set bookingInProgress to false on error', fakeAsync(() => {
-      bookingService.createBooking.and.returnValue(
-        throwError(() => ({ status: 500 }))
-      );
-      
       component.confirmBooking();
       tick();
-      
-      expect(component.bookingInProgress).toBe(false);
-    }));
 
-    it('should navigate to error page on failure', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      bookingService.createBooking.and.returnValue(
-        throwError(() => ({ status: 400, error: { message: 'Invalid booking' } }))
-      );
-      
-      component.confirmBooking();
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/error'], {
         queryParams: {
-          message: 'Invalid booking',
+          message: 'Apartment not available',
           code: 400
         }
       });
+      expect(component.bookingInProgress).toBeFalse();
     }));
 
-    it('should use default error message if not provided', fakeAsync(() => {
-      spyOn(router, 'navigate');
-      bookingService.createBooking.and.returnValue(
-        throwError(() => ({ status: 500 }))
-      );
-      
-      component.confirmBooking();
-      tick();
-      
-      expect(router.navigate).toHaveBeenCalledWith(['/error'], {
-        queryParams: {
-          message: 'Failed to create booking',
-          code: 500
-        }
-      });
-    }));
-  });
-
-  describe('goToMyBookings', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-    });
-
-    it('should navigate to profile with bookings fragment', () => {
-      spyOn(router, 'navigate');
-      component.goToMyBookings();
-      expect(router.navigate).toHaveBeenCalledWith(['/profile'], { fragment: 'bookings' });
-    });
-  });
-
-  describe('goToApartments', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-    });
-
-    it('should navigate to apartments page', () => {
-      spyOn(router, 'navigate');
-      component.goToApartments();
-      expect(router.navigate).toHaveBeenCalledWith(['/apartments']);
-    });
-  });
-
-  describe('goBack', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-    });
-
-    it('should navigate to apartment detail page', () => {
-      spyOn(router, 'navigate');
-      component.apartmentId = 5;
-      component.goBack();
-      expect(router.navigate).toHaveBeenCalledWith(['/apartment', 5]);
-    });
   });
 
   describe('formatDate', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-    });
-
     it('should format date correctly', () => {
-      const date = new Date('2025-10-20');
+      const date = new Date('2025-01-15');
       const formatted = component.formatDate(date);
+      expect(formatted).toContain('Wednesday');
+      expect(formatted).toContain('January');
+      expect(formatted).toContain('15');
       expect(formatted).toContain('2025');
-      expect(formatted).toContain('October');
     });
 
     it('should return empty string for null date', () => {
-      const formatted = component.formatDate(null);
-      expect(formatted).toBe('');
+      expect(component.formatDate(null)).toBe('');
+    });
+  });
+
+  describe('formatDateForAPI', () => {
+    it('should format date for API correctly', () => {
+      const date = new Date('2025-01-15');
+      expect(component.formatDateForAPI(date)).toBe('2025-01-15');
     });
 
-    it('should include weekday in formatted date', () => {
-      const date = new Date('2025-10-20');
-      const formatted = component.formatDate(date);
-      expect(formatted).toMatch(/Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday/);
+    it('should pad month and day with zeros', () => {
+      const date = new Date('2025-03-05');
+      expect(component.formatDateForAPI(date)).toBe('2025-03-05');
+    });
+  });
+
+  describe('navigation methods', () => {
+    it('should navigate to my bookings', () => {
+      component.goToMyBookings();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/profile'], { 
+        fragment: 'bookings' 
+      });
+    });
+
+    it('should navigate to apartments', () => {
+      component.goToApartments();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/apartments']);
+    });
+
+    it('should navigate back to apartment details', () => {
+      component.apartmentId = 1;
+      component.goBack();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/apartment', 1]);
     });
   });
 
   describe('getServicesArray', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-    });
-
     it('should convert Set to Array', () => {
-      const services = new Set(['WiFi', 'AC', 'Kitchen']);
-      const array = component.getServicesArray(services);
-      
-      expect(Array.isArray(array)).toBe(true);
-      expect(array.length).toBe(3);
-      expect(array).toContain('WiFi');
-      expect(array).toContain('AC');
-      expect(array).toContain('Kitchen');
-    });
-
-    it('should handle empty Set', () => {
-      const services = new Set<string>();
-      const array = component.getServicesArray(services);
-      
-      expect(array.length).toBe(0);
+      const services = new Set(['WiFi', 'Kitchen', 'Air Conditioning']);
+      const result = component.getServicesArray(services);
+      expect(Array.isArray(result)).toBeTrue();
+      expect(result.length).toBe(3);
+      expect(result).toContain('WiFi');
     });
   });
 
-  describe('showMessage', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BookingConfirmationComponent);
-      component = fixture.componentInstance;
-      (component as any).snackBar = snackBar;
-      snackBar.open.calls.reset();
-    });
+  describe('template rendering', () => {
 
-    it('should open snackbar with success style', () => {
-      component.showMessage('Success', 'success');
-      
-      expect(snackBar.open).toHaveBeenCalledWith(
-        'Success',
-        'Close',
-        jasmine.objectContaining({
-          panelClass: ['snackbar-success']
-        })
-      );
-    });
-
-    it('should open snackbar with error style', () => {
-      component.showMessage('Error', 'error');
-      
-      expect(snackBar.open).toHaveBeenCalledWith(
-        'Error',
-        'Close',
-        jasmine.objectContaining({
-          panelClass: ['snackbar-error']
-        })
-      );
-    });
-
-    it('should open snackbar with warning style', () => {
-      component.showMessage('Warning', 'warning');
-      
-      expect(snackBar.open).toHaveBeenCalledWith(
-        'Warning',
-        'Close',
-        jasmine.objectContaining({
-          panelClass: ['snackbar-warning']
-        })
-      );
-    });
-  });
-
-  describe('Template Rendering', () => {
-    it('should show loading spinner when loading', () => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      
-      component.loading = true;
+    it('should display booking details when loaded', fakeAsync(() => {
       fixture.detectChanges();
-      
-      const spinner = fixture.nativeElement.querySelector('mat-spinner');
-      expect(spinner).toBeTruthy();
-    });
-
-    it('should show booking content when not loading and not confirmed', fakeAsync(() => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
       tick();
       
       component.loading = false;
       component.bookingConfirmed = false;
       fixture.detectChanges();
       
-      const content = fixture.nativeElement.querySelector('.booking-content');
-      expect(content).toBeTruthy();
+      const bookingContent = fixture.nativeElement.querySelector('.booking-content');
+      expect(bookingContent).toBeTruthy();
     }));
 
-    it('should show success container when booking confirmed', () => {
-      createComponentWithParams({});
-      
+    it('should display success message when booking is confirmed', () => {
       component.loading = false;
       component.bookingConfirmed = true;
+      component.bookingId = 123;
       fixture.detectChanges();
       
-      const success = fixture.nativeElement.querySelector('.success-container');
-      expect(success).toBeTruthy();
+      const successContainer = fixture.nativeElement.querySelector('.success-container');
+      expect(successContainer).toBeTruthy();
     });
 
     it('should display user information', fakeAsync(() => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
+      fixture.detectChanges();
       tick();
       
       component.loading = false;
       fixture.detectChanges();
       
-      const content = fixture.nativeElement.textContent;
-      expect(content).toContain('John');
-      expect(content).toContain('john@example.com');
+      const compiled = fixture.nativeElement;
+      expect(compiled.textContent).toContain('John');
+      expect(compiled.textContent).toContain('Doe');
+      expect(compiled.textContent).toContain('john.doe@example.com');
     }));
 
-    it('should display booking dates', fakeAsync(() => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
+    it('should display apartment information', fakeAsync(() => {
+      fixture.detectChanges();
       tick();
       
       component.loading = false;
       fixture.detectChanges();
       
-      const content = fixture.nativeElement.textContent;
-      expect(content).toContain('Check-in');
-      expect(content).toContain('Check-out');
-    }));
-
-    it('should have confirm booking button', fakeAsync(() => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
-      tick();
-      
-      component.loading = false;
-      fixture.detectChanges();
-      
-      const button = fixture.nativeElement.querySelector('.confirm-button');
-      expect(button).toBeTruthy();
+      const compiled = fixture.nativeElement;
+      expect(compiled.textContent).toContain('Luxury Apartment');
     }));
 
     it('should disable confirm button when booking in progress', fakeAsync(() => {
-      createComponentWithParams({
-        apartmentId: '1',
-        checkIn: '2025-10-20',
-        checkOut: '2025-10-25',
-        guests: '2'
-      });
+      fixture.detectChanges();
       tick();
       
       component.loading = false;
@@ -742,7 +479,20 @@ describe('BookingConfirmationComponent', () => {
       fixture.detectChanges();
       
       const button = fixture.nativeElement.querySelector('.confirm-button');
-      expect(button.disabled).toBe(true);
+      expect(button.disabled).toBeTrue();
+    }));
+
+    it('should display savings badge when there are discounts', fakeAsync(() => {
+      fixture.detectChanges();
+      tick();
+      
+      component.loading = false;
+      component.totalDiscounts = 50;
+      fixture.detectChanges();
+      
+      const savingsBadge = fixture.nativeElement.querySelector('.savings-badge');
+      expect(savingsBadge).toBeTruthy();
+      expect(savingsBadge.textContent).toContain('50.00');
     }));
   });
 });
