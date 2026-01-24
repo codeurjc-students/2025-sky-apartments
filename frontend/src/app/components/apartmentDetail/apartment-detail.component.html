@@ -54,6 +54,7 @@
                 <div class="title-row">
                   <h1>{{ apartment.name }}</h1>
                   <div class="price-display">
+                    <span class="per-night">from</span>
                     <span class="price">${{ apartment.price }}</span>
                     <span class="per-night">/night</span>
                   </div>
@@ -99,185 +100,218 @@
         </div>
 
         <!-- Right Column: Booking -->
-        <!-- Right Column: Booking -->
-<div class="right-column">
-  <mat-card class="booking-card">
-    <mat-card-header>
-      <mat-card-title>
-        <h2>Reserve This Apartment</h2>
-      </mat-card-title>
-    </mat-card-header>
-    <br>
-    <mat-card-content>
-      <!-- Calendar -->
-      <div class="calendar-container">
-        <div class="calendar-header">
-          <button mat-icon-button (click)="previousMonth()">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <h3>{{ getMonthYearLabel() }}</h3>
-          <button mat-icon-button (click)="nextMonth()">
-            <mat-icon>chevron_right</mat-icon>
-          </button>
+        <div class="right-column">
+          <mat-card class="booking-card">
+            <mat-card-header>
+              <mat-card-title>
+                <h2>Reserve This Apartment</h2>
+              </mat-card-title>
+            </mat-card-header>
+            <br>
+            <mat-card-content>
+              <!-- Calendar -->
+              <div class="calendar-container">
+                <div class="calendar-header">
+                  <button mat-icon-button (click)="previousMonth()">
+                    <mat-icon>chevron_left</mat-icon>
+                  </button>
+                  <h3>{{ getMonthYearLabel() }}</h3>
+                  <button mat-icon-button (click)="nextMonth()">
+                    <mat-icon>chevron_right</mat-icon>
+                  </button>
+                </div>
+
+                <!-- Loading spinner -->
+                <div class="calendar-loading" *ngIf="isLoadingAvailability">
+                  <mat-spinner diameter="30"></mat-spinner>
+                  <span>Loading availability...</span>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid" [class.loading]="isLoadingAvailability">
+                  <!-- Week day headers -->
+                  <div class="calendar-weekday" *ngFor="let day of weekDays">
+                    {{ day }}
+                  </div>
+
+                  <!-- Calendar days -->
+                  <div 
+                    *ngFor="let day of calendarDays"
+                    class="calendar-day"
+                    [class.other-month]="!day.isCurrentMonth"
+                    [class.past]="day.isPast"
+                    [class.unavailable]="day.isAvailable === false"
+                    [class.available]="day.isAvailable === true"
+                    [class.selected]="day.isSelected"
+                    [class.in-range]="day.isInRange"
+                    [class.today]="day.isToday"
+                    (click)="selectDate(day)">
+                    <span class="day-number">{{ day.day }}</span>
+                    <span class="availability-indicator" *ngIf="day.isCurrentMonth && !day.isPast && day.isAvailable !== null">
+                      <mat-icon *ngIf="day.isAvailable">check_circle</mat-icon>
+                      <mat-icon *ngIf="!day.isAvailable">cancel</mat-icon>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="calendar-legend">
+                  <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>Available</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color unavailable"></div>
+                    <span>Unavailable</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color selected"></div>
+                    <span>Selected</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Selected Dates Display -->
+              <div class="selected-dates" *ngIf="selectedCheckIn || selectedCheckOut">
+                <div class="date-display">
+                  <div class="date-item">
+                    <mat-icon>event</mat-icon>
+                    <div>
+                      <label>Check-in</label>
+                      <span>{{ selectedCheckIn ? (selectedCheckIn | date:'mediumDate') : 'Select date' }}</span>
+                    </div>
+                  </div>
+                  <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                  <div class="date-item">
+                    <mat-icon>event</mat-icon>
+                    <div>
+                      <label>Check-out</label>
+                      <span>{{ selectedCheckOut ? (selectedCheckOut | date:'mediumDate') : 'Select date' }}</span>
+                    </div>
+                  </div>
+                </div>
+                <button mat-button color="warn" (click)="clearDates()" class="clear-dates-btn">
+                  <mat-icon>clear</mat-icon>
+                  Clear Dates
+                </button>
+              </div>
+
+              <!-- Number of Guests -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Number of Guests</mat-label>
+                <mat-select [(ngModel)]="selectedGuests" placeholder="Select guests" name="guests">
+                  <mat-option *ngFor="let num of guestsOptions" [value]="num">
+                    {{ num }} {{ num === 1 ? 'Guest' : 'Guests' }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>people</mat-icon>
+              </mat-form-field>
+
+              <!-- Booking Summary -->
+              <div class="booking-summary" *ngIf="selectedCheckIn && selectedCheckOut && numberOfNights > 0">
+                <!-- Base Price -->
+                <div class="summary-row">
+                  <span>Number of nights:</span>
+                  <strong>{{ numberOfNights }}</strong>
+                </div>
+                
+                <div class="summary-row">
+                  <span>${{ apartment.price }} × {{ numberOfNights }} nights</span>
+                  <strong>${{ basePrice.toFixed(2) }}</strong>
+                </div>
+
+                <!-- Applied Filters Section -->
+                <div class="filters-section" *ngIf="appliedFilters.length > 0">
+                  <mat-divider></mat-divider>
+                  <div class="section-title">Applied Filters:</div>
+                  
+                  <div 
+                    *ngFor="let filter of appliedFilters" 
+                    class="filter-row"
+                    [class.increment]="filter.increment"
+                    [class.discount]="!filter.increment"
+                    [matTooltip]="filter.description || 'No description available'"
+                    matTooltipPosition="left">
+                    
+                    <div class="filter-info">
+                      <span class="filter-name">
+                        <i class="bi" [ngClass]="filter.increment ? 'bi-arrow-up-circle' : 'bi-arrow-down-circle'"></i>
+                        {{ filter.name }}
+                      </span>
+                      <span class="filter-details">
+                        ({{ filter.value }}% × {{ filter.nightsApplied }} {{ filter.nightsApplied === 1 ? 'night' : 'nights' }})
+                      </span>
+                    </div>
+                    
+                    <strong class="filter-amount" [class.positive]="filter.increment" [class.negative]="!filter.increment">
+                      {{ filter.increment ? '+' : '-' }}${{ Math.abs(filter.impact).toFixed(2) }}
+                    </strong>
+                  </div>
+                </div>
+
+                <!-- Total Price -->
+                <mat-divider></mat-divider>
+                <div class="summary-row total">
+                  <span>Total Price:</span>
+                  <strong>${{ totalPrice.toFixed(2) }}</strong>
+                </div>
+
+              </div>
+
+              <!-- Login Required Message -->
+              <div class="login-message" *ngIf="!loginService.isLogged() && selectedCheckIn && selectedCheckOut">
+                <mat-icon>info</mat-icon>
+                <p>You must <a routerLink="/login">log in</a> to make a reservation</p>
+              </div>
+
+              <!-- Reserve Button -->
+              <button 
+                mat-raised-button 
+                color="primary"
+                class="reserve-button"
+                (click)="proceedToBooking()"
+                [disabled]="!selectedCheckIn || !selectedCheckOut || isLoadingAvailability"
+                *ngIf="loginService.isLogged()">
+                <mat-spinner *ngIf="isLoadingAvailability" diameter="20"></mat-spinner>
+                <mat-icon *ngIf="!isLoadingAvailability">event_available</mat-icon>
+                <span *ngIf="!isLoadingAvailability">Reserve Now</span>
+                <span *ngIf="isLoadingAvailability">Verifying...</span>
+              </button>
+
+              <!-- Login Button -->
+              <button 
+                mat-raised-button 
+                color="primary"
+                class="reserve-button"
+                routerLink="/login"
+                *ngIf="!loginService.isLogged()">
+                <mat-icon>login</mat-icon>
+                Log In to Reserve
+              </button>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Additional Info Card -->
+          <mat-card class="info-highlight">
+            <mat-card-content>
+              <div class="highlight-item">
+                <mat-icon>support_agent</mat-icon>
+                <div>
+                  <h4>24/7 Support</h4>
+                  <p>Our team is always available to help you</p>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="highlight-item">
+                <mat-icon>payment</mat-icon>
+                <div>
+                  <h4>Payment on Arrival</h4>
+                  <p>Pay when you arrive at the property. No prepayment required</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </div>
-
-        <!-- Loading spinner -->
-        <div class="calendar-loading" *ngIf="isLoadingAvailability">
-          <mat-spinner diameter="30"></mat-spinner>
-          <span>Loading availability...</span>
-        </div>
-
-        <!-- Calendar Grid -->
-        <div class="calendar-grid" [class.loading]="isLoadingAvailability">
-          <!-- Week day headers -->
-          <div class="calendar-weekday" *ngFor="let day of weekDays">
-            {{ day }}
-          </div>
-
-          <!-- Calendar days -->
-          <div 
-            *ngFor="let day of calendarDays"
-            class="calendar-day"
-            [class.other-month]="!day.isCurrentMonth"
-            [class.past]="day.isPast"
-            [class.unavailable]="day.isAvailable === false"
-            [class.available]="day.isAvailable === true"
-            [class.selected]="day.isSelected"
-            [class.in-range]="day.isInRange"
-            [class.today]="day.isToday"
-            (click)="selectDate(day)">
-            <span class="day-number">{{ day.day }}</span>
-            <span class="availability-indicator" *ngIf="day.isCurrentMonth && !day.isPast && day.isAvailable !== null">
-              <mat-icon *ngIf="day.isAvailable">check_circle</mat-icon>
-              <mat-icon *ngIf="!day.isAvailable">cancel</mat-icon>
-            </span>
-          </div>
-        </div>
-
-        <!-- Legend -->
-        <div class="calendar-legend">
-          <div class="legend-item">
-            <div class="legend-color available"></div>
-            <span>Available</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color unavailable"></div>
-            <span>Unavailable</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color selected"></div>
-            <span>Selected</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Selected Dates Display -->
-      <div class="selected-dates" *ngIf="selectedCheckIn || selectedCheckOut">
-        <div class="date-display">
-          <div class="date-item">
-            <mat-icon>event</mat-icon>
-            <div>
-              <label>Check-in</label>
-              <span>{{ selectedCheckIn ? (selectedCheckIn | date:'mediumDate') : 'Select date' }}</span>
-            </div>
-          </div>
-          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
-          <div class="date-item">
-            <mat-icon>event</mat-icon>
-            <div>
-              <label>Check-out</label>
-              <span>{{ selectedCheckOut ? (selectedCheckOut | date:'mediumDate') : 'Select date' }}</span>
-            </div>
-          </div>
-        </div>
-        <button mat-button color="warn" (click)="clearDates()" class="clear-dates-btn">
-          <mat-icon>clear</mat-icon>
-          Clear Dates
-        </button>
-      </div>
-
-      <!-- Number of Guests -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Number of Guests</mat-label>
-        <mat-select [(ngModel)]="selectedGuests" placeholder="Select guests" name="guests" (selectionChange)="onGuestsChange($event)">
-          <mat-option *ngFor="let num of guestsOptions" [value]="num">
-            {{ num }} {{ num === 1 ? 'Guest' : 'Guests' }}
-          </mat-option>
-        </mat-select>
-        <mat-icon matPrefix>people</mat-icon>
-      </mat-form-field>
-
-      <!-- Booking Summary -->
-      <div class="booking-summary" *ngIf="selectedCheckIn && selectedCheckOut && numberOfNights > 0">
-        <div class="summary-row">
-          <span>Number of nights:</span>
-          <strong>{{ numberOfNights }}</strong>
-        </div>
-        <div class="summary-row">
-          <span>${{ apartment.price }} × {{ numberOfNights }} nights</span>
-          <strong>${{ apartment.price * numberOfNights }}</strong>
-        </div>
-        <mat-divider></mat-divider>
-        <div class="summary-row total">
-          <span>Total Price:</span>
-          <strong>${{ totalPrice }}</strong>
-        </div>
-      </div>
-
-      <!-- Login Required Message -->
-      <div class="login-message" *ngIf="!loginService.isLogged() && selectedCheckIn && selectedCheckOut">
-        <mat-icon>info</mat-icon>
-        <p>You must <a routerLink="/login">log in</a> to make a reservation</p>
-      </div>
-
-      <!-- Reserve Button -->
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="reserve-button"
-        (click)="proceedToBooking()"
-        [disabled]="!selectedCheckIn || !selectedCheckOut || isLoadingAvailability"
-        *ngIf="loginService.isLogged()">
-        <mat-spinner *ngIf="isLoadingAvailability" diameter="20"></mat-spinner>
-        <mat-icon *ngIf="!isLoadingAvailability">event_available</mat-icon>
-        <span *ngIf="!isLoadingAvailability">Reserve Now</span>
-        <span *ngIf="isLoadingAvailability">Verifying...</span>
-      </button>
-
-      <!-- Login Button -->
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="reserve-button"
-        routerLink="/login"
-        *ngIf="!loginService.isLogged()">
-        <mat-icon>login</mat-icon>
-        Log In to Reserve
-      </button>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Additional Info Card -->
-  <mat-card class="info-highlight">
-    <mat-card-content>
-      <div class="highlight-item">
-        <mat-icon>support_agent</mat-icon>
-        <div>
-          <h4>24/7 Support</h4>
-          <p>Our team is always available to help you</p>
-        </div>
-      </div>
-      <mat-divider></mat-divider>
-      <div class="highlight-item">
-        <mat-icon>payment</mat-icon>
-        <div>
-          <h4>Payment on Arrival</h4>
-          <p>Pay when you arrive at the property. No prepayment required</p>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-</div>
       </div>
 
       <!-- Reviews Section -->
