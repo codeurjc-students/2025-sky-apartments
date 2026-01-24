@@ -32,6 +32,10 @@ public class DataBaseInitializer {
 
     @PostConstruct
     public void initializeDatabase() throws Exception {
+
+        if (apartmentRepository.count() > 0) {
+            return;
+        }
         Set<String> servicios1 = new HashSet<>(Arrays.asList("WiFi", "Aire acondicionado", "Piscina"));
         Set<String> servicios2 = new HashSet<>(Arrays.asList("WiFi", "Calefacción", "Parking"));
         Set<String> servicios3 = new HashSet<>(Arrays.asList("WiFi", "TV", "Balcón"));

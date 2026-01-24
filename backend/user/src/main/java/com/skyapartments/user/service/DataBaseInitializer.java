@@ -22,6 +22,9 @@ public class DataBaseInitializer {
 
     @PostConstruct
     public void initializeDatabase() {
+        if (userRepository.count() > 0) {
+            return;
+        }
         User user = new User("Juan", "Pérez", "600123456", "user@example.com", passwordEncoder.encode("Password@1234"),"USER");
         User admin = new User("Leire", "Sánchez", "600123456", "admin@example.com", passwordEncoder.encode("Password@1234"),"ADMIN");
         User user3 = new User("María", "García", "611234567", "maria.garcia@example.com", passwordEncoder.encode("Password@1234"), "USER");
