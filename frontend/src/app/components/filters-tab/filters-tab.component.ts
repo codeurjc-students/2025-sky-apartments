@@ -97,6 +97,13 @@ export class FiltersTabComponent implements OnInit {
     });
   }
 
+  reloadFilters(): void {
+    this.filters = [];
+    this.filterCurrentPage = 0;
+    this.filterHasMore = true;
+    this.loadFilters();
+  }
+
   loadMoreFilters(): void {
     this.filterCurrentPage++;
     this.loadFilters();
@@ -130,7 +137,7 @@ export class FiltersTabComponent implements OnInit {
       this.filterService.update(this.selectedFilter.id, this.selectedFilter).subscribe({
         next: () => {
           this.showMessage('Filter updated successfully', 'success');
-          this.loadFilters();
+          this.reloadFilters();
           this.closeForm();
           this.loading = false;
         },
@@ -143,7 +150,7 @@ export class FiltersTabComponent implements OnInit {
       this.filterService.create(this.selectedFilter).subscribe({
         next: () => {
           this.showMessage('Filter created successfully', 'success');
-          this.loadFilters();
+          this.reloadFilters();
           this.closeForm();
           this.loading = false;
         },
@@ -168,7 +175,7 @@ export class FiltersTabComponent implements OnInit {
       this.filterService.delete(id).subscribe({
         next: () => {
           this.showMessage('Filter deleted successfully', 'success');
-          this.loadFilters();
+          this.reloadFilters();
           this.loading = false;
         },
         error: (error) => {
@@ -187,7 +194,7 @@ export class FiltersTabComponent implements OnInit {
     this.filterService.update(filter.id, updatedFilter).subscribe({
       next: () => {
         this.showMessage( `Filter ${updatedFilter.activated ? 'activated' : 'deactivated'} successfully`, 'success');
-        this.loadFilters();
+        this.reloadFilters();
       },
       error: (error) => {
         this.showMessage('Error toggling filter', 'error');

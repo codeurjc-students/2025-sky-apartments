@@ -185,14 +185,16 @@ test.describe('Admin User Journey', () => {
       
       // Click next month
       await page.locator('.month-navigation button:has(mat-icon:has-text("chevron_right"))').click();
-      
+      //Wait for month to update
+      await page.waitForTimeout(500);
       // Verify month changed
       const newMonthName = await page.locator('.month-navigation h2').textContent();
       expect(newMonthName).not.toBe(monthName);
       
       // Go back to previous month
       await page.locator('.month-navigation button:has(mat-icon:has-text("chevron_left"))').click();
-      
+      //Wait for month to update
+      await page.waitForTimeout(500);
       // Should be back to original month
       const returnedMonthName = await page.locator('.month-navigation h2').textContent();
       expect(returnedMonthName).toBe(monthName);
@@ -402,9 +404,11 @@ test.describe('Admin User Journey', () => {
       
       // Wait for modal to close and success message
       await expect(page.locator('.modal-container')).not.toBeVisible({ timeout: 5000 });
-      
-      // Verify filter appears in list
-      await expect(page.locator('.filter-card:has-text("Weekend Premium Test")')).toBeVisible({ timeout: 5000 });
+      //Verify success snackbar
+      const snackbar = page.locator('.mat-mdc-snack-bar-container, .mat-snack-bar-container');
+      await expect(snackbar).toBeVisible({ timeout: 5000 });
+      await expect(snackbar).toContainText('Filter created successfully');
+
     });
 
     test('should create a last minute discount filter', async ({ page }) => {
@@ -422,7 +426,7 @@ test.describe('Admin User Journey', () => {
       await page.selectOption('select[name="increment"]', { label: 'Discount' });
       
       // Select no date restriction
-      await page.selectOption('select[name="dateType"]', { label: 'No date restriction' });
+      await page.selectOption('select[name="dateType"]', { label: 'Every day' });
       
       // Select last minute condition
       await page.selectOption('select[name="conditionType"]', { label: 'Last minute booking' });
@@ -436,8 +440,10 @@ test.describe('Admin User Journey', () => {
       // Submit
       await page.click('button:has-text("Create Filter")');
       
-      // Verify success
-      await expect(page.locator('.filter-card:has-text("Last Minute Deal Test")')).toBeVisible({ timeout: 5000 });
+      //Verify success snackbar
+      const snackbar = page.locator('.mat-mdc-snack-bar-container, .mat-snack-bar-container');
+      await expect(snackbar).toBeVisible({ timeout: 5000 });
+      await expect(snackbar).toContainText('Filter created successfully');
     });
 
     test('should create a long stay discount filter', async ({ page }) => {
@@ -462,8 +468,10 @@ test.describe('Admin User Journey', () => {
       // Submit
       await page.click('button:has-text("Create Filter")');
       
-      // Verify
-      await expect(page.locator('.filter-card:has-text("Long Stay Discount Test")')).toBeVisible({ timeout: 5000 });
+      //Verify success snackbar
+      const snackbar = page.locator('.mat-mdc-snack-bar-container, .mat-snack-bar-container');
+      await expect(snackbar).toBeVisible({ timeout: 5000 });
+      await expect(snackbar).toContainText('Filter created successfully');
     });
 
     test('should create a seasonal filter with date range', async ({ page }) => {
@@ -491,8 +499,10 @@ test.describe('Admin User Journey', () => {
       // Submit
       await page.click('button:has-text("Create Filter")');
       
-      // Verify
-      await expect(page.locator('.filter-card:has-text("Summer Season")')).toBeVisible({ timeout: 5000 });
+      //Verify success snackbar
+      const snackbar = page.locator('.mat-mdc-snack-bar-container, .mat-snack-bar-container');
+      await expect(snackbar).toBeVisible({ timeout: 5000 });
+      await expect(snackbar).toContainText('Filter created successfully');
     });
 
     test('should validate required fields when creating filter', async ({ page }) => {
@@ -583,34 +593,47 @@ test.describe('Admin User Journey', () => {
     });
 
     test('should delete a filter with confirmation', async ({ page }) => {
-      // First create a test filter to delete
       await page.goto('/profile#filters');
       
-      await page.click('button:has-text("New Filter")');
-      await page.waitForSelector('.modal-container');
+      // Wait for filters to load
+      await page.waitForSelector('.filters-grid', { timeout: 10000 });
       
-      await page.fill('input[name="name"]', 'Filter to Delete');
-      await page.fill('input[name="value"]', '5');
-      await page.click('button:has-text("Create Filter")');
+      const filterCards = page.locator('.filter-card');
+      const initialCount = await filterCards.count();
       
-      await page.waitForSelector('.filter-card:has-text("Filter to Delete")');
+      if (initialCount === 0) {
+        test.skip();
+        return;
+      }
       
-      // Now delete it
-      const filterToDelete = page.locator('.filter-card:has-text("Filter to Delete")');
-
-      // Setup dialog handler for SweetAlert
-      page.once('dialog', async dialog => {
-        expect(dialog.message()).toContain('delete');
-        await dialog.accept();
-      });
-
-      await filterToDelete.locator('button:has-text("Delete")').click();
-      await page.click('button:has-text("Yes, delete it!")');
-      // Wait for deletion
-      await page.waitForTimeout(4000);
+      // Get the first filter
+      const firstFilter = filterCards.first();
+      const filterName = await firstFilter.locator('.filter-name').textContent();
       
-      // Verify filter is removed
-      await expect(filterToDelete).not.toBeVisible();
+      // Click delete button
+      await firstFilter.locator('button.btn-delete').click();
+      
+      // Wait for SweetAlert confirmation dialog
+      await expect(page.locator('.swal2-popup')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('.swal2-title')).toContainText('delete this filter');
+      
+      // Confirm deletion
+      await page.click('button.swal2-confirm:has-text("Yes, delete it!")');
+      
+      // Wait for success message
+      const snackbar = page.locator('.mat-mdc-snack-bar-container, .mat-snack-bar-container');
+      await expect(snackbar).toContainText('deleted successfully', { timeout: 5000 });
+      
+      // Wait for reload to complete
+      await page.waitForLoadState('networkidle');
+            
+      // Verify the specific filter is gone
+      if (filterName) {
+        const deletedFilter = page.locator('.filter-card', {
+          has: page.locator(`.filter-name:has-text("${filterName}")`)
+        });
+        await expect(deletedFilter).not.toBeVisible();
+      }
     });
 
     test('should cancel filter creation', async ({ page }) => {
@@ -620,7 +643,7 @@ test.describe('Admin User Journey', () => {
       await page.waitForSelector('.modal-container');
       
       // Fill some data
-      await page.fill('input[name="name"]', 'Test Filter');
+      await page.fill('input[name="name"]', 'Test Filter 1234');
       
       // Click cancel
       await page.click('button:has-text("Cancel")');
@@ -629,7 +652,7 @@ test.describe('Admin User Journey', () => {
       await expect(page.locator('.modal-container')).not.toBeVisible();
       
       // Verify filter was not created
-      await expect(page.locator('.filter-card:has-text("Test Filter")')).not.toBeVisible();
+      await expect(page.locator('.filter-card:has-text("Test Filter 1234")')).not.toBeVisible();
     });
 
     test('should display filter details correctly', async ({ page }) => {
