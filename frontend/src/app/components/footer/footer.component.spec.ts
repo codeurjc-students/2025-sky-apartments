@@ -206,7 +206,7 @@ describe('FooterComponent', () => {
     it('should display contact email', () => {
       const compiled = fixture.nativeElement;
       const contactInfo = compiled.querySelector('.contact-info');
-      expect(contactInfo.textContent).toContain('info@skyapartments.com');
+      expect(contactInfo.textContent).toContain('skyapartmentsmad@gmail.com');
     });
 
     it('should display business hours', () => {

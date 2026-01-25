@@ -388,6 +388,10 @@
   stroke: #667eea;
 }
 
+.star-icon {
+  color: #ffc107;
+}
+
 @media (max-width: 1200px) {
   .apartments-grid {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

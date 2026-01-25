@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { Router } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 
 import { HeaderComponent } from './header.component';
 import { LoginService } from '../../services/user/login.service';
@@ -149,56 +149,70 @@ describe('HeaderComponent', () => {
     let navigateSpy: jasmine.Spy;
 
     beforeEach(() => {
-        navigateSpy = spyOn(router, 'navigate');
+      navigateSpy = spyOn(router, 'navigate');
     });
 
     describe('onProfile', () => {
-        it('should navigate to profile with personal fragment', () => {
+      it('should navigate to profile with personal fragment', () => {
         component.onProfile();
         expect(navigateSpy).toHaveBeenCalledWith(['/profile'], { fragment: 'personal' });
-        });
+      });
     });
 
     describe('onBookings', () => {
-        it('should navigate to profile with bookings fragment', () => {
+      it('should navigate to profile with bookings fragment', () => {
         component.onBookings();
         expect(navigateSpy).toHaveBeenCalledWith(['/profile'], { fragment: 'bookings' });
-        });
+      });
     });
 
     describe('onBookingsDashboard', () => {
-        it('should navigate to profile with dashboard fragment', () => {
+      it('should navigate to profile with dashboard fragment', () => {
         component.onBookingsDashboard();
         expect(navigateSpy).toHaveBeenCalledWith(['/profile'], { fragment: 'dashboard' });
-        });
+      });
     });
 
     describe('onApartmentsManagement', () => {
-        it('should navigate to profile with apartments fragment', () => {
+      it('should navigate to profile with apartments fragment', () => {
         component.onApartmentsManagement();
         expect(navigateSpy).toHaveBeenCalledWith(['/profile'], { fragment: 'apartments' });
-        });
+      });
+    });
+
+    describe('onBookingCalendar', () => {
+      it('should navigate to profile with bookings fragment', () => {
+        component.onBookingCalendar();
+        expect(navigateSpy).toHaveBeenCalledWith(['/profile'], { fragment: 'bookings' });
+      });
+    });
+
+    describe('onFiltersManagement', () => {
+      it('should navigate to profile with filters fragment', () => {
+        component.onFiltersManagement();
+        expect(navigateSpy).toHaveBeenCalledWith(['/profile'], { fragment: 'filters' });
+      });
     });
 
     describe('onBook', () => {
-        it('should navigate to book-apartment page', () => {
+      it('should navigate to book-apartment page', () => {
         component.onBook();
         expect(navigateSpy).toHaveBeenCalledWith(['/book-apartment']);
-        });
+      });
     });
 
     describe('onLogin', () => {
-        it('should navigate to login page', () => {
+      it('should navigate to login page', () => {
         component.onLogin();
         expect(navigateSpy).toHaveBeenCalledWith(['/login']);
-        });
+      });
     });
 
     describe('onSignUp', () => {
-        it('should navigate to signup page', () => {
+      it('should navigate to signup page', () => {
         component.onSignUp();
         expect(navigateSpy).toHaveBeenCalledWith(['/signup']);
-        });
+      });
     });
   });
 
@@ -268,7 +282,6 @@ describe('HeaderComponent', () => {
       loginService.isAdmin.and.returnValue(false);
       fixture.detectChanges();
       
-      // This test verifies the template logic is correct
       expect(loginService.isAdmin()).toBe(false);
     });
 
@@ -278,7 +291,6 @@ describe('HeaderComponent', () => {
       loginService.currentUser.and.returnValue(mockAdminUser);
       fixture.detectChanges();
       
-      // This test verifies the template logic is correct
       expect(loginService.isAdmin()).toBe(true);
     });
   });
@@ -306,6 +318,52 @@ describe('HeaderComponent', () => {
     });
   });
 
+  describe('onLogout', () => {
+    let navigateSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      navigateSpy = spyOn(router, 'navigate');
+      spyOn(component, 'reloadPage'); 
+    });
+
+    it('should call logOut from loginService', () => {
+      loginService.logOut.and.returnValue(EMPTY);
+      component.onLogout();
+      expect(loginService.logOut).toHaveBeenCalled();
+    });
+
+
+    it('should navigate to error page on logout failure', () => {
+      const errorResponse = {
+        status: 403,
+        error: { message: 'Invalid token' }
+      };
+      loginService.logOut.and.returnValue(throwError(() => errorResponse));
+      
+      component.onLogout();
+      
+      expect(navigateSpy).toHaveBeenCalledWith(['/error'], {
+        queryParams: {
+          code: 403,
+          message: 'Invalid token'
+        }
+      });
+    });
+
+    it('should use default error values if error response is empty', () => {
+      loginService.logOut.and.returnValue(throwError(() => ({})));
+      
+      component.onLogout();
+      
+      expect(navigateSpy).toHaveBeenCalledWith(['/error'], {
+        queryParams: {
+          code: 500,
+          message: 'Logout failed'
+        }
+      });
+    });
+  });
+
   describe('Book Now Button', () => {
     it('should display book now button', () => {
       const compiled = fixture.nativeElement;
@@ -322,6 +380,5 @@ describe('HeaderComponent', () => {
       bookButton.click();
       expect(navigateSpy).toHaveBeenCalledWith(['/book-apartment']);
     });
-
   });
 });

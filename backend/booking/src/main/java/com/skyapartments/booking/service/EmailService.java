@@ -886,7 +886,7 @@ public class EmailService {
             
             helper.setFrom(fromEmail);
             helper.setTo("skyapartmentsmad@gmail.com");
-            helper.setReplyTo(email); // Para poder responder directamente al usuario
+            helper.setReplyTo(email);
             helper.setSubject("Contact Form: " + subject);
             helper.setText(buildContactEmailContent(name, email, subject, message), true);
             

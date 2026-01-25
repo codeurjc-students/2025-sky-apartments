@@ -234,6 +234,13 @@
           </div>
         </mat-tab>
 
+        <!-- Bookings Management Tab -->
+        <mat-tab label="Bookings">
+          <div class="tab-content">
+            <app-bookings-tab></app-bookings-tab>
+          </div>
+        </mat-tab>
+
         <!-- Apartments Management Tab -->
         <mat-tab label="Manage Apartments">
           <div class="tab-content">
@@ -259,7 +266,7 @@
                     <mat-card-content>
                       <h3>{{ apartment.name }}</h3>
                       <div class="apartment-meta">
-                        <span class="price">${{ apartment.price }}/night</span>
+                        <span class="price">from ${{ apartment.price }}/night</span>
                         <span class="capacity">
                           <mat-icon>people</mat-icon>
                           {{ apartment.capacity }}
@@ -294,6 +301,14 @@
             </mat-card>
           </div>
         </mat-tab>
+
+        <!-- Filters Management Tab -->
+        <mat-tab label="Manage Filters">
+          <div class="tab-content">
+            <app-filters-tab></app-filters-tab>
+          </div>
+        </mat-tab>
+
       </mat-tab-group>
     </div>
   </div>

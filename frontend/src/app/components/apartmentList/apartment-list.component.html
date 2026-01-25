@@ -28,10 +28,31 @@
           </mat-form-field>
         </div>
 
-        <!-- Services filter -->
+        <!-- Rating filter -->
         <div class="filter-section">
           <h3>
             <mat-icon>star</mat-icon>
+            Rating
+          </h3>
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Minimum rating</mat-label>
+            <input 
+              matInput
+              type="number" 
+              [(ngModel)]="selectedMinRating"
+              (change)="onRatingChange()"
+              min="0"
+              max="5"
+              step="0.5"
+            />
+            <mat-icon matPrefix>star</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Services filter -->
+        <div class="filter-section">
+          <h3>
+            <mat-icon>filter_alt</mat-icon>
             Services
           </h3>
           <div class="services-list">
@@ -77,6 +98,7 @@
           <div class="title-row">
             <h3>{{ apartment.name }}</h3>
             <div class="price-display">
+              <span class="per-night">from</span>
               <span class="price">${{ apartment.price }}</span>
               <span class="per-night">/night</span>
             </div>
@@ -89,6 +111,11 @@
               <mat-icon>people</mat-icon>
               <span>{{ apartment.capacity }} guests</span>
             </div>
+          </div>
+
+          <div class="meta-item">
+            <mat-icon class="star-icon">star</mat-icon>
+            <span>{{ getRating(apartment.id).toFixed(1) }}</span>
           </div>
           
           <div class="services-section">

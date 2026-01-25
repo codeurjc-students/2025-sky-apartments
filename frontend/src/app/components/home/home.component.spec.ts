@@ -10,6 +10,7 @@ import { HomeComponent } from './home.component';
 import { ApartmentService } from '../../services/apartment/apartment.service';
 import { ContactService } from '../../services/contact/contact.service';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;

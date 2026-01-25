@@ -236,8 +236,7 @@ test.describe('Guest User Journey (Not Authenticated)', () => {
       await expect(page.locator('text=Madrid, Spain 28013')).toBeVisible();
       await expect(page.locator('text=+34 912 345 678').first()).toBeVisible();
       
-      // Email might be obfuscated, check for domain
-      await expect(page.locator('text=skyapartments.com').first()).toBeVisible();
+      await expect(page.locator('text=skyapartmentsmad@gmail.com').first()).toBeVisible();
     });
 
     test('should display Google Maps embed', async ({ page }) => {

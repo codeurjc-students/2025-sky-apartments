@@ -23,7 +23,8 @@ import { UpdateReviewRequestDTO } from '../../dtos/updateReviewRequest.dto';
 import { UserService } from '../../services/user/user.service';
 import { UserDTO } from '../../dtos/user.dto';
 import Swal from 'sweetalert2';
-import { forkJoin } from 'rxjs';
+import { FilterService } from '../../services/booking/filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface CalendarDay {
   date: Date;
@@ -54,7 +55,9 @@ interface CalendarDay {
     MatSelectModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatTooltipModule,
+    MatDividerModule
   ],
   templateUrl: './apartment-detail.component.html',
   styleUrls: ['./apartment-detail.component.css']
@@ -98,7 +101,12 @@ export class ApartmentDetailComponent implements OnInit {
   
   // Booking summary
   numberOfNights = 0;
-  totalPrice = 0;
+  appliedFilters: any[] = [];
+  basePrice: number = 0;
+  totalPrice: number = 0;
+  totalDiscounts: number = 0;
+  totalIncrements: number = 0;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -108,7 +116,8 @@ export class ApartmentDetailComponent implements OnInit {
     private reviewService: ReviewService,
     private userService: UserService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private filterService: FilterService
   ) {
     this.bookingForm = this.fb.group({});
 
@@ -230,6 +239,9 @@ export class ApartmentDetailComponent implements OnInit {
     // Check availability for each day by checking single-day ranges
     const availabilityChecks = currentMonthDays.map(day => {
       const dateStr = this.formatDate(day.date);
+      const nextDate = new Date(day.date);
+      nextDate.setDate(nextDate.getDate() + 1);
+      const dateStrEnd = this.formatDate(nextDate);
       
       // Check cache first
       if (this.availabilityCache.has(dateStr)) {
@@ -242,7 +254,7 @@ export class ApartmentDetailComponent implements OnInit {
       return this.apartmentService.checkAvailability(
         this.apartment!.id,
         dateStr,
-        dateStr
+        dateStrEnd
       ).toPromise().then(available => {
         this.availabilityCache.set(dateStr, available!);
         return { date: day.date, available: available! };
@@ -305,6 +317,7 @@ export class ApartmentDetailComponent implements OnInit {
     }
     
     this.updateCalendarSelection();
+    this.onDatesChange();
   }
 
   updateCalendarSelection() {
@@ -348,11 +361,6 @@ export class ApartmentDetailComponent implements OnInit {
     this.updateCalendarSelection();
   }
 
-  onGuestsChange(event: any) {
-    console.log('Guests changed to:', event.value);
-    console.log('selectedGuests is now:', this.selectedGuests);
-  }
-
   getMonthYearLabel(): string {
     return this.currentMonth.toLocaleDateString('en-US', { 
       month: 'long', 
@@ -361,7 +369,6 @@ export class ApartmentDetailComponent implements OnInit {
   }
 
   proceedToBooking() {
-    console.log('Selected guests:', this.selectedGuests);
     
     if (!this.loginService.isLogged()) {
       this.showMessage('Please log in to make a reservation', 'warning');
@@ -383,7 +390,7 @@ export class ApartmentDetailComponent implements OnInit {
       return;
     }
 
-    // Verificar disponibilidad del rango completo antes de proceder
+    // Verify availability again before proceeding
     this.isLoadingAvailability = true;
     const checkIn = this.formatDate(this.selectedCheckIn);
     const checkOut = this.formatDate(this.selectedCheckOut);
@@ -407,7 +414,7 @@ export class ApartmentDetailComponent implements OnInit {
           });
         } else {
           this.showMessage('Sorry, the apartment is not available for the complete selected period. Please choose different dates.', 'error');
-          // Recargar la disponibilidad del mes para mostrar los días actualizados
+          // Reload availability for the month to update calendar
           this.loadMonthAvailability();
         }
       },
@@ -671,6 +678,86 @@ export class ApartmentDetailComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/apartments']);
+  }
+
+  onDatesChange() {
+    if (this.selectedCheckIn && this.selectedCheckOut) {
+      this.calculatePriceWithFilters();
+      
+    }
+  }
+
+  calculatePriceWithFilters() {
+    this.filterService.getApplicableFilters(
+      this.formatDate(this.selectedCheckIn!),
+      this.formatDate(this.selectedCheckOut!)
+    )
+      .subscribe({
+        next: (response) => {
+          this.appliedFilters = this.processFiltersForDisplay(response);
+          this.calculateTotals();
+        },
+        error: (error) => {
+          console.error('Error loading filters:', error);
+          // Fallback to base calculation
+          this.basePrice = this.apartment!.price * this.numberOfNights;
+          this.totalPrice = this.basePrice;
+        }
+      });
+  }
+
+  processFiltersForDisplay(response: any): any[] {
+    const filtersByNight: Map<string, any> = new Map();
+    
+    // Process each night's filters
+    Object.entries(response.filtersByDate).forEach(([date, filters]) => {
+      (filters as any[]).forEach(filter => {
+        const key = filter.id;
+        if (filtersByNight.has(key)) {
+          // Increment the count of nights this filter applies
+          filtersByNight.get(key).nightsApplied++;
+        } else {
+          filtersByNight.set(key, {
+            ...filter,
+            nightsApplied: 1
+          });
+        }
+      });
+    });
+
+    // Calculate impact for each filter
+    return Array.from(filtersByNight.values()).map(filter => {
+      const pricePerNight = this.apartment?.price || 0;
+      const impact = (pricePerNight * (filter.value / 100)) * filter.nightsApplied;
+      
+      return {
+        id: filter.id,
+        name: filter.name,
+        description: filter.description,
+        increment: filter.increment,
+        value: filter.value,
+        nightsApplied: filter.nightsApplied,
+        impact: filter.increment ? impact : -impact
+      };
+    }).sort((a, b) => b.impact - a.impact);
+  }
+
+  calculateTotals() {
+    if (!this.apartment) {
+      return;
+    }
+    
+    this.basePrice = this.apartment!.price * this.numberOfNights;
+    
+    this.totalIncrements = this.appliedFilters
+      .filter(f => f.increment)
+      .reduce((sum, f) => sum + f.impact, 0);
+    
+    this.totalDiscounts = Math.abs(this.appliedFilters
+      .filter(f => !f.increment)
+      .reduce((sum, f) => sum + f.impact, 0));
+    
+    this.totalPrice = this.basePrice + this.totalIncrements - this.totalDiscounts;
   }
 
   private showMessage(message: string, type: 'success' | 'error' | 'warning') {

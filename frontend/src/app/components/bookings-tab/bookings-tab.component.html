@@ -1,0 +1,208 @@
+<div class="bookings-tab-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading">
+
+    <!-- Controls Card -->
+    <mat-card class="controls-card">
+      <mat-card-content>
+        <div class="controls-row">
+          <!-- View Toggle -->
+          <mat-button-toggle-group [(ngModel)]="viewType" class="view-toggle">
+            <mat-button-toggle value="calendar">
+              <mat-icon>calendar_month</mat-icon>
+              Calendar View
+            </mat-button-toggle>
+            <mat-button-toggle value="list">
+              <mat-icon>list</mat-icon>
+              List View
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+
+          <!-- Filters -->
+          <div class="filters-group">
+            <!-- Search -->
+            <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search apartments</mat-label>
+            <input 
+                matInput 
+                [(ngModel)]="searchTerm" 
+                (ngModelChange)="onSearchChange()"
+                placeholder="Search...">
+            <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <!-- Status Filter -->
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Filter by status</mat-label>
+              <mat-select data-testid="filter-state" [(ngModel)]="filterState" (ngModelChange)="onFilterChange()">
+                <mat-option value="ALL">All States</mat-option>
+                <mat-option value="CONFIRMED">Confirmed</mat-option>
+                <mat-option value="COMPLETED">Completed</mat-option>
+                <mat-option value="CANCELLED">Cancelled</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Month Navigation (Only for Calendar View) -->
+        <div class="month-navigation" *ngIf="viewType === 'calendar'">
+          <button mat-icon-button (click)="changeMonth(-1)">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <h2>{{ monthName }}</h2>
+          <button mat-icon-button (click)="changeMonth(1)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Calendar View -->
+    <mat-card class="calendar-card" *ngIf="viewType === 'calendar'">
+      <mat-card-content>
+        <div class="calendar-wrapper">
+          <table class="calendar-table">
+            <thead>
+              <tr>
+                <th class="apartment-header">Apartment</th>
+                <th *ngFor="let day of daysArray" class="day-header">
+                  <div class="day-number">{{ day }}</div>
+                  <div class="day-name">{{ getDayName(day) }}</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredBookingsByApartment" class="apartment-row">
+                <td class="apartment-cell">
+                  <div class="apartment-info">
+                    <img [src]="item.apartment.imagesUrl[0]" [alt]="item.apartment.name">
+                    <div class="apartment-details">
+                      <div class="apartment-name">{{ item.apartment.name }}</div>
+                      <div class="apartment-meta">
+                        from ${{ item.apartment.price }}/night · {{ item.apartment.capacity }} guests
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td *ngFor="let day of daysArray" class="booking-cell">
+                  <ng-container *ngIf="getBookingForDate(item.apartment.id, day) as booking">
+                    <div 
+                      class="booking-indicator"
+                      [ngClass]="getStatusClass(booking.state)"
+                      [matTooltip]="getBookingTooltip(booking)"
+                      matTooltipPosition="above">
+                      {{ booking.id }}
+                    </div>
+                  </ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- List View -->
+    <div class="list-view" *ngIf="viewType === 'list'">
+      <mat-card *ngFor="let item of filteredBookingsByApartment" class="apartment-list-card">
+        <div class="apartment-list-header">
+          <img [src]="item.apartment.imagesUrl[0]" [alt]="item.apartment.name">
+          <div class="apartment-list-info">
+            <h3>{{ item.apartment.name }}</h3>
+            <p>${{ item.apartment.price }}/night · Capacity: {{ item.apartment.capacity }} guests</p>
+          </div>
+        </div>
+
+        <mat-card-content>
+          <div *ngIf="item.bookings.length === 0" class="no-bookings">
+            <p>No bookings found</p>
+          </div>
+
+          <div *ngIf="item.bookings.length > 0" class="bookings-list-items">
+            <div *ngFor="let booking of item.bookings" class="booking-list-item">
+              <div class="booking-list-content">
+                <mat-chip [ngClass]="getStatusClass(booking.state)">
+                  {{ booking.state }}
+                </mat-chip>
+                
+                <div class="booking-list-details">
+                  <div class="booking-id">Booking #{{ booking.id }} · User #{{ booking.userId }}</div>
+                  <div class="booking-info-row">
+                    <span class="info-item">
+                      <mat-icon>calendar_today</mat-icon>
+                      {{ formatDate(booking.startDate) }} - {{ formatDate(booking.endDate) }}
+                    </span>
+                    <span class="info-item">
+                      <mat-icon>people</mat-icon>
+                      {{ booking.guests }} guests
+                    </span>
+                    <span class="info-item">
+                      <mat-icon>attach_money</mat-icon>
+                      ${{ booking.cost }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Statistics Summary -->
+    <div class="statistics-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon bookings-icon">
+            <mat-icon>event</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ totalBookings }}</h3>
+            <p>Total Bookings</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon confirmed-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ confirmedBookings }}</h3>
+            <p>Confirmed</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon completed-icon">
+            <mat-icon>done_all</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ completedBookings }}</h3>
+            <p>Completed</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon revenue-icon">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>${{ totalRevenue.toLocaleString() }}</h3>
+            <p>Total Revenue</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

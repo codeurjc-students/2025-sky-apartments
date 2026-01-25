@@ -497,6 +497,10 @@
     height: 400px;
   }
 
+  .carousel-indicators {
+    display: none;
+  }
+
   .carousel-overlay {
     padding: 30px;
   }

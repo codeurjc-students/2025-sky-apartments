@@ -70,10 +70,20 @@
         <mat-icon>dashboard</mat-icon>
         <span>Dashboard of bookings</span>
       </button>
+      <button mat-menu-item (click)="onBookingCalendar()">
+        <mat-icon>calendar_month</mat-icon>
+        <span>Bookings calendar</span>
+      </button>
       <button mat-menu-item (click)="onApartmentsManagement()">
         <mat-icon>apartment</mat-icon>
         <span>Manage apartments</span>
       </button>
+
+      <button mat-menu-item (click)="onFiltersManagement()">
+        <mat-icon>tune</mat-icon>
+        <span>Manage filters</span>
+      </button>
+
     </ng-container>
     
     <mat-divider></mat-divider>
@@ -105,7 +115,7 @@
 
   <!-- Mobile Navigation -->
   <nav class="mobile-nav" [class.open]="isMenuOpen">
-    <a routerLink="/home" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+    <a routerLink="/home" fragment="hero" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
       <mat-icon>home</mat-icon>
       <span>Home</span>
     </a>
@@ -113,11 +123,11 @@
       <mat-icon>meeting_room</mat-icon>
       <span>Apartments</span>
     </a>
-    <a routerLink="/about" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+    <a routerLink="/home" fragment="about" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
       <mat-icon>info</mat-icon>
       <span>About Us</span>
     </a>
-    <a routerLink="/contact" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
+    <a routerLink="/home" fragment="contact" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMenu()">
       <mat-icon>contact_mail</mat-icon>
       <span>Contact</span>
     </a>

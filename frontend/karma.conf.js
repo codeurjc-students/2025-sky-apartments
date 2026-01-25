@@ -21,7 +21,7 @@ module.exports = function (config) {
       suppressAll: true
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/your-project-name'),
+      dir: require('path').join(__dirname, './coverage/sky-apartments'),
       subdir: '.',
       reporters: [
         { type: 'html' },
@@ -36,7 +36,9 @@ module.exports = function (config) {
       '/api/v1/apartments': 'http://localhost:8083/api/v1/apartments',
       '/api/v1/auth': 'http://localhost:8080/api/v1/auth/',
       '/api/v1/users': 'http://localhost:8080/api/v1/users',
-      '/api/v1/bookings': 'http://localhost:8082/api/v1/bookings'
+      '/api/v1/bookings': 'http://localhost:8082/api/v1/bookings',
+      '/api/v1/filters': 'http://localhost:8082/api/v1/filters',
+      '/api/v1/contact': 'http://localhost:8082/api/v1/contact'
     },
 
     browserNoActivityTimeout: 60000,

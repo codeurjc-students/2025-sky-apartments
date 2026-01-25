@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 
 import { ProfileComponent } from './profile.component';
 import { LoginService } from '../../services/user/login.service';
@@ -15,6 +15,7 @@ import { ApartmentService } from '../../services/apartment/apartment.service';
 import { UserDTO } from '../../dtos/user.dto';
 import { BookingDTO } from '../../dtos/booking.dto';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
+import Swal from 'sweetalert2';
 
 describe('ProfileComponent', () => {
   let component: ProfileComponent;
@@ -472,21 +473,37 @@ describe('ProfileComponent', () => {
     }));
 
     it('should delete apartment successfully', fakeAsync(() => {
-      spyOn<any>(component, 'showMessage');
+
+      spyOn(Swal, 'fire').and.returnValue(
+        Promise.resolve({ isConfirmed: true } as any)
+      ) as jasmine.Spy;
+      
+      const showMessageSpy = spyOn<any>(component, 'showMessage');
       mockApartmentService.deleteApartment.and.returnValue(of(void 0));
       mockApartmentService.getAllApartments.and.returnValue(of([]));
-      spyOn(window, 'confirm').and.returnValue(true);
 
       component.deleteApartment(1);
+    
       tick();
-
+      
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+        title: 'Are you sure?',
+        text: 'Do you want to delete this apartment?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }));
+      
       expect(mockApartmentService.deleteApartment).toHaveBeenCalledWith(1);
-      expect((component as any).showMessage).toHaveBeenCalledWith(
+      expect(showMessageSpy).toHaveBeenCalledWith(
         'Apartment deleted successfully',
         'success'
       );
+      expect(mockApartmentService.getAllApartments).toHaveBeenCalled();
     }));
-
     it('should not delete apartment if not confirmed', () => {
       spyOn(window, 'confirm').and.returnValue(false);
 
@@ -540,5 +557,78 @@ describe('ProfileComponent', () => {
       component.profileForm.get('repeatPassword')?.setErrors({ passwordMismatch: true });
       expect(component.getProfileErrorMessage('repeatPassword')).toBe('Passwords do not match');
     });
+  });
+
+  describe('navigateToTab Admin', () => {
+    it('should navigate to admin tabs correctly', fakeAsync(() => {
+      component.isAdmin = true;
+
+      const fragments = [
+        { frag: 'dashboard', index: 0 },
+        { frag: 'bookings', index: 1 },
+        { frag: 'apartments', index: 2 },
+        { frag: 'filters', index: 3 }
+      ];
+
+      fragments.forEach(item => {
+        component.navigateToTab(item.frag);
+        tick(300); // Necesario por el setTimeout de 300ms
+        expect(component.selectedTabIndex).toBe(item.index, `Failed for fragment: ${item.frag}`);
+      });
+    }));
+
+    it('should not change tab if fragment is null', fakeAsync(() => {
+      component.selectedTabIndex = 5;
+      component.navigateToTab(null);
+      tick(300);
+      expect(component.selectedTabIndex).toBe(5);
+    }));
+  });
+
+  describe('loadAdminData branches', () => {
+    it('should set aptHasMore to false when response is empty', fakeAsync(() => {
+      mockApartmentService.getAllApartments.and.returnValue(of([]));
+      
+      component.loadAdminData();
+      tick();
+
+      expect(component.aptHasMore).toBeFalse();
+      expect(component.allApartments.length).toBe(0);
+    }));
+
+    it('should set aptHasMore to false when receiving fewer items than pageSize', fakeAsync(() => {
+      const fewApartments = new Array(5).fill(mockApartment);
+      mockApartmentService.getAllApartments.and.returnValue(of(fewApartments));
+      component.aptPageSize = 10;
+
+      component.loadAdminData();
+      tick();
+
+      expect(component.aptHasMore).toBeFalse();
+      expect(component.allApartments.length).toBe(5);
+    }));
+
+    it('should set aptHasMore to true when receiving exactly pageSize items', fakeAsync(() => {
+      const fullPage = new Array(10).fill(mockApartment);
+      mockApartmentService.getAllApartments.and.returnValue(of(fullPage));
+      component.aptPageSize = 10;
+
+      component.loadAdminData();
+      tick();
+
+      expect(component.aptHasMore).toBeTrue();
+    }));
+
+    it('should handle HTTP 204 error by setting aptHasMore to false', fakeAsync(() => {
+      mockApartmentService.getAllApartments.and.returnValue(
+        throwError(() => ({ status: 204 }))
+      );
+
+      component.loadAdminData();
+      tick();
+
+      expect(component.aptHasMore).toBeFalse();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    }));
   });
 });

@@ -176,7 +176,6 @@ describe('LoginService (Integration)', () => {
           setTimeout(() => {
             service.logOut().subscribe({
               next: () => {
-                expect(service.logged).toBeFalse();
                 expect(service.isLogged()).toBeFalse();
                 done();
               },
@@ -532,5 +531,42 @@ describe('LoginService (Integration)', () => {
         error: (err) => fail(`Login failed: ${err.message}`)
       });
     }, 10000);
+  });
+
+  // ==================== reqIsLoggedPromise() ====================
+  describe('reqIsLoggedPromise', () => {
+    it('should resolve and update state when user is authenticated', async () => {
+      await service.reqIsLoggedPromise();
+      
+      expect(service.logged$.getValue()).toBeDefined();
+    });
+
+    it('should resolve even if the request fails (error handling)', (done) => {
+      service.logOut().subscribe(() => {
+        service.reqIsLoggedPromise().then(() => {
+          expect(service.isLogged()).toBeFalse();
+          done();
+        });
+      });
+    });
+  });
+
+  // ==================== refreshToken() ====================
+  describe('refreshToken', () => {
+    it('should successfully refresh token and restart timer', (done) => {
+      service.logIn('admin@example.com', 'Password@1234').subscribe(() => {
+        setTimeout(() => {
+          service.refreshToken().subscribe({
+            next: (response) => {
+              if (response && response.status === 'SUCCESS') {
+                expect(service.isLogged()).toBeTrue();
+              }
+              done();
+            },
+            error: () => fail('Refresh token should not have failed')
+          });
+        }, 1000);
+      });
+    }, 15000);
   });
 });

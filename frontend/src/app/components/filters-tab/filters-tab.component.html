@@ -1,0 +1,336 @@
+<div class="filters-container">
+  <!-- Header -->
+  <div class="filters-header">
+    <div class="header-content">
+      <h2 class="header-title">
+        <i class="bi bi-sliders"></i>
+        Price Filters Management
+      </h2>
+      <button class="btn-new-filter" (click)="newFilter()">
+        <i class="bi bi-plus-circle"></i>
+        New Filter
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading && !showForm" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading filters...</p>
+  </div>
+
+  <!-- Filters Grid -->
+  <div *ngIf="!loading && !showForm" class="filters-grid">
+    <div *ngFor="let filter of filters" class="filter-card" [class.inactive]="!filter.activated">
+      <!-- Card Header -->
+      <div class="filter-card-header">
+        <div class="filter-title-section">
+          <h3 class="filter-name">{{ filter.name }}</h3>
+          <span [ngClass]="getTypeBadgeClass(filter)" class="filter-badge">
+            {{ getTypeLabel(filter) }} {{ filter.value }}%
+          </span>
+        </div>
+        <div class="filter-actions">
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [checked]="filter.activated"
+              (change)="toggleActivation(filter)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="filter-card-body">
+        <p class="filter-description">{{ filter.description || 'No description' }}</p>
+        
+        <div class="filter-details">
+          <div class="detail-item">
+            <i class="bi bi-calendar-range"></i>
+            <div class="detail-content">
+              <span class="detail-label">Date Type</span>
+              <span class="detail-value">{{ formatDateType(filter.dateType) }}</span>
+            </div>
+          </div>
+
+          <!-- Para DATE_RANGE solamente -->
+          <div class="detail-item" *ngIf="filter.dateType === DateType.DATE_RANGE && filter.startDate && filter.endDate">
+            <i class="bi bi-calendar-event"></i>
+            <div class="detail-content">
+              <span class="detail-label">Period</span>
+              <span class="detail-value">
+                {{ filter.startDate | date:'dd/MM/yyyy' }} - {{ filter.endDate | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Para WEEK_DAYS solamente -->
+          <div class="detail-item" *ngIf="filter.dateType === DateType.WEEK_DAYS && filter.weekDays">
+            <i class="bi bi-calendar-week"></i>
+            <div class="detail-content">
+              <span class="detail-label">Days</span>
+              <span class="detail-value">{{ filter.weekDays }}</span>
+            </div>
+          </div>
+
+          <!-- Para DATE_RANGE_WEEK_DAYS -->
+          <div class="detail-item" *ngIf="filter.dateType === DateType.DATE_RANGE_WEEK_DAYS">
+            <i class="bi bi-calendar-range-fill"></i>
+            <div class="detail-content">
+              <span class="detail-label">Date Range + Days</span>
+              <span class="detail-value">
+                {{ filter.startDate | date:'dd/MM/yyyy' }} - {{ filter.endDate | date:'dd/MM/yyyy' }}
+                <br>
+                <small>Days: {{ filter.weekDays }}</small>
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item" *ngIf="filter.conditionType && filter.conditionType !== 'NONE'">
+            <i class="bi bi-gear"></i>
+            <div class="detail-content">
+              <span class="detail-label">Condition</span>
+              <span class="detail-value">{{ formatConditionType(filter.conditionType) }}</span>
+            </div>
+          </div>
+
+          <div class="detail-item" *ngIf="filter.anticipationHours">
+            <i class="bi bi-clock"></i>
+            <div class="detail-content">
+              <span class="detail-label">Anticipation</span>
+              <span class="detail-value">{{ filter.anticipationHours }}h</span>
+            </div>
+          </div>
+
+          <div class="detail-item" *ngIf="filter.minDays">
+            <i class="bi bi-calendar-check"></i>
+            <div class="detail-content">
+              <span class="detail-label">Min Days</span>
+              <span class="detail-value">{{ filter.minDays }} days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="filter-card-footer">
+        <button class="btn-edit" (click)="editFilter(filter)">
+          <i class="bi bi-pencil"></i>
+          Edit
+        </button>
+        <button class="btn-delete" (click)="deleteFilter(filter.id!)">
+          <i class="bi bi-trash"></i>
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filters.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <h3>No filters yet</h3>
+      <p>Create your first price filter to get started</p>
+      <button class="btn-primary" (click)="newFilter()">
+        <i class="bi bi-plus-circle"></i>
+        Create First Filter
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="filterHasMore && filters.length > 0" class="load-more-container">
+      <button mat-raised-button class="load-more-btn" (click)="loadMoreFilters()" [disabled]="filterLoading">
+        <mat-spinner *ngIf="filterLoading" diameter="20"></mat-spinner>
+        <span *ngIf="!filterLoading">Load More</span>
+      </button>
+  </div>
+
+  <!-- Filter Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="closeForm()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ isEditing ? 'Edit Filter' : 'New Filter' }}</h3>
+        <button class="btn-close-modal" (click)="closeForm()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <form #filterForm="ngForm">
+          <!-- Name and Value -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="selectedFilter!.name"
+                name="name"
+                required
+                placeholder="e.g., Weekend Premium">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Value (%)</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="selectedFilter!.value"
+                name="value"
+                required
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="e.g., 20">
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea 
+              class="form-control" 
+              [(ngModel)]="selectedFilter!.description"
+              name="description"
+              rows="2"
+              placeholder="Optional description"></textarea>
+          </div>
+
+          <!-- Type and Status -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">Type</label>
+              <select class="form-control" [(ngModel)]="selectedFilter!.increment" name="increment">
+                <option [value]="false">Discount</option>
+                <option [value]="true">Increment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="selectedFilter!.activated"
+                  name="activated">
+                <span>Activated</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Date Configuration Section -->
+          <div class="form-section">
+            <h4 class="section-title">
+              <i class="bi bi-calendar-range"></i>
+              Date Configuration
+            </h4>
+            
+            <div class="form-group">
+              <label class="form-label required">Apply on</label>
+              <select class="form-control" [(ngModel)]="selectedFilter!.dateType" name="dateType">
+                <option [value]="DateType.EVERY_DAY">Every day</option>
+                <option [value]="DateType.DATE_RANGE">Specific date range</option>
+                <option [value]="DateType.WEEK_DAYS">Specific days of week</option>
+                <option [value]="DateType.DATE_RANGE_WEEK_DAYS">Date range + specific days</option>
+              </select>
+            </div>
+
+            <!-- Date Range Fields - Se muestra para DATE_RANGE y DATE_RANGE_WEEK_DAYS -->
+            <div *ngIf="showDateFields()" class="form-row">
+              <div class="form-group">
+                <label class="form-label required">Start Date</label>
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  [(ngModel)]="selectedFilter!.startDate"
+                  name="startDate">
+              </div>
+              <div class="form-group">
+                <label class="form-label required">End Date</label>
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  [(ngModel)]="selectedFilter!.endDate"
+                  name="endDate">
+              </div>
+            </div>
+
+            <!-- Week Days Selection - Se muestra para WEEK_DAYS y DATE_RANGE_WEEK_DAYS -->
+            <div *ngIf="showWeekDaysField()" class="form-group">
+              <label class="form-label required">Select days</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-label" *ngFor="let day of weekDaysOptions">
+                  <input 
+                    type="checkbox"
+                    [checked]="isWeekDaySelected(day.value)"
+                    (change)="onWeekDayChange(day.value, $event)">
+                  <span>{{ day.label }}</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Helper text for DATE_RANGE_WEEK_DAYS -->
+            <div *ngIf="selectedFilter?.dateType === DateType.DATE_RANGE_WEEK_DAYS" class="form-hint-box">
+              <i class="bi bi-info-circle"></i>
+              <span>This filter will apply only on the selected days of the week within the specified date range.</span>
+            </div>
+          </div>
+
+          <!-- Condition Configuration Section -->
+          <div class="form-section">
+            <h4 class="section-title">
+              <i class="bi bi-gear"></i>
+              Additional Conditions
+            </h4>
+            
+            <div class="form-group">
+              <label class="form-label">Condition type</label>
+              <select class="form-control" [(ngModel)]="selectedFilter!.conditionType" name="conditionType">
+                <option [value]="ConditionType.NONE">None</option>
+                <option [value]="ConditionType.LAST_MINUTE">Last minute booking</option>
+                <option [value]="ConditionType.LONG_STAY">Long stay</option>
+              </select>
+            </div>
+
+            <div *ngIf="showAnticipationHoursField()" class="form-group">
+              <label class="form-label required">Maximum anticipation hours</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="selectedFilter!.anticipationHours"
+                name="anticipationHours"
+                min="1"
+                placeholder="e.g., 48">
+              <small class="form-hint">
+                Filter applies if booking is made with X or fewer hours in advance
+              </small>
+            </div>
+
+            <div *ngIf="showMinDaysField()" class="form-group">
+              <label class="form-label required">Minimum days</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="selectedFilter!.minDays"
+                name="minDays"
+                min="1"
+                placeholder="e.g., 7">
+              <small class="form-hint">
+                Filter applies if booking is X days or more
+              </small>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeForm()">
+          Cancel
+        </button>
+        <button 
+          class="btn-primary" 
+          (click)="saveFilter()"
+          [disabled]="!filterForm.valid || loading">
+          <span *ngIf="loading" class="spinner-small"></span>
+          {{ isEditing ? 'Update' : 'Create' }} Filter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

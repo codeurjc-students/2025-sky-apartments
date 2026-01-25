@@ -6,12 +6,14 @@ import { of, throwError } from 'rxjs';
 
 import { ApartmentListComponent } from './apartment-list.component';
 import { ApartmentService } from '../../services/apartment/apartment.service';
+import { ReviewService } from '../../services/review/review.service';
 import { ApartmentDTO } from '../../dtos/apartment.dto';
 
 describe('ApartmentListComponent', () => {
   let component: ApartmentListComponent;
   let fixture: ComponentFixture<ApartmentListComponent>;
   let apartmentService: jasmine.SpyObj<ApartmentService>;
+  let reviewService: jasmine.SpyObj<ReviewService>;
   let router: Router;
 
   const mockApartments: ApartmentDTO[] = [
@@ -43,6 +45,10 @@ describe('ApartmentListComponent', () => {
       'getAllServices'
     ]);
 
+    const reviewServiceSpy = jasmine.createSpyObj('ReviewService', [
+      'getApartmentRating'
+    ]);
+
     await TestBed.configureTestingModule({
       imports: [
         ApartmentListComponent,
@@ -50,6 +56,7 @@ describe('ApartmentListComponent', () => {
       ],
       providers: [
         { provide: ApartmentService, useValue: apartmentServiceSpy },
+        { provide: ReviewService, useValue: reviewServiceSpy },
         provideRouter([
           { path: 'error', component: ApartmentListComponent },
           { path: 'apartment/:id', component: ApartmentListComponent }
@@ -58,11 +65,13 @@ describe('ApartmentListComponent', () => {
     }).compileComponents();
 
     apartmentService = TestBed.inject(ApartmentService) as jasmine.SpyObj<ApartmentService>;
+    reviewService = TestBed.inject(ReviewService) as jasmine.SpyObj<ReviewService>;
     router = TestBed.inject(Router);
 
     // Default mock responses
     apartmentService.getAllServices.and.returnValue(of(mockServices));
     apartmentService.searchApartments.and.returnValue(of(mockApartments));
+    reviewService.getApartmentRating.and.returnValue(of(4.5));
 
     fixture = TestBed.createComponent(ApartmentListComponent);
     component = fixture.componentInstance;
@@ -78,11 +87,13 @@ describe('ApartmentListComponent', () => {
       expect(component.availableServices).toEqual([]);
       expect(component.selectedServices.size).toBe(0);
       expect(component.selectedCapacity).toBe(1);
+      expect(component.selectedMinRating).toBe(0);
       expect(component.currentPage).toBe(0);
       expect(component.pageSize).toBe(10);
       expect(component.hasMore).toBe(true);
       expect(component.loading).toBe(false);
       expect(component.initialLoading).toBe(true);
+      expect(component.apartmentRatings.size).toBe(0);
     });
   });
 
@@ -173,22 +184,37 @@ describe('ApartmentListComponent', () => {
       });
     });
 
-    it('should load apartments successfully', fakeAsync(() => {
+    it('should load apartments successfully and fetch ratings', fakeAsync(() => {
       component.searchApartments();
       tick();
 
       expect(component.apartments).toEqual(mockApartments);
+      expect(reviewService.getApartmentRating).toHaveBeenCalledTimes(2);
       expect(component.loading).toBe(false);
       expect(component.initialLoading).toBe(false);
-      expect(component.hasMore).toBe(false); // Less than pageSize
+      expect(component.hasMore).toBe(false);
+    }));
+
+    it('should filter apartments by minimum rating', fakeAsync(() => {
+      component.selectedMinRating = 4.0;
+      reviewService.getApartmentRating.and.callFake((id: number) => {
+        return id === 1 ? of(4.5) : of(3.5);
+      });
+
+      component.searchApartments();
+      tick();
+
+      expect(component.apartments.length).toBe(1);
+      expect(component.apartments[0].id).toBe(1);
     }));
 
     it('should append apartments when not resetting', fakeAsync(() => {
       component.apartments = [mockApartments[0]];
+      component.apartmentRatings.set(1, 4.5);
       component.searchApartments(false);
       tick();
 
-      expect(component.apartments.length).toBe(3); // 1 existing + 2 new
+      expect(component.apartments.length).toBe(3);
     }));
 
     it('should replace apartments when resetting', fakeAsync(() => {
@@ -222,6 +248,19 @@ describe('ApartmentListComponent', () => {
 
       expect(component.hasMore).toBe(false);
       expect(component.apartments).toEqual([]);
+    }));
+
+    it('should handle rating fetch errors gracefully', fakeAsync(() => {
+      reviewService.getApartmentRating.and.returnValue(
+        throwError(() => new Error('Rating not found'))
+      );
+
+      component.searchApartments();
+      tick();
+
+      expect(component.apartments).toEqual(mockApartments);
+      expect(component.apartmentRatings.get(1)).toBe(0);
+      expect(component.apartmentRatings.get(2)).toBe(0);
     }));
 
     it('should handle 204 No Content response', fakeAsync(() => {
@@ -348,6 +387,64 @@ describe('ApartmentListComponent', () => {
     });
   });
 
+  describe('onRatingChange', () => {
+    it('should search apartments when rating changes', () => {
+      spyOn(component, 'searchApartments');
+      
+      component.selectedMinRating = 4.0;
+      component.onRatingChange();
+      
+      expect(component.searchApartments).toHaveBeenCalledWith(true);
+    });
+
+    it('should enforce minimum rating of 0', () => {
+      spyOn(component, 'searchApartments');
+      
+      component.selectedMinRating = -2;
+      component.onRatingChange();
+      
+      expect(component.selectedMinRating).toBe(0);
+    });
+
+    it('should enforce maximum rating of 5', () => {
+      spyOn(component, 'searchApartments');
+      
+      component.selectedMinRating = 7;
+      component.onRatingChange();
+      
+      expect(component.selectedMinRating).toBe(5);
+    });
+
+    it('should reset search when rating changes', () => {
+      spyOn(component, 'searchApartments');
+      
+      component.selectedMinRating = 3.5;
+      component.onRatingChange();
+      
+      expect(component.searchApartments).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('getRating', () => {
+    it('should return rating from map', () => {
+      component.apartmentRatings.set(1, 4.5);
+      
+      expect(component.getRating(1)).toBe(4.5);
+    });
+
+    it('should return 0 for unknown apartment', () => {
+      expect(component.getRating(999)).toBe(0);
+    });
+
+    it('should return correct ratings for multiple apartments', () => {
+      component.apartmentRatings.set(1, 4.5);
+      component.apartmentRatings.set(2, 3.8);
+      
+      expect(component.getRating(1)).toBe(4.5);
+      expect(component.getRating(2)).toBe(3.8);
+    });
+  });
+
   describe('loadMore', () => {
     it('should increment current page', () => {
       spyOn(component, 'searchApartments');
@@ -368,6 +465,7 @@ describe('ApartmentListComponent', () => {
 
     it('should append new apartments to existing ones', fakeAsync(() => {
       component.apartments = [mockApartments[0]];
+      component.apartmentRatings.set(1, 4.5);
       component.currentPage = 0;
       
       const newApartments = [mockApartments[1]];
@@ -548,8 +646,8 @@ describe('ApartmentListComponent', () => {
       fixture.detectChanges();
       tick();
       
-      const capacityInput = fixture.nativeElement.querySelector('input[type="number"]');
-      expect(capacityInput).toBeTruthy();
+      const inputs = fixture.nativeElement.querySelectorAll('input[type="number"]');
+      expect(inputs.length).toBeGreaterThanOrEqual(1);
     }));
 
     it('should display View Apartment button for each apartment', fakeAsync(() => {
@@ -598,6 +696,22 @@ describe('ApartmentListComponent', () => {
       );
     }));
 
+    it('should filter apartments when rating changes', fakeAsync(() => {
+      fixture.detectChanges();
+      tick();
+      
+      reviewService.getApartmentRating.and.callFake((id: number) => {
+        return id === 1 ? of(4.5) : of(3.0);
+      });
+      
+      component.selectedMinRating = 4.0;
+      component.searchApartments(true);
+      tick();
+      
+      expect(component.apartments.length).toBe(1);
+      expect(component.apartments[0].id).toBe(1);
+    }));
+
     it('should handle multiple filter changes', fakeAsync(() => {
       fixture.detectChanges();
       tick();
@@ -612,9 +726,14 @@ describe('ApartmentListComponent', () => {
       component.onCapacityChange();
       tick();
       
+      component.selectedMinRating = 3.5;
+      component.onRatingChange();
+      tick();
+      
       expect(component.selectedServices.has('WiFi')).toBe(true);
       expect(component.selectedServices.has('AC')).toBe(true);
       expect(component.selectedCapacity).toBe(3);
+      expect(component.selectedMinRating).toBe(3.5);
     }));
 
     it('should load multiple pages sequentially', fakeAsync(() => {
@@ -632,6 +751,15 @@ describe('ApartmentListComponent', () => {
       tick();
       
       expect(component.currentPage).toBe(2);
+    }));
+
+    it('should fetch ratings for all apartments on load', fakeAsync(() => {
+      fixture.detectChanges();
+      tick();
+      
+      expect(reviewService.getApartmentRating).toHaveBeenCalledWith(1);
+      expect(reviewService.getApartmentRating).toHaveBeenCalledWith(2);
+      expect(reviewService.getApartmentRating).toHaveBeenCalledTimes(2);
     }));
   });
 });

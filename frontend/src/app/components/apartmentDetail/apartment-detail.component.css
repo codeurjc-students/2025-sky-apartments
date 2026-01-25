@@ -346,44 +346,153 @@
   color: #2e7d32;
 }
 
-.booking-summary {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+.filters-section {
+  margin: 0.5rem 0;
 }
 
-.summary-row {
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 1rem 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  color: #666;
-  font-size: 15px;
+  padding: 0.625rem 0.75rem;
+  margin: 0.375rem 0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: help;
 }
 
-.summary-row:last-child {
-  margin-bottom: 0;
+.filter-row:hover {
+  background: #f9fafb;
+  transform: translateX(4px);
 }
 
-.summary-row.total {
-  font-size: 18px;
-  color: #333;
-  margin-top: 12px;
+.filter-row.increment {
+  border-left: 3px solid #dc2626;
 }
 
-.summary-row strong {
-  color: #333;
+.filter-row.discount {
+  border-left: 3px solid #059669;
+}
+
+.filter-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.filter-name {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-name i {
+  font-size: 1rem;
+}
+
+.filter-row.increment .filter-name i {
+  color: #dc2626;
+}
+
+.filter-row.discount .filter-name i {
+  color: #059669;
+}
+
+.filter-details {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.filter-amount {
+  font-size: 0.95rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.summary-row.total strong {
-  font-size: 24px;
-  color: #667eea;
+.filter-amount.positive {
+  color: #dc2626;
 }
 
-::ng-deep .booking-summary mat-divider {
-  margin: 12px 0;
+.filter-amount.negative {
+  color: #059669;
+}
+
+/* Subtotals */
+.subtotals {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  margin: 0.25rem 0;
+}
+
+.subtotal-row.increment {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.subtotal-row.discount {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.subtotal-row span {
+  font-weight: 500;
+}
+
+.subtotal-row strong {
+  font-weight: 700;
+}
+
+/* Savings Badge */
+.savings-badge {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-radius: 8px;
+  color: #065f46;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  animation: slideIn 0.3s ease;
+}
+
+.savings-badge i {
+  font-size: 1.25rem;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-message {
@@ -921,6 +1030,10 @@
   .carousel-image {
     height: 250px;
     border-radius: 12px;
+  }
+
+  .carousel-thumbnails {
+    display: none;
   }
 
   .info-card h1 {

@@ -135,16 +135,70 @@
                 Price Summary
               </h2>
               
+              <!-- Base price -->
               <div class="price-row">
-                <span class="label">${{ apartment?.price }} × {{ numberOfNights }} night{{ numberOfNights !== 1 ? 's' : '' }}</span>
-                <span class="value">${{ totalPrice }}</span>
+                <span class="label">{{ numberOfNights }} night{{ numberOfNights !== 1 ? 's' : '' }}</span>
+                <span class="detail">${{ apartment?.price }} × {{ numberOfNights }}</span>
+              </div>
+              <div class="price-row">
+                <span class="label">Base price</span>
+                <span class="value">${{ basePrice.toFixed(2) }}</span>
+              </div>
+              
+              <!-- Applied Filters -->
+              <div class="filters-section" *ngIf="appliedFilters.length > 0">
+                <mat-divider></mat-divider>
+                
+                <div class="section-header">
+                  <mat-icon>tune</mat-icon>
+                  <span>Applied Price Filters</span>
+                </div>
+                
+                <div 
+                  *ngFor="let filter of appliedFilters" 
+                  class="filter-row"
+                  [class.increment]="filter.increment"
+                  [class.discount]="!filter.increment"
+                  [matTooltip]="filter.description"
+                  matTooltipPosition="left"
+                  matTooltipClass="custom-tooltip">
+                  
+                  <div class="filter-info">
+                    <div class="filter-name">
+                      <mat-icon class="filter-icon">
+                        {{ filter.increment ? 'arrow_upward' : 'arrow_downward' }}
+                      </mat-icon>
+                      <span>{{ filter.name }}</span>
+                    </div>
+                    <span class="filter-details">
+                      {{ filter.value }}% × {{ filter.nightsApplied }} night{{ filter.nightsApplied !== 1 ? 's' : '' }}
+                    </span>
+                  </div>
+                  
+                  <strong class="filter-amount" [class.positive]="filter.increment" [class.negative]="!filter.increment">
+                    {{ filter.increment ? '+' : '-' }}${{ Math.abs(filter.impact).toFixed(2) }}
+                  </strong>
+                </div>
+              </div>
+
+              <!-- Loading filters -->
+              <div class="loading-filters" *ngIf="loadingFilters">
+                <mat-spinner diameter="24"></mat-spinner>
+                <span>Loading price filters...</span>
               </div>
               
               <mat-divider></mat-divider>
               
+              <!-- Total -->
               <div class="price-row total">
                 <span class="label">Total</span>
-                <span class="value">${{ totalPrice }}</span>
+                <span class="value">${{ totalPrice.toFixed(2) }}</span>
+              </div>
+
+              <!-- Savings badge -->
+              <div class="savings-badge" *ngIf="totalDiscounts > 0">
+                <mat-icon>check_circle</mat-icon>
+                You save ${{ totalDiscounts.toFixed(2) }}!
               </div>
 
               <button 
@@ -152,7 +206,7 @@
                 color="primary"
                 class="confirm-button"
                 (click)="confirmBooking()"
-                [disabled]="bookingInProgress"
+                [disabled]="bookingInProgress || loadingFilters"
               >
                 <mat-spinner *ngIf="bookingInProgress" diameter="24"></mat-spinner>
                 <mat-icon *ngIf="!bookingInProgress">check_circle</mat-icon>
