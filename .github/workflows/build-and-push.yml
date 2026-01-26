@@ -86,9 +86,21 @@ jobs:
 
       - name: Prepare docker-compose for OCI
         run: |
-          cp docker/docker-compose.yml docker-compose-temp.yml
+          # Determinar qué archivo usar
+          if [ "${{ inputs.docker_tag }}" == "dev" ]; then
+            COMPOSE_FILE="docker/docker-compose-dev.yml"
+          else
+            COMPOSE_FILE="docker/docker-compose.yml"
+          fi
+          
+          cp $COMPOSE_FILE docker-compose-temp.yml
           sed -i "s/\${DOCKER_USERNAME}/${{ secrets.DOCKER_USERNAME }}/g" docker-compose-temp.yml
-          sed -i "s/:0\.1/:${{ inputs.docker_tag }}/g" docker-compose-temp.yml
+          
+          # Solo reemplazar si NO es dev o un tag de versión específico
+          if [ "${{ inputs.docker_tag }}" != "dev" ]; then
+            sed -i "s/:0\.2/:${{ inputs.docker_tag }}/g" docker-compose-temp.yml
+          fi
+          
           sed -i '/^version:/d' docker-compose-temp.yml
           
           echo "Prepared docker-compose.yml:"

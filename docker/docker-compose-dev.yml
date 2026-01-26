@@ -140,6 +140,7 @@ services:
   # Main application (Backend + Frontend) - Develop
   app:
     image: ${DOCKER_USERNAME}/apartments-app:dev
+    pull_policy: always
     restart: always
     ports:
       - "443:443"
