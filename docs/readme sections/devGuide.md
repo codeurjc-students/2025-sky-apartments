@@ -120,14 +120,14 @@ The following tools and IDEs are used to develop the application. Only the ones 
 
 The following diagram illustrates the core domain entities and their relationships:
 
-![Domain Model Diagram](/docs/images/entity_diagram_2.png)
+![Domain Model Diagram](/docs/images/diagrama_entidad.png)
 ---
 
 ### **Server Architecture**
 
 The backend follows a microservices architecture with multiple independent services communicating through REST APIs:
 
-![Server Architecture Diagram](/docs/images/server_architecture_v2.png)
+![Server Architecture Diagram](/docs/images/diagrama_server.png)
 
 ---
 
@@ -135,7 +135,7 @@ The backend follows a microservices architecture with multiple independent servi
 
 The frontend is built with Angular 19 following a component-based architecture:
 
-![Client Architecture Diagram](/docs/images/client_architecture_v2.png)
+![Client Architecture Diagram](/docs/images/diagrama_cliente.png)
 
 ---
 
@@ -213,7 +213,7 @@ A generated **HTML version** of the documentation is available for direct viewin
 
 📄 **[View REST API Documentation of Booking MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-booking.html)**
 
-📄 **[View REST API Documentation of Review MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/docs/update-strcuture-phase-3/docs/api/api-docs-review.html)**
+📄 **[View REST API Documentation of Review MS](https://rawcdn.githack.com/codeurjc-students/2025-sky-apartments/1b79a0e20549f62d2a2a1dd2c098228848b17829/docs/api/api-docs-review.html)**
 
 ### **Distributed Tracing**
 
@@ -248,18 +248,18 @@ The backend microservices have undergone several layers of automated testing to 
 
 | Metric                | Value         |
 |-----------------------|--------------|
-| **Line Coverage**     | 83% (318/1971 instructions missed) |
-| **Branch Coverage**   | 70% (18/60 branches missed)        |
+| **Line Coverage**     | 88% (245/2202 instructions missed) |
+| **Branch Coverage**   | 77% (15/66 branches missed)        |
 | **Number of Classes** | 22            |
-| **Number of Methods** | 135 total, 3 missed              |
+| **Number of Methods** | 136 total, 25 missed              |
 
 **Coverage by Package:**
 
 | Package | Line Coverage | Branch Coverage |
 |---------|--------------|----------------|
-| `com.skyapartments.apartment.dto`        | 83% | 75% |
-| `com.skyapartments.apartment.model`      | 100% | N/A |
-| `com.skyapartments.apartment.service`    | 97%| 85% |
+| `com.skyapartments.apartment.dto`        | 89% | N/A |
+| `com.skyapartments.apartment.model`      | 96% | 100% |
+| `com.skyapartments.apartment.service`    | 98%| 86% |
 | `com.skyapartments.apartment.controller` | 91%| 100% |
 | `com.skyapartments.apartment.exception` | 84%| N/A |
 
@@ -267,50 +267,73 @@ The backend microservices have undergone several layers of automated testing to 
 
 | Metric                | Value         |
 |-----------------------|--------------|
-| **Line Coverage**     | 81% (212/1720 instructions missed) |
-| **Branch Coverage**   | 66% (19/56 branches missed) |
+| **Line Coverage**     | 87% (221/1755 instructions missed) |
+| **Branch Coverage**   | 67% (18/56 branches missed) |
 | **Number of Classes** | 22 |
-| **Number of Methods** | 143 total, 0 missed  |
+| **Number of Methods** | 143 total, 15 missed  |
 
 **Coverage by Package:**
 
 | Package | Line Coverage | Branch Coverage |
 |---------|--------------|----------------|
 | `com.skyapartments.user.dto`        | 100% | N/A |
-| `com.skyapartments.user.model`      | 94% | N/A |
-| `com.skyapartments.user.service`    | 96% | 69% |
-| `com.skyapartments.user.controller` | 84% | 83% |
-| `com.skyapartments.user.exception`   | 86% | N/A |
+| `com.skyapartments.user.model`      | 100% | N/A |
+| `com.skyapartments.user.service`    | 97% | 69% |
+| `com.skyapartments.user.controller` | 87% | 91% |
+| `com.skyapartments.user.exception`   | 87% | N/A |
 
 ##### **Booking Service**
 
 | Metric                | Value         |
 |-----------------------|--------------|
-| **Line Coverage**     | 75% (413/1660 instructions missed) |
-| **Branch Coverage**   | 65% (23/66 branches missed)  |
-| **Number of Classes** | 22 |
-| **Number of Methods** | 142 total, 46 missed |
+| **Line Coverage**     | 85% (687/4778 instructions missed) |
+| **Branch Coverage**   | 76% (53/222 branches missed)  |
+| **Number of Classes** | 32 |
+| **Number of Methods** | 268 total, 51 missed |
 
 **Coverage by Package:**
 
 | Package | Line Coverage | Branch Coverage |
 |---------|--------------|----------------|
-| `com.skyapartments.booking.dto`        | 61% | N/A |
-| `com.skyapartments.booking.model`      | 100% | N/A |
-| `com.skyapartments.booking.service`    | 87% | 69% |
-| `com.skyapartments.booking.controller` | 83% | 84% |
-| `com.skyapartments.user.exception`   | 73% | N/A |
+| `com.skyapartments.booking.dto`        | 75% | N/A |
+| `com.skyapartments.booking.model`      | 82% | 52% |
+| `com.skyapartments.booking.service`    | 92% | 87% |
+| `com.skyapartments.booking.controller` | 78% | 85% |
+| `com.skyapartments.booking.exception`   | 78% | N/A |
+
+##### **Review Service**
+
+| Metric                | Value         |
+|-----------------------|--------------|
+| **Line Coverage**     | 83% (325/1932 instructions missed) |
+| **Branch Coverage**   | 75% (13/52 branches missed)  |
+| **Number of Classes** | 23 |
+| **Number of Methods** | 157 total, 44 missed |
+
+**Coverage by Package:**
+
+| Package | Line Coverage | Branch Coverage |
+|---------|--------------|----------------|
+| `com.skyapartments.review.dto`        | 61% | N/A |
+| `com.skyapartments.review.model`      | 100% | N/A |
+| `com.skyapartments.review.service`    | 100% | 90% |
+| `com.skyapartments.review.controller` | 100% | N/A |
+| `com.skyapartments.review.exception`   | 79% | N/A |
 
 #### **Coverage Report Screenshots**
 
 **Apartment Service:**
-![Apartment Service Coverage Report](/docs/coverage-report/jacoco_apartment.jpg)
+![Apartment Service Coverage Report](/docs/coverage-report/jacoco_apartment_3.png)
 
 **User Service:**
-![User Service Coverage Report](/docs/coverage-report/jacoco_user.jpg)
+![User Service Coverage Report](/docs/coverage-report/jacoco_user_3.png)
 
 **Booking Service:**
-![Booking Service Coverage Report](/docs/coverage-report/jacoco_booking.jpg)
+![Booking Service Coverage Report](/docs/coverage-report/jacoco_booking_3.png)
+
+**Review Service:**
+![Review Service Coverage Report](/docs/coverage-report/jacoco_review_3.png)
+
 
 Coverage reports are generated using **JaCoCo** and can be found in the `target/site/jacoco` directory of each microservice.
 
@@ -342,12 +365,12 @@ This generates a coverage report in `frontend/coverage/frontend` folder.
 
 |Type      |Coverage|
 |----------|--------|
-|Lines     | 88.23%   |
-|Functions | 88.12%   |
-|Branches  | 79.04%   |
-|Statements| 87.89%   |
+|Lines     | 90.94%   |
+|Functions | 91.22%   |
+|Branches  | 82.34%   |
+|Statements| 90.76%   |
 
-![Frontend Coverage Report](/docs/coverage-report/frontend_Unit_Integration_2.jpg)
+![Frontend Coverage Report](/docs/coverage-report/frontend_Unit_Integration_3.png)
 
 #### **End-to-End (E2E) Tests**
 
@@ -371,7 +394,7 @@ To open the interactive report:
 npx playwright show-report
 ```
 
-![📸 Playwright report screenshot](/docs/coverage-report/frontend_e2e_2.png)
+![📸 Playwright report screenshot](/docs/coverage-report/frontend_e2e_3.png)
 
 ---
 
@@ -419,7 +442,7 @@ The application image and Docker Compose files are distributed through **DockerH
 The `docker-compose.yml` file is also published as an OCI artifact on DockerHub, allowing users to pull the complete orchestration configuration:
 ```bash
 # Pull and use the compose file directly from DockerHub
-docker compose -f oci://eloydsdlh/apartments-compose:0.2 up
+docker compose -f oci://eloydsdlh/apartments-compose:1.0 up
 ```
 
 ### **🔹 Deployment Options**
@@ -437,7 +460,7 @@ docker compose up -d
 **Option 2: Docker Compose with specific version**
 ```bash
 # Pull a specific version
-docker pull eloydsdlh/apartments-app:0.2
+docker pull eloydsdlh/apartments-app:1.0
 
 # Update docker-compose.yml to use the desired version
 docker compose up -d
@@ -504,6 +527,9 @@ The instance was configured with the following **Security Group** inbound rules:
 | SSH | 22 | Personal IP |
 | HTTP | 80 | 0.0.0.0/0 |
 | HTTPS | 443 | 0.0.0.0/0 |
+| HTTP | 8761 | 0.0.0.0/0 |
+| HTTP | 16686 | 0.0.0.0/0 |
+| HTTP | 9001 | 0.0.0.0/0 |
 
 > 📝 **Note:** AWS does not use resource groups like Azure; resources are logically grouped using tags.
 
@@ -514,11 +540,11 @@ The instance was configured with the following **Security Group** inbound rules:
 After connecting to the EC2 instance via SSH:
 
 ```bash
-ssh -i skyapartments.pem ubuntu@ec2-16-170-206-187.eu-north-1.compute.amazonaws.com
+ssh -i skyapartments.pem ubuntu@ec2-13-60-118-214.eu-north-1.compute.amazonaws.com
 ```
 or
 ```bash
-ssh -i skyapartments.pem ubuntu@16.170.206.187
+ssh -i skyapartments.pem ubuntu@13.60.118.214
 ```
 
 The server was configured with the Docker runtime:
@@ -537,10 +563,10 @@ The application is deployed using the **OCI Docker Compose artifact** published 
 
 ```bash
 # Set environment variables for the cloud environment
-export MINIO_EXTERNAL_URL=https://16.170.206.187:443/minio
+export MINIO_EXTERNAL_URL=https://13.60.118.214:443/minio
 
 # Run the application using the remote OCI Compose artifact
-docker compose -f oci://eloydsdlh/apartments-compose:0.2 up -d
+docker compose -f oci://eloydsdlh/apartments-compose:1.0 up -d
 ```
 
 ---
@@ -550,7 +576,7 @@ docker compose -f oci://eloydsdlh/apartments-compose:0.2 up -d
 The application is fully deployed and accessible through the following public endpoint:
 
 🚀 **Access Sky Apartments Live**  
-https://16.170.206.187:443
+https://13.60.118.214:443
 
 > 📝 **Note:** The application is served over HTTPS (port 443) using a **self-signed TLS certificate**. As a result, browsers may display a security warning that must be acknowledged before accessing the application.
 
@@ -725,7 +751,7 @@ Multiple Docker Compose files are provided for different purposes:
 
 #### **`docker-compose.yml`** (Production/Stable Version)
 - Runs the latest published stable release.
-- Image tag points to version `0.2` on DockerHub.
+- Image tag points to version `1.0` on DockerHub.
 - Includes MySQL containers for each microservice.
 - Includes MinIO for object storage.
 - Includes Jaeger for distributed tracing.
@@ -835,7 +861,7 @@ docker compose up
 ```
 
 This will:
-- Pull the latest stable image (`0.2`) from DockerHub
+- Pull the latest stable image (`1.0`) from DockerHub
 - Start MySQL containers for all microservices
 - Start MinIO for object storage
 - Start Eureka Server for service discovery
@@ -983,7 +1009,7 @@ A proxy configuration is used to forward `/api` requests to the API Gateway.
 ## 4. Development Tools
 
 - **IDE:** 
-  - IntelliJ IDEA or VS Code for backend microservices
+  - VS Code for backend microservices
   - VS Code for Angular frontend
 - **Postman:** Used to interact with the backend REST API through the API Gateway.
   - The Postman collection is provided in the repository:  
