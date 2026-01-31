@@ -29,6 +29,15 @@ public class DataBaseInitializer {
 
     @PostConstruct
     public void initializeDatabase() throws Exception {
+        if (bookingRepository.count() == 0) {
+            initializeBookings();
+        }
+        if (filterRepository.count() == 0) {
+            initializeFilters();
+        }
+    }
+
+    private void initializeBookings() {
         bookingRepository.save(new Booking(1L, 1L, LocalDate.of(2025, 1, 10), LocalDate.of(2025, 1, 15), new BigDecimal("500.00"), 2));
         bookingRepository.save(new Booking(2L, 1L, LocalDate.of(2025, 2, 5), LocalDate.of(2025, 2, 12), new BigDecimal("750.00"), 4));
         bookingRepository.save(new Booking(3L, 3L, LocalDate.of(2025, 3, 20), LocalDate.of(2025, 3, 22), new BigDecimal("200.00"), 1));
@@ -72,7 +81,9 @@ public class DataBaseInitializer {
         bookingRepository.save(new Booking(4L, 2L, LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 31), new BigDecimal("850.00"), 2));
         b1.setState(BookingState.COMPLETED);
         bookingRepository.save(b1);
+    }
 
+    private void initializeFilters() {
         // 1. WEEKEND FILTER (+20%)
         Filter weekendFilter = new Filter();
         weekendFilter.setName("Weekend Premium");
@@ -196,7 +207,6 @@ public class DataBaseInitializer {
         extendedStayFilter.setConditionType(ConditionType.LONG_STAY);
         extendedStayFilter.setMinDays(30);
         filterRepository.save(extendedStayFilter);
-
     }
 }
 
