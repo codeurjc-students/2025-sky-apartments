@@ -149,11 +149,12 @@ export class BookingsTabComponent implements OnInit {
   }
 
   changeMonth(direction: number) {
-    const newDate = new Date(this.currentMonth);
-    newDate.setMonth(newDate.getMonth() + direction);
-    this.currentMonth = newDate;
-    this.calculateMonthData();
-  }
+  const newDate = new Date(this.currentMonth);
+  newDate.setDate(1);
+  newDate.setMonth(newDate.getMonth() + direction);
+  this.currentMonth = newDate;
+  this.calculateMonthData();
+}
 
   applyFilters() {
     this.filteredBookingsByApartment = this.bookingsByApartment.map(item => ({

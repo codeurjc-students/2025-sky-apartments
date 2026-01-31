@@ -2,92 +2,156 @@
 
 `Sky Apartments` is a web application designed to help apartment owner manage and showcase their properties and allow users to book apartments through a friendly and filtered interface. The application will support user roles such as guests, registered users, and administrators, offering different functionalities tailored to each profile.
 
-## Version 0.2 - Current Features
+## Version 1.0 - Full Release
 
-Version 0.2 of Sky Apartments has extend the core functionalities of the application:
+Version 1.0 of Sky Apartments delivers a complete, production-ready apartment management and booking system with all core features implemented:
 
 **For Anonymous Users:**
-- View the complete apartment catalog
+- View the complete apartment catalog with pagination
 - Advanced search system with combined filters and multiple criteria
-- Filter by characteristics (number of guests, terrace/balcony, etc.)
+- Filter by characteristics (number of guests, terrace/balcony, parking, pool, etc.)
+- **Filter by minimum rating** to find top-rated apartments and availability
 - Map integration to display apartments location
-- Detailed apartment information with image and description
+- Detailed apartment information with image gallery and description
 - Check availability for specific dates
 - **Interactive calendar** with real-time availability visualization
 - Display **average rating** on apartment cards
 - Display **rating** and **reviews** on apartment detail page
 
 **For Registered Users:**
-- Registration and authentication on the platform
-- Personal profile management
+- Secure registration and authentication on the platform
+- Personal profile management with editable information
 - Make reservations on available apartments
-- View booking history
+- View complete booking history with status indicators
 - Cancel active reservations
 - **Review past stays** and rate apartments (1-5 stars)
-- **Email notifications** for booking confirmations, cancellations, and updates
+- **Email notifications** for booking confirmations, cancellations, and updates and Check-in reminders
 
 **For Administrators:**
-- Access through system credentials
-- Full apartment management (create, edit, delete)
-- **Enhanced media gallery** with support for multiple images per apartment
-- **Statistics Dashboard** with metrics for:
-    - Number of bookings
-    - Active bookings
-    - Total revenue
+- Secure access through system credentials
+- **Comprehensive Statistics Dashboard** with key metrics:
+    - Number of bookings (total and active)
+    - Total revenue generated
     - Average occupancy rate
     - Average booking duration
-    - Occupancy over time (chart)
-    - Top 10 most booked apartments (chart)
-    - Top 10 apartments by rating (chart)
+    - Revenue per date range
+    - Occupancy over time (interactive chart)
+    - Top 10 most booked apartments (visual chart)
+    - Top 10 apartments by rating (visual chart)
+
+- **Full apartment management** (create, edit, delete):
+    - Complete apartment information forms
+    - Amenities configuration
+    - Dynamic pricing configuration:
+        - Base price per apartment
+        - Price multipliers for weekends vs. weekdays
+        - Seasonal pricing (low, medium, high season)
+        - Occupancy-based pricing adjustments
+        - Last-minute and advance booking modifiers
+        - Special pricing for holidays and events
+        - Long-stay discounts
+    - Enhanced media gallery with support for multiple images per apartment
+    - Image upload and deletion capabilities
+
+- **Booking management**:
+    - View all system bookings with advanced filters
+    - Filter by status (pending, confirmed, cancelled, completed)
+    - Filter by date range
+    - Search by apartment
 
 ## 📸 Screenshots
 
-![Home Page](docs/images/screenshots/home_v02.png)
+![Home Page](docs/images/screenshots/home_v1.png)
 *Main view with available apartment listings*
 
-![Apartment Detail](docs/images/screenshots/apartment_detail_v02.png)
-*Detail page showing complete apartment information*
+![Apartment Detail](docs/images/screenshots/apartment_detail_v1.png)
+*Detail page showing complete apartment information, image gallery, and user reviews*
 
-![Admin Panel](docs/images/screenshots/admin_panel_v02.png)
+![Admin Dashboard](docs/images/screenshots/admin_panel_v1.png)
 *Administration interface for apartment management*
+
+![Admin Filter Management](docs/images/screenshots/admin_filters_v1.png)
+*Administration interface for apartment management*
+
+
+![Admin Bookings View](docs/images/screenshots/admin_bookings_v1.png)
+*Administration interface for apartment management*
+
 
 ![User Profile](docs/images/screenshots/user_profile_v01.png)
 *User personal area with booking history*
 
 ## 🎥 Demo
 
-[![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://youtu.be/CsTjzuhjU8M)
+[![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://youtu.be/3y74mSs_f9E)
 
-*Video showcasing the main features of version 0.2*
+*Video showcasing the main features of version 1.0*
 
 ## 🚀 Access Link
 
-[Access Sky Apartments Live](https://16.170.206.187:443)
+[Access Sky Apartments Live](https://13.60.118.214:443)
 
 > 📝 **Note:** Since the application uses a self-signed certificate for HTTPS (port 443) through the API Gateway, you might need to accept the browser security warning to proceed.
 
 ---
 
-## 🚧 Project Status
+## ✨ What's New in Version 1.0
 
-> ℹ️ **The application is under active development.** We are continuously working to add new features and improve the user experience.
+### Complete Feature Set
 
-## 🔮 Upcoming Versions
+- ✅ All core functionality fully implemented and tested
+- ✅ Dynamic pricing system with intelligent price adjustments
+- ✅ Rating and review system fully operational
+- ✅ Comprehensive email notification system
+- ✅ Check-in reminder notifications
+- ✅ Filter by minimum rating capability
+- ✅ Enhanced admin panel with complete booking management
+- ✅ Full statistics dashboard with visual charts and price analytics
+- ✅ Production-ready deployment
 
-In the next iterations of Sky Apartments, we plan to implement:
+### Dynamic Pricing Features
 
-- **Dynamic Pricing System:**
-    - Base price configuration per apartment
-    - Price multipliers based on:
-        - Day of the week (weekends vs. weekdays)
-        - Season (low, medium, high)
-        - Occupancy percentage
-        - Booking lead time (last-minute vs. advance)
-    - Special pricing for holidays and events
-    - Discounts for long stays
-- **Enhanced Filtering:**
-    - Filter apartments by minimum rating
-- **User Experience Improvements:**
+- ✅ Base price configuration per apartment
+- ✅ Automatic price multipliers based on:
+    - Day of the week (weekends vs. weekdays)
+    - Season (low, medium, high)
+    - Occupancy percentage
+    - Booking lead time (last-minute vs. advance)
+- ✅ Special pricing for holidays and events
+- ✅ Discounts for long stays
+- ✅ Price history and analytics in admin dashboard
+
+### Technical Achievements
+
+- ✅ RESTful API following industry best practices
+- ✅ Secure HTTPS communication
+- ✅ Role-based access control with Spring Security
+- ✅ Dockerized application for easy deployment
+- ✅ Published on DockerHub for distribution
+- ✅ Custom error pages matching application design
+- ✅ Pagination and filtering for optimal performance
+- ✅ Sample data for immediate testing and demonstration
+
+## 🔮 Future Enhancements
+While Version 1.0 delivers a complete and fully functional application, potential future enhancements could include:
+
+- Additional User Features:
+    - Wishlist/favorite apartments
+    - Advanced user preferences and saved searches
+    - Social media integration for sharing
+    - Multi-language support
+    - In-app messaging between users and administrators
+- Enhanced Analytics:
+    - Predictive occupancy models using machine learning
+    - Revenue forecasting tools
+    - Market trend analysis and competitive insights
+    - Customer segmentation and behavior analysis
+    - Automated reporting and recommendations
+- Extended Integrations:
+    - Payment gateway integration
+    - Calendar synchronization (Google Calendar, iCal)
+    - Third-party booking platform integrations
+    - Property management system (PMS) connections
     - Booking reminders before check-in date
 
 ---
@@ -96,13 +160,18 @@ In the next iterations of Sky Apartments, we plan to implement:
 
 1. [Features v0.1](docs/readme%20sections/features01.md)
 2. [Features v0.2](docs/readme%20sections/features02.md)
-3. [Detailed Features](docs/readme%20sections/detailedFeatures01.md)
-4. [Execution](docs/readme%20sections/execution.md)
-5. [Development Guide](docs/readme%20sections/devGuide.md)
-6. [Progress Tracking](docs/readme%20sections/progressTracking.md)
-7. [Project Start](docs/readme%20sections/ProjectStart.md)
-8. [Authors](docs/readme%20sections/author.md)
+3. [Features v1.0](docs/readme%20sections/features10.md)
+4. [Detailed Features](docs/readme%20sections/detailedFeatures01.md)
+5. [Execution](docs/readme%20sections/execution.md)
+6. [Development Guide](docs/readme%20sections/devGuide.md)
+7. [Progress Tracking](docs/readme%20sections/progressTracking.md)
+8. [Project Start](docs/readme%20sections/ProjectStart.md)
+9. [Authors](docs/readme%20sections/author.md)
 
 ## 📄 License
 
 This project is under license. See the [`LICENSE`](./LICENSE) file for details.
+
+🎯 Project Status: Production Ready
+
+> ✅ Version 1.0 is complete and production-ready. All planned features including the dynamic pricing system have been implemented, tested, and are fully functional. The application is ready for real-world deployment and use.
