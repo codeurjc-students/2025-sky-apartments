@@ -18,6 +18,9 @@ public class DataBaseInitializer {
 
     @PostConstruct
     public void initializeDatabase() throws Exception {
+        if (reviewRepository.count() > 0) {
+            return;
+        }
         reviewRepository.save(new Review(1L, 1L, "Very cozy and well-located apartment. The cleanliness was impeccable and the host was very attentive. Will definitely come back.", 5));
         reviewRepository.save(new Review(2L, 1L, "Excellent experience. The apartment had all the necessary amenities and was in a quiet but central area.", 5));
         reviewRepository.save(new Review(3L, 3L, "Small but functional apartment. Perfect for a short stay. The wifi worked well.", 4));
