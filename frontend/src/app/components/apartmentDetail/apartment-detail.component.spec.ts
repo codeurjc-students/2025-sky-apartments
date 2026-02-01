@@ -14,6 +14,17 @@ import { ReviewDTO } from '../../dtos/review.dto';
 import { UserDTO } from '../../dtos/user.dto';
 import { ConditionType, DateType } from '../../dtos/filter.dto';
 
+interface CalendarDay {
+  date: Date;
+  day: number;
+  isCurrentMonth: boolean;
+  isAvailable: boolean | null; // null = loading
+  isSelected: boolean;
+  isInRange: boolean;
+  isToday: boolean;
+  isPast: boolean;
+}
+
 describe('ApartmentDetailComponent', () => {
   let component: ApartmentDetailComponent;
   let fixture: ComponentFixture<ApartmentDetailComponent>;
@@ -302,7 +313,23 @@ describe('ApartmentDetailComponent', () => {
     });
 
     it('should not select past dates', () => {
-      const pastDay = component.calendarDays.find(d => d.isPast)!;
+      // First, generate the calendar and set up a past date
+      component.generateCalendar();
+      
+      // Create a past date manually in the calendar
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - 1); // Yesterday
+      
+      const pastDay: CalendarDay = {
+        date: pastDate,
+        day: pastDate.getDate(),
+        isCurrentMonth: true,
+        isAvailable: true,
+        isSelected: false,
+        isInRange: false,
+        isToday: false,
+        isPast: true
+      };
 
       component.selectDate(pastDay);
 
