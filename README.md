@@ -83,7 +83,7 @@ Version 1.0 of Sky Apartments delivers a complete, production-ready apartment ma
 
 ## 🎥 Demo
 
-[![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://youtu.be/3y74mSs_f9E)
+[![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://www.youtube.com/watch?v=wLvm_5JjNUs)
 
 *Video showcasing the main features of version 1.0*
 
