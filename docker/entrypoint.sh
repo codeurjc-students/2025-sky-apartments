@@ -47,10 +47,7 @@ wait_for_mysql() {
 }
 
 
-wait_for_mysql mysql-users 3306 "usersdb" || exit 1
-wait_for_mysql mysql-apartments 3306 "apartmentsdb" || exit 1
-wait_for_mysql mysql-bookings 3306 "bookingsdb" || exit 1
-wait_for_mysql mysql-reviews 3306 "reviewsdb" || exit 1
+wait_for_mysql mysql 3306 "MySQL" || exit 1
 
 wait_for_service() {
   local host=$1
@@ -126,7 +123,7 @@ echo "Starting User Service..."
 java -Xmx256m -Xms128m \
   -Dserver.port=8080 \
   -Dserver.ssl.enabled=false \
-  -Dspring.datasource.url=jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB:-usersdb} \
+  -Dspring.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_USERS_DB:-usersdb} \
   -Dspring.datasource.username=${MYSQL_USER:-user} \
   -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
   -Djwt.secret=${JWT_SECRET:-dev-secret-key} \
@@ -140,7 +137,7 @@ echo "Starting Apartment Service..."
 java -Xmx256m -Xms128m \
   -Dserver.port=8083 \
   -Dserver.ssl.enabled=false \
-  -Dspring.datasource.url=jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB:-apartmentsdb} \
+  -Dspring.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_APARTMENTS_DB:-apartmentsdb} \
   -Dspring.datasource.username=${MYSQL_USER:-user} \
   -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
   -Dminio.url=${MINIO_URL:-http://minio:9000} \
@@ -157,7 +154,7 @@ echo "Starting Booking Service..."
 java -Xmx256m -Xms128m \
   -Dserver.port=8082 \
   -Dserver.ssl.enabled=false \
-  -Dspring.datasource.url=jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB:-bookingsdb} \
+  -Dspring.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_BOOKINGS_DB:-bookingsdb} \
   -Dspring.datasource.username=${MYSQL_USER:-user} \
   -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
   -Deureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/ \
@@ -170,7 +167,7 @@ echo "Starting Review Service..."
 java -Xmx256m -Xms128m \
   -Dserver.port=8081 \
   -Dserver.ssl.enabled=false \
-  -Dspring.datasource.url=jdbc:mysql://mysql-reviews:3306/${MYSQL_REVIEWS_DB:-reviewsdb} \
+  -Dspring.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_REVIEWS_DB:-reviewsdb} \
   -Dspring.datasource.username=${MYSQL_USER:-user} \
   -Dspring.datasource.password=${MYSQL_PASSWORD:-password} \
   -Deureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/ \
