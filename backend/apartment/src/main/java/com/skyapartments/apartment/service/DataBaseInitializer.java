@@ -36,88 +36,89 @@ public class DataBaseInitializer {
         if (apartmentRepository.count() > 0) {
             return;
         }
-        Set<String> servicios1 = new HashSet<>(Arrays.asList("WiFi", "Aire acondicionado", "Piscina"));
-        Set<String> servicios2 = new HashSet<>(Arrays.asList("WiFi", "Calefacción", "Parking"));
-        Set<String> servicios3 = new HashSet<>(Arrays.asList("WiFi", "TV", "Balcón"));
-        Set<String> servicios4 = new HashSet<>(Arrays.asList("Cocina equipada", "Lavadora", "Secadora"));
-        Set<String> servicios5 = new HashSet<>(Arrays.asList("WiFi", "Gimnasio", "Jacuzzi"));
-        Set<String> servicios6 = new HashSet<>(Arrays.asList("WiFi", "Piscina", "Parking"));
-        Set<String> servicios7 = new HashSet<>(Arrays.asList("Aire acondicionado", "Calefacción", "Terraza"));
-        Set<String> servicios8 = new HashSet<>(Arrays.asList("WiFi", "Cocina equipada", "TV"));
-        Set<String> servicios9 = new HashSet<>(Arrays.asList("WiFi", "Piscina", "Barbacoa"));
-        Set<String> servicios10 = new HashSet<>(Arrays.asList("WiFi", "Calefacción", "Balcón"));
+        Set<String> services1 = new HashSet<>(Arrays.asList("WiFi", "Air conditioning", "Pool"));
+        Set<String> services2 = new HashSet<>(Arrays.asList("WiFi", "Heating", "Parking"));
+        Set<String> services3 = new HashSet<>(Arrays.asList("WiFi", "TV", "Balcony"));
+        Set<String> services4 = new HashSet<>(Arrays.asList("Fully equipped kitchen", "Washing machine", "Dryer"));
+        Set<String> services5 = new HashSet<>(Arrays.asList("WiFi", "Gym", "Jacuzzi"));
+        Set<String> services6 = new HashSet<>(Arrays.asList("WiFi", "Pool", "Parking"));
+        Set<String> services7 = new HashSet<>(Arrays.asList("Air conditioning", "Heating", "Terrace"));
+        Set<String> services8 = new HashSet<>(Arrays.asList("WiFi", "Fully equipped kitchen", "TV"));
+        Set<String> services9 = new HashSet<>(Arrays.asList("WiFi", "Pool", "BBQ"));
+        Set<String> services10 = new HashSet<>(Arrays.asList("WiFi", "Heating", "Balcony"));
 
-        Apartment apto1 = new Apartment("Apartamento Vista Mar", "Hermoso apartamento con vistas al mar", BigDecimal.valueOf(120.0), servicios1, 4);
-        Apartment apto2 = new Apartment("Loft Urbano", "Moderno loft en el centro de la ciudad", BigDecimal.valueOf(90.0), servicios2, 2);
-        Apartment apto3 = new Apartment("Estudio Acogedor", "Pequeño estudio ideal para una pareja", BigDecimal.valueOf(60.0), servicios3, 2);
-        Apartment apto4 = new Apartment("Casa Rural El Roble", "Casa en plena naturaleza con encanto rústico", BigDecimal.valueOf(150.0), servicios4, 6);
-        Apartment apto5 = new Apartment("Penthouse Deluxe", "Ático de lujo con vistas panorámicas", BigDecimal.valueOf(200.0), servicios5, 4);
-        Apartment apto6 = new Apartment("Villa Piscina Privada", "Villa con piscina privada y jardín", BigDecimal.valueOf(250.0), servicios6, 8);
-        Apartment apto7 = new Apartment("Apartamento Familiar", "Amplio apartamento ideal para familias", BigDecimal.valueOf(130.0), servicios7, 5);
-        Apartment apto8 = new Apartment("Mini Loft", "Mini loft económico en buena ubicación", BigDecimal.valueOf(70.0), servicios8, 2);
-        Apartment apto9 = new Apartment("Chalet Vacacional", "Chalet con piscina y barbacoa para grupos", BigDecimal.valueOf(180.0), servicios9, 7);
-        Apartment apto10 = new Apartment("Estudio Romántico", "Estudio decorado para escapadas en pareja", BigDecimal.valueOf(85.0), servicios10, 2);
-
-        apto1 = apartmentRepository.save(apto1);
-        apto2 = apartmentRepository.save(apto2);
-        apto3 = apartmentRepository.save(apto3);
-        apto4 = apartmentRepository.save(apto4);
-        apto5 = apartmentRepository.save(apto5);
-        apto6 = apartmentRepository.save(apto6);
-        apto7 = apartmentRepository.save(apto7);
-        apto8 = apartmentRepository.save(apto8);
-        apto9 = apartmentRepository.save(apto9);
-        apto10 = apartmentRepository.save(apto10);
-
-        addImageToApartment(apto1.getId(), "static/test-images/main1.jpg");
-        addImageToApartment(apto1.getId(), "static/test-images/kitchen1.jpg");
-        addImageToApartment(apto1.getId(), "static/test-images/toilet1.jpg");
-        addImageToApartment(apto1.getId(), "static/test-images/room1.jpg");
-        addImageToApartment(apto1.getId(), "static/test-images/ext1.jpg");
-
-        addImageToApartment(apto2.getId(), "static/test-images/main2.jpg");
-        addImageToApartment(apto3.getId(), "static/test-images/main3.jpg");
-        addImageToApartment(apto4.getId(), "static/test-images/main4.jpg");
-        addImageToApartment(apto5.getId(), "static/test-images/main5.jpg");
-        addImageToApartment(apto6.getId(), "static/test-images/main6.jpg");
-        addImageToApartment(apto7.getId(), "static/test-images/main7.jpg");
-        addImageToApartment(apto8.getId(), "static/test-images/main8.jpg");
-        addImageToApartment(apto9.getId(), "static/test-images/main9.jpg");
-        addImageToApartment(apto10.getId(), "static/test-images/main10.jpg");
+        Apartment apt1 = new Apartment("Sea View Apartment", "Beautiful apartment with ocean views", BigDecimal.valueOf(120.0), services1, 4);
+        Apartment apt2 = new Apartment("Urban Loft", "Modern loft in the city center", BigDecimal.valueOf(90.0), services2, 2);
+        Apartment apt3 = new Apartment("Cozy Studio", "Small studio ideal for a couple", BigDecimal.valueOf(60.0), services3, 2);
+        Apartment apt4 = new Apartment("The Oak Country House", "House in the heart of nature with rustic charm", BigDecimal.valueOf(150.0), services4, 6);
+        Apartment apt5 = new Apartment("Deluxe Penthouse", "Luxury penthouse with panoramic views", BigDecimal.valueOf(200.0), services5, 4);
+        Apartment apt6 = new Apartment("Private Pool Villa", "Villa with a private pool and garden", BigDecimal.valueOf(250.0), services6, 8);
+        Apartment apt7 = new Apartment("Family Apartment", "Spacious apartment ideal for families", BigDecimal.valueOf(130.0), services7, 5);
+        Apartment apt8 = new Apartment("Mini Loft", "Affordable mini loft in a great location", BigDecimal.valueOf(70.0), services8, 2);
+        Apartment apt9 = new Apartment("Vacation Chalet", "Chalet with pool and BBQ for groups", BigDecimal.valueOf(180.0), services9, 7);
+        Apartment apt10 = new Apartment("Romantic Studio", "Decorated studio for couples' getaways", BigDecimal.valueOf(85.0), services10, 2);
 
 
-        addImageToApartment(apto2.getId(), "static/test-images/kitchen2.jpg");
-        addImageToApartment(apto3.getId(), "static/test-images/kitchen3.jpg");
-        addImageToApartment(apto4.getId(), "static/test-images/kitchen4.jpg");
-        addImageToApartment(apto5.getId(), "static/test-images/kitchen5.jpg");
-        addImageToApartment(apto6.getId(), "static/test-images/kitchen6.jpg");
-        addImageToApartment(apto7.getId(), "static/test-images/kitchen7.jpg");
-        addImageToApartment(apto8.getId(), "static/test-images/kitchen8.jpg");
-        addImageToApartment(apto9.getId(), "static/test-images/kitchen9.jpg");
-        addImageToApartment(apto10.getId(), "static/test-images/kitchen10.jpg");
+        apt1 = apartmentRepository.save(apt1);
+        apt2 = apartmentRepository.save(apt2);
+        apt3 = apartmentRepository.save(apt3);
+        apt4 = apartmentRepository.save(apt4);
+        apt5 = apartmentRepository.save(apt5);
+        apt6 = apartmentRepository.save(apt6);
+        apt7 = apartmentRepository.save(apt7);
+        apt8 = apartmentRepository.save(apt8);
+        apt9 = apartmentRepository.save(apt9);
+        apt10 = apartmentRepository.save(apt10);
 
-        addImageToApartment(apto2.getId(), "static/test-images/room2.jpg");
-        addImageToApartment(apto3.getId(), "static/test-images/room3.jpg");
-        addImageToApartment(apto4.getId(), "static/test-images/room4.jpg");
-        addImageToApartment(apto5.getId(), "static/test-images/room5.jpg");
-        addImageToApartment(apto6.getId(), "static/test-images/room6.jpg");
-        addImageToApartment(apto7.getId(), "static/test-images/room7.jpg");
-        addImageToApartment(apto8.getId(), "static/test-images/room8.jpg");
-        addImageToApartment(apto9.getId(), "static/test-images/room9.jpg");
-        addImageToApartment(apto10.getId(), "static/test-images/room10.jpg");
+        addImageToApartment(apt1.getId(), "static/test-images/main1.jpg");
+        addImageToApartment(apt1.getId(), "static/test-images/kitchen1.jpg");
+        addImageToApartment(apt1.getId(), "static/test-images/toilet1.jpg");
+        addImageToApartment(apt1.getId(), "static/test-images/room1.jpg");
+        addImageToApartment(apt1.getId(), "static/test-images/ext1.jpg");
 
-        addImageToApartment(apto2.getId(), "static/test-images/toilet2.jpg");
-        addImageToApartment(apto3.getId(), "static/test-images/toilet3.jpg");
-        addImageToApartment(apto4.getId(), "static/test-images/toilet4.jpg");
-        addImageToApartment(apto5.getId(), "static/test-images/toilet5.jpg");
-        addImageToApartment(apto6.getId(), "static/test-images/toilet6.jpg");
-        addImageToApartment(apto7.getId(), "static/test-images/toilet7.jpg");
-        addImageToApartment(apto8.getId(), "static/test-images/toilet8.jpg");
-        addImageToApartment(apto9.getId(), "static/test-images/toilet9.jpg");
-        addImageToApartment(apto10.getId(), "static/test-images/toilet10.jpg");
+        addImageToApartment(apt2.getId(), "static/test-images/main2.jpg");
+        addImageToApartment(apt3.getId(), "static/test-images/main3.jpg");
+        addImageToApartment(apt4.getId(), "static/test-images/main4.jpg");
+        addImageToApartment(apt5.getId(), "static/test-images/main5.jpg");
+        addImageToApartment(apt6.getId(), "static/test-images/main6.jpg");
+        addImageToApartment(apt7.getId(), "static/test-images/main7.jpg");
+        addImageToApartment(apt8.getId(), "static/test-images/main8.jpg");
+        addImageToApartment(apt9.getId(), "static/test-images/main9.jpg");
+        addImageToApartment(apt10.getId(), "static/test-images/main10.jpg");
 
-        addImageToApartment(apto2.getId(), "static/test-images/ext2.jpg");
-        addImageToApartment(apto3.getId(), "static/test-images/ext3.jpg");
+
+        addImageToApartment(apt2.getId(), "static/test-images/kitchen2.jpg");
+        addImageToApartment(apt3.getId(), "static/test-images/kitchen3.jpg");
+        addImageToApartment(apt4.getId(), "static/test-images/kitchen4.jpg");
+        addImageToApartment(apt5.getId(), "static/test-images/kitchen5.jpg");
+        addImageToApartment(apt6.getId(), "static/test-images/kitchen6.jpg");
+        addImageToApartment(apt7.getId(), "static/test-images/kitchen7.jpg");
+        addImageToApartment(apt8.getId(), "static/test-images/kitchen8.jpg");
+        addImageToApartment(apt9.getId(), "static/test-images/kitchen9.jpg");
+        addImageToApartment(apt10.getId(), "static/test-images/kitchen10.jpg");
+
+        addImageToApartment(apt2.getId(), "static/test-images/room2.jpg");
+        addImageToApartment(apt3.getId(), "static/test-images/room3.jpg");
+        addImageToApartment(apt4.getId(), "static/test-images/room4.jpg");
+        addImageToApartment(apt5.getId(), "static/test-images/room5.jpg");
+        addImageToApartment(apt6.getId(), "static/test-images/room6.jpg");
+        addImageToApartment(apt7.getId(), "static/test-images/room7.jpg");
+        addImageToApartment(apt8.getId(), "static/test-images/room8.jpg");
+        addImageToApartment(apt9.getId(), "static/test-images/room9.jpg");
+        addImageToApartment(apt10.getId(), "static/test-images/room10.jpg");
+
+        addImageToApartment(apt2.getId(), "static/test-images/toilet2.jpg");
+        addImageToApartment(apt3.getId(), "static/test-images/toilet3.jpg");
+        addImageToApartment(apt4.getId(), "static/test-images/toilet4.jpg");
+        addImageToApartment(apt5.getId(), "static/test-images/toilet5.jpg");
+        addImageToApartment(apt6.getId(), "static/test-images/toilet6.jpg");
+        addImageToApartment(apt7.getId(), "static/test-images/toilet7.jpg");
+        addImageToApartment(apt8.getId(), "static/test-images/toilet8.jpg");
+        addImageToApartment(apt9.getId(), "static/test-images/toilet9.jpg");
+        addImageToApartment(apt10.getId(), "static/test-images/toilet10.jpg");
+
+        addImageToApartment(apt2.getId(), "static/test-images/ext2.jpg");
+        addImageToApartment(apt3.getId(), "static/test-images/ext3.jpg");
 
     }
 
