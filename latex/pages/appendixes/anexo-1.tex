@@ -1,0 +1,72 @@
+A continuación se detalla el desglose técnico y funcional de todas las características implementadas en la plataforma \textbf{Sky Apartments}, categorizadas por su nivel de complejidad y alcance operativo.
+
+\section{Funcionalidades Básicas}
+
+\subsubsection{Gestión de Usuarios Anónimos:}
+\begin{itemize}
+    \item Visualización del catálogo general de apartamentos.
+    \item Filtrado básico por capacidad (número de huéspedes).
+    \item Filtrado por comodidades específicas (terraza, balcón, ubicación, etc.).
+    \item Acceso a la vista de detalle del apartamento (fotografías, descripción, precio por noche).
+    \item Consulta de disponibilidad en el calendario sin necesidad de autenticación.
+\end{itemize}
+
+\subsubsection{Gestión de Usuarios Registrados:}
+\begin{itemize}
+    \item Registro de nuevas cuentas (\textit{Sign Up}) con validación de formato de correo electrónico y contraseña segura.
+    \item Autenticación segura (\textit{Log In}) mediante Spring Security y contraseñas encriptadas.
+    \item Visualización y edición de datos del perfil personal.
+    \item Realización de reservas en apartamentos con disponibilidad.
+    \item Visualización del historial completo de reservas personales.
+    \item Cancelación de reservas activas.
+\end{itemize}
+
+\subsubsection{Gestión de Administradores:}
+\begin{itemize}
+    \item Autenticación segura mediante credenciales predefinidas.
+    \item Operaciones CRUD completas (Crear, Leer, Actualizar, Eliminar) sobre el catálogo de apartamentos.
+    \item Gestión y subida de imágenes principales para los alojamientos.
+    \item Visualización general de todas las reservas registradas en el sistema.
+\end{itemize}
+
+\section{Funcionalidades Intermedias}
+
+\subsubsection{Búsqueda y Visualización:}
+\begin{itemize}
+    \item Motor de búsqueda avanzado con combinación simultánea de múltiples filtros (fechas, comodidades, capacidad).
+    \item Soporte para múltiples imágenes por apartamento (Galería multimedia).
+    \item Visualización interactiva de la disponibilidad mediante un componente de calendario.
+    \item Geolocalización básica de los apartamentos.
+\end{itemize}
+
+
+\subsubsection{Comunicaciones y Experiencia de Usuario:}
+\begin{itemize}
+    \item Envío automatizado de correos electrónicos transaccionales para la confirmación de reservas.
+    \item Sistema de reseñas: posibilidad de valorar la estancia y dejar comentarios de texto.
+    \item Páginas de error personalizadas (403, 404, 500, 503) integradas con el diseño general de la aplicación.
+\end{itemize}
+
+\section{Funcionalidades Avanzadas}
+
+\subsubsection{Analítica de Negocio (Dashboard Interactivo):}
+\begin{itemize}
+    \item Gráficos dinámicos de ingresos y reservas por mes.
+    \item Estadísticas de ocupación media y duración de las estancias.
+    \item Ranking visual de los alojamientos más demandados.
+    \item Ranking de los apartamentos con mejores valoraciones.
+\end{itemize}
+
+
+\subsubsection{Motor de Precios Dinámicos y Lógica Avanzada:}
+
+\begin{itemize}
+    \item Modificadores de precio automatizados basados en:
+    \begin{itemize}
+        \item Temporadas del año (Baja, Media, Alta).
+        \item Día de la semana (Incrementos en fines de semana).
+        \item Proximidad de la fecha de reserva (descuentos \textit{last-minute} o recargos por anticipación).
+    \end{itemize}
+    \item Desglose transparente del precio base frente a los modificadores aplicados en el momento de la confirmación de la reserva.
+    \item Envío de correos electrónicos automatizados de recordatorio de \textit{check-in} en fechas próximas a la llegada.
+\end{itemize}

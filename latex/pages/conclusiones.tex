@@ -1,0 +1,45 @@
+La culminación de este Trabajo de Fin de Grado permite realizar una evaluación global sobre el cumplimiento de las metas iniciales, el proceso de desarrollo y los conocimientos adquiridos.
+\section{Conclusiones}
+El objetivo principal era diseñar e implementar un sistema completo de gestión de apartamentos turísticos con arquitectura de microservicios, integrando backend y frontend, y desplegándolo en un entorno de producción real. Este objetivo se ha cumplido satisfactoriamente.
+\subsection{Materialización de los Objetivos Funcionales}
+Desde la perspectiva del negocio y del usuario, los objetivos funcionales se han cumplido con éxito mediante la entrega de \textbf{Sky Apartments}, una plataforma web plenamente operativa. Se ha logrado materializar:
+\begin{itemize}
+    \item \textbf{Una experiencia de usuario completa:} Implementando un catálogo interactivo, filtros avanzados y un calendario de disponibilidad en tiempo real que evita problemas críticos como el \textit{overbooking}.
+    \item \textbf{Autonomía operativa:} A través de un motor de reservas automatizado, el sistema de notificaciones transaccionales por correo electrónico y el módulo de reseñas y valoraciones.
+    \item \textbf{Gestión centralizada:} Mediante un panel de administración que permite controlar el catálogo y aplicar reglas de precios dinámicos altamente flexibles, logrando la ansiada independencia tecnológica respecto a plataformas de terceros.
+\end{itemize}
+
+\subsection{Materialización de los Objetivos Técnicos}
+A nivel tecnológico, el proyecto ha superado el alcance de una aplicación monolítica tradicional, materializándose en una arquitectura distribuida moderna y robusta:
+\begin{itemize}
+    \item \textbf{Arquitectura de Microservicios:} Se ha implementado un ecosistema basado en Spring Boot orquestado con API Gateway y Eureka, aplicando rigurosamente patrones de diseño distribuido. El patrón \textit{Database per Service}~\cite[Cap.~5]{richardson2018}, por el que cada microservicio mantiene su propia base de datos MySQL aislada, es una condición esencial de esta arquitectura y ha sido aplicado de forma rigurosa.
+    \item \textbf{Despliegue y DevOps:} El empaquetado en contenedores Docker y la automatización del flujo CI/CD mediante GitHub Actions han permitido un despliegue exitoso en Amazon EC2 (AWS).
+    \item \textbf{Calidad de Software:} Una estrategia de pruebas exhaustiva ha permitido alcanzar coberturas superiores al 85\% en el backend y 90\% en el frontend, garantizando la mantenibilidad futura.
+\end{itemize}
+
+\subsection{Reflexión Personal}
+El desarrollo de este proyecto ha constituido una experiencia de aprendizaje extraordinariamente enriquecedora. La arquitectura de microservicios demostró ventajas evidentes, pero también reveló la inmensa complejidad inherente a la coordinación y depuración distribuida. 
+
+Comprender que la observabilidad (mediante Jaeger) y la infraestructura son pilares críticos ha sido fundamental. Con la perspectiva adquirida y evaluando los \textit{trade-offs}\footnote{En ingeniería de software, un \textit{trade-off} es una decisión de diseño donde elegir una solución implica renunciar a ciertos atributos (ej. simplicidad) en favor de otros beneficios (ej. escalabilidad).}, reconozco que en ciertos escenarios un monolito modular podría ser un punto de partida más pragmático para evitar una complejidad prematura~\cite{newman2015}. 
+
+No obstante, superar los retos de integración externa, algoritmos de \textit{pricing} y despliegue \textit{cloud}, ha consolidado competencias técnicas directamente aplicables al mundo profesional.
+
+
+\section{Trabajos futuros}
+\label{sec:trabajos_futuros}
+
+Aunque el sistema es plenamente funcional y se encuentra en producción, la base arquitectónica diseñada permite una evolución continua.
+
+\subsection{Mejoras Funcionales}
+\begin{itemize}
+    \item \textbf{Pasarela de Pagos Segura:} Integración con Stripe o PayPal\footnote{Stripe: \url{https://stripe.com/docs/api}, PayPal: \url{https://developer.paypal.com/}} para procesar transacciones económicas reales.
+    \item \textbf{Experiencia de Usuario:} Inicio de sesión mediante redes sociales (OAuth 2.0)\footnote{OAuth 2.0, RFC 6749: \url{https://tools.ietf.org/html/rfc6749}} y soporte multi-idioma.
+    \item \textbf{Inteligencia Artificial aplicada al Negocio:} Sustitución del motor de reglas manual por un modelo predictivo de \textit{Machine Learning} que optimice las tarifas aplicando técnicas de \textit{revenue management}~\cite{talluri2004revenue} basadas en demanda histórica y estacionalidad.
+\end{itemize}
+
+\subsection{Mejoras Técnicas}
+\begin{itemize}
+    \item \textbf{Optimización del Rendimiento:} Implementación de una caché distribuida (como Redis\footnote{Redis: \url{https://redis.io/}}) para reducir la carga de la base de datos en consultas recurrentes.
+    \item \textbf{Tolerancia a Fallos:} Transición hacia arquitecturas orientadas a eventos (\textit{message brokers} como RabbitMQ\footnote{RabbitMQ: \url{https://www.rabbitmq.com/}}) para desacoplar operaciones no bloqueantes, e integración de patrones \textit{Circuit Breaker}~\cite{nygard2007release} para evitar fallos en cascada.
+    \item \textbf{Evolución del Despliegue:} Separar la imagen Docker única en contenedores independientes por microservicio y migrar la orquestación a \textbf{Kubernetes\footnote{Kubernetes (K8s): \url{https://kubernetes.io/}} (K8s)}, habilitando el escalado horizontal elástico e independiente de cada servicio según la demanda.
+\end{itemize}

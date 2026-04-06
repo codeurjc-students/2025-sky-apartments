@@ -1,0 +1,222 @@
+Este anexo detalla las instrucciones necesarias para clonar el repositorio, configurar el entorno de desarrollo local y ejecutar las pruebas de \textbf{Sky Apartments}.
+
+\section{Configuración del Repositorio}
+Para clonar el repositorio del proyecto en el equipo local, se debe ejecutar el siguiente comando:
+
+\begin{lstlisting}[language=bash]
+git clone https://github.com/codeurjc-students/2025-sky-apartments.git
+cd 2025-sky-apartments
+\end{lstlisting}
+
+\section{Ejecución con Docker Compose (Recomendado)}
+La forma más sencilla de ejecutar la aplicación completa con todos sus servicios es utilizando Docker Compose.
+
+\subsection{Versión Estable}
+\begin{lstlisting}[language=bash]
+cd docker
+docker compose up
+\end{lstlisting}
+Este comando realizará las siguientes acciones:
+\begin{itemize}
+    \item Descargar la última imagen estable desde DockerHub.
+    \item Iniciar contenedores MySQL independientes para cada microservicio.
+    \item Iniciar MinIO para el almacenamiento de objetos.
+    \item Iniciar Eureka Server para el descubrimiento de servicios.
+    \item Iniciar todos los microservicios de la lógica de negocio (Usuarios, Apartamentos, Reservas, Reseñas).
+    \item Iniciar el API Gateway con configuración HTTPS.
+    \item Iniciar Jaeger para la trazabilidad distribuida.
+    \item Desplegar el \textit{frontend} accesible en \url{https://localhost/}.
+\end{itemize}
+
+\subsection{Versión de Desarrollo}
+Para probar los últimos cambios integrados en la rama principal (\texttt{main}), se puede utilizar la versión de desarrollo:
+\begin{lstlisting}[language=bash]
+cd docker
+docker compose -f docker-compose-dev.yml up
+\end{lstlisting}
+
+\subsection{Accesos a los servicios}
+Una vez levantada la infraestructura, los distintos servicios son accesibles a través de las siguientes rutas:
+\begin{itemize}
+    \item \textbf{Frontend:} \url{https://localhost/}
+    \item \textbf{API Gateway:} \url{https://localhost/api/}
+    \item \textbf{Panel de Eureka:} \url{http://localhost:8761/}
+    \item \textbf{Interfaz de Jaeger:} \url{http://localhost:16686/}
+    \item \textbf{Consola de MinIO:} \url{http://localhost:9001/}
+\end{itemize}
+
+\section{Ejecución Manual (Entorno de Desarrollo Local)}
+Para modificar el código y realizar desarrollo local sin empaquetar en contenedores Docker la propia aplicación, se deben seguir estos pasos.
+
+\subsection{Requisitos Previos}
+\begin{itemize}
+    \item \textbf{Java:} Versión 17.
+    \item \textbf{Node.js:} Versión 20.18.0.
+    \item \textbf{MySQL:} Versión 8.0 (mediante Docker o instalación nativa).
+    \item \textbf{MinIO:} Para almacenamiento de objetos (mediante Docker).
+    \item \textbf{Maven Wrapper:} Incluido en el propio repositorio.
+\end{itemize}
+
+\subsection{Configuración de Bases de Datos}
+Se deben arrancar los contenedores de MySQL para cada microservicio ejecutando:
+
+\begin{lstlisting}[language=bash]
+# Base de datos del Servicio de Usuarios (Puerto 3307)
+docker run --name mysql-user -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=user_db -e MYSQL_USER=user -e MYSQL_PASSWORD=password -p 3307:3306 -d mysql:8.0
+
+# Base de datos del Servicio de Apartamentos (Puerto 3308)
+docker run --name mysql-apartment -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=apartment_db -e MYSQL_USER=user -e MYSQL_PASSWORD=password -p 3308:3306 -d mysql:8.0
+
+# Base de datos del Servicio de Reservas (Puerto 3309)
+docker run --name mysql-booking -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=booking_db -e MYSQL_USER=user -e MYSQL_PASSWORD=password -p 3309:3306 -d mysql:8.0
+
+# Base de datos del Servicio de Resenas (Puerto 3310)
+docker run --name mysql-review -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=review_db -e MYSQL_USER=user -e MYSQL_PASSWORD=password -p 3310:3306 -d mysql:8.0
+\end{lstlisting}
+
+\subsection{Configuración de MinIO}
+\begin{lstlisting}[language=bash]
+docker run --name minio \
+  -e MINIO_ROOT_USER=minioadmin \
+  -e MINIO_ROOT_PASSWORD=minioadmin \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -d minio/minio server /data --console-address ":9001"
+\end{lstlisting}
+
+\subsection{Ejecución del Backend (\textit{Microservicios})}
+Es necesario abrir un terminal independiente para cada servicio e iniciarlos en el siguiente orden estricto:
+
+\begin{lstlisting}[language=bash]
+cd backend
+
+# 1. Iniciar Eureka Server
+cd eureka-server && mvn spring-boot:run
+
+# 2. Iniciar Servicio de Usuarios
+cd user && mvn spring-boot:run
+
+# 3. Iniciar Servicio de Apartamentos
+cd apartment && mvn spring-boot:run
+
+# 4. Iniciar Servicio de Reservas
+cd booking && mvn spring-boot:run
+
+# 5. Iniciar Servicio de Resenas
+cd review && mvn spring-boot:run
+
+# 6. Iniciar API Gateway
+cd api-gateway && mvn spring-boot:run
+\end{lstlisting}
+
+\subsection{Ejecución del Frontend (\textit{Angular})}
+En un nuevo terminal:
+\begin{lstlisting}[language=bash]
+cd frontend
+npm install
+npm start # O alternativamente: ng serve
+\end{lstlisting}
+El \textit{frontend} estará disponible en \url{http://localhost:4200}. Las peticiones a \texttt{/api} se redirigirán automáticamente al API Gateway mediante la configuración del \textit{proxy} de desarrollo.
+
+\section{Herramientas de Desarrollo Adicionales}
+\begin{itemize}
+    \item \textbf{IDE:} Visual Studio Code (tanto para los microservicios en Java como para Angular).
+    \item \textbf{Postman:} Para interactuar con la API REST a través del Gateway. El repositorio incluye una colección con ejemplos de peticiones y datos de prueba en la ruta: \texttt{backend/postman/Sky\_Apartments.postman\_collection.json}.
+\end{itemize}
+
+\section{Ejecución de Pruebas Automáticas}
+
+\subsection{Pruebas del Backend}
+
+\subsubsection*{Pruebas Unitarias}
+\begin{lstlisting}[language=bash]
+cd backend
+
+# Ejecutar pruebas en todos los microservicios
+mvn test -Dtest='*UnitTest'
+
+# Ejecutar pruebas en un microservicio especifico (Ej: apartment)
+mvn test -Dtest='*UnitTest' -pl apartment
+\end{lstlisting}
+
+\subsubsection*{Pruebas de Integración}
+\begin{lstlisting}[language=bash]
+cd backend
+
+# Ejecutar pruebas en todos los microservicios
+mvn test -Dtest='*IntegrationTest'
+
+# Ejecutar pruebas en un microservicio especifico
+mvn test -Dtest='*IntegrationTest' -pl apartment
+\end{lstlisting}
+
+\subsubsection*{Pruebas End-to-End (E2E)}
+Las pruebas E2E requieren que la infraestructura esté en funcionamiento:
+\begin{lstlisting}[language=bash]
+# Iniciar infraestructura de pruebas
+cd docker
+docker compose -f docker-compose-testing.yml up -d
+
+# Esperar a que los servicios esten listos en Eureka y ejecutar:
+cd ../backend
+mvn test -Dtest='*e2eTest' -pl apartment
+mvn test -Dtest='*e2eTest' -pl user
+
+# Detener infraestructura al finalizar
+cd ../docker
+docker compose -f docker-compose-testing.yml down -v
+\end{lstlisting}
+
+\subsection{Pruebas del Frontend}
+\begin{lstlisting}[language=bash]
+cd frontend
+
+# Pruebas Unitarias
+npm run test:unit
+
+# Pruebas de Integracion (Requiere backend en ejecucion)
+npm run test:integration
+
+# Pruebas E2E con Playwright (Requiere stack completo)
+npm run test:e2e
+
+# Ver el informe de resultados de Playwright
+npx playwright show-report
+\end{lstlisting}
+
+\section{Construcción de Imágenes Docker}
+Para compilar y construir la imagen de Docker localmente:
+\begin{lstlisting}[language=bash]
+cd docker
+docker build -t skyapartments:local .
+docker compose -f docker-compose-local.yml up
+\end{lstlisting}
+
+\section{Publicación y Gestión de Versiones (\textit{Releases})}
+El proyecto implementa un flujo de \textbf{entrega continua} automatizado mediante GitHub Actions. La publicación de una nueva versión se activa manualmente al crear una \textit{Release} en GitHub, momento en el que se dispara automáticamente la \textit{pipeline} de CD. El paso final a producción (AWS EC2) requiere intervención manual del administrador. El proceso completo es el siguiente:
+
+\begin{enumerate}
+    \item \textbf{Actualización manual de versiones:}
+    \begin{itemize}
+        \item Archivo \texttt{backend/pom.xml} (Ej. \texttt{0.1.0}).
+        \item Archivo \texttt{frontend/package.json} (Ej. \texttt{0.1.0}).
+        \item Archivo \texttt{docker/docker-compose.yml} (Ej. \texttt{0.1}).
+    \end{itemize}
+    \item \textbf{Creación de la Release en GitHub:} Se genera una nueva \textit{Release} 
+    asociándole una etiqueta (\textit{tag}) coincidente con la versión (Ej. \texttt{0.1}). 
+    Este evento dispara automáticamente la \textit{pipeline} de entrega continua.
+    \item \textbf{Ejecución automática de la \textit{pipeline}:} GitHub Actions construye 
+    la imagen, actualiza la etiqueta \texttt{latest}, publica la imagen en DockerHub y sube 
+    el archivo \texttt{docker-compose.yml} como artefacto OCI.
+    \item \textbf{Preparación del próximo ciclo:} Se actualizan los archivos \texttt{pom.xml} 
+    y \texttt{package.json} a la siguiente versión \texttt{SNAPSHOT} 
+    (Ej. \texttt{0.2.0-SNAPSHOT}).
+\end{enumerate}
+
+\section{Acceso a Imágenes Publicadas}
+Las imágenes generadas por la \textit{pipeline} están disponibles públicamente en DockerHub bajo las siguientes etiquetas:
+\begin{itemize}
+    \item \textbf{Versión específica:} \texttt{eloydsdlh/apartments-app:1.0}
+    \item \textbf{Última versión estable:} \texttt{eloydsdlh/apartments-app:latest}
+    \item \textbf{Última versión de desarrollo:} \texttt{eloydsdlh/apartments-app:dev}
+\end{itemize}

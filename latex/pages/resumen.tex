@@ -1,0 +1,11 @@
+Este Trabajo Fin de Grado (TFG) presenta el diseño, desarrollo y despliegue de \textbf{Sky Apartments}, una plataforma web integral para la gestión de apartamentos turísticos de un único arrendador. El proyecto surge de la necesidad de ofrecer a los pequeños propietarios una herramienta propia que reduzca la dependencia de agencias externas (OTAs) y mejore la rentabilidad mediante la venta directa.
+
+La solución se basa en una \textbf{arquitectura de microservicios} desacoplados (User, Apartment, Booking y Review) desarrollada con \textbf{Java 17 y Spring Boot}. El sistema utiliza el ecosistema \textbf{Spring Cloud} para la gestión de la infraestructura distribuida, incluyendo un \textit{API Gateway} para el enrutamiento y un servidor Eureka para el descubrimiento de servicios. Por su parte, el frontend se ha implementado como una \textit{Single Page Application} (SPA) utilizando \textbf{Angular 19}, proporcionando una interfaz moderna y diseño web adaptable (\textit{responsive}) con funcionalidades avanzadas como calendarios interactivos y paneles de estadísticas.
+
+Entre las funcionalidades técnicas más destacadas se encuentran:
+\begin{itemize}
+    \item Un \textbf{motor de precios dinámicos} que permite al administrador configurar reglas de ajuste automático según fechas o duración de la estancia.
+    \item Un sistema de seguridad robusto basado en \textbf{Spring Security y JSON Web Tokens (JWT)} con una estrategia de \textit{Silent Refresh} para mejorar la experiencia de usuario.
+    \item Integración con \textbf{MinIO} para el almacenamiento de imágenes compatible con S3 y \textbf{Jaeger} para garantizar la trazabilidad distribuida de las peticiones.
+\end{itemize}
+La calidad del software se ha garantizado mediante una estrategia de pruebas exhaustiva (unitarias, integración y E2E) alcanzando una \textbf{cobertura global cercana al 85\%}. Finalmente, todo el sistema ha sido empaquetado en contenedores Docker y desplegado en la nube utilizando \textbf{Amazon EC2}, automatizando el ciclo de vida mediante un pipeline de integración y despliegue continuo (CI/CD) con \textbf{GitHub Actions}.

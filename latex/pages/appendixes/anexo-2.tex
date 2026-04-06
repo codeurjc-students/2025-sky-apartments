@@ -1,0 +1,247 @@
+Esta guía proporciona las instrucciones detalladas paso a paso para ejecutar la versión 1.0 de \textbf{Sky Apartments} utilizando Docker Compose.
+
+\section{Requisitos Previos}
+
+\subsection{Instalación de Docker}
+La aplicación requiere el uso de \textbf{Docker} para su ejecución. Las instrucciones de instalación varían en función del sistema operativo:
+
+\subsubsection*{Windows}
+\begin{itemize}
+    \item Descargar e instalar \textbf{Docker Desktop para Windows}.
+    \item Enlace oficial: \url{https://docs.docker.com/desktop/install/windows-install/}
+    \item Requisitos del sistema: Windows 10 de 64 bits o superior.
+\end{itemize}
+
+\subsubsection*{macOS}
+\begin{itemize}
+    \item Descargar e instalar \textbf{Docker Desktop para Mac}.
+    \item Enlace oficial: \url{https://docs.docker.com/desktop/install/mac-install/}
+    \item Disponible tanto para procesadores Intel como para Apple Silicon.
+\end{itemize}
+
+\subsubsection*{Linux}
+Es necesario instalar tanto \textbf{Docker Engine} como \textbf{Docker Compose}:
+
+\begin{itemize}
+    \item \textbf{Docker Engine:} Visitar \url{https://docs.docker.com/engine/install/} y seleccionar la distribución de Linux correspondiente (Ubuntu, Debian, Fedora, etc.).
+    \item \textbf{Docker Compose:} Visitar \url{https://docs.docker.com/compose/install/} y seguir los pasos de instalación para Docker Compose independiente (\textit{standalone}).
+\end{itemize}
+
+\subsection{Verificación de la instalación}
+Una vez finalizada la instalación, se puede verificar que Docker funciona correctamente abriendo un terminal y ejecutando:
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+docker --version
+docker compose version
+\end{lstlisting}
+
+\section{Ejecución de la Aplicación}
+
+\subsection{Opción 1: Mediante registro de DockerHub (Recomendada)}
+Esta opción utiliza el artefacto OCI directamente sin necesidad de descargar archivos manuales:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+docker compose -f oci://eloydsdlh/apartments-compose:1.0 up -d
+\end{lstlisting}
+\textit{Nota: Puede sustituir \texttt{1.0} por cualquier tag disponible en el registro oficial (\url{https://hub.docker.com/r/eloydsdlh/apartments-compose/tags}).}
+
+\subsection{Opción 2: Mediante archivo docker-compose.yml}
+
+\begin{enumerate}
+    \item \textbf{Descargar el archivo \texttt{docker-compose.yml}} \\
+    Se puede descargar directamente desde el repositorio o crearlo manualmente ejecutando:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+curl -o docker-compose.yml \
+  https://raw.githubusercontent.com/codeurjc-students/\
+  2025-sky-apartments/main/docker/docker-compose.yml
+\end{lstlisting}
+
+    \item \textbf{Iniciar la aplicación}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+docker compose up -d
+\end{lstlisting}
+    Este comando se encargará de:
+    \begin{itemize}
+        \item Descargar la imagen de Sky Apartments desde DockerHub (etiqueta: \texttt{1.0}).
+        \item Descargar la imagen de MySQL.
+        \item Crear y arrancar los contenedores.
+        \item Configurar la red interna para su comunicación.
+    \end{itemize}
+
+    \item \textbf{Esperar al arranque de la aplicación} \\
+    La primera vez que se ejecute, el proceso puede tardar unos minutos mientras se descargan las imágenes, se inicializa la base de datos y se cargan los datos de prueba. Se puede monitorizar el progreso con:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+docker compose logs -f
+\end{lstlisting}
+
+    \item \textbf{Acceder a la aplicación} \\
+    Una vez que los registros (\textit{logs}) muestren que la aplicación ha arrancado correctamente, se debe abrir el navegador web y acceder a:\newline \url{https://localhost} \\
+    
+    \textit{\textbf{Nota:}} Es posible que el navegador muestre una advertencia de seguridad debido al uso de un certificado SSL autofirmado (comportamiento esperado en entornos de desarrollo). Para continuar, se debe hacer clic en "Avanzado" y luego en "Aceptar el riesgo y continuar" (o equivalente según el navegador).
+\end{enumerate}
+
+\section{Variables de Entorno}
+Para el correcto funcionamiento de las \textbf{notificaciones por correo}, cree un archivo \texttt{.env} en el directorio raíz:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Variable} & \textbf{Requerido} & \textbf{Descripción} \\ \midrule
+\texttt{MAIL\_USERNAME} & Sí & Cuenta de correo emisor. \\
+\texttt{MAIL\_PASSWORD} & Sí & Contraseña de aplicación del correo. \\
+\texttt{JWT\_SECRET}    & No & Clave para tokens (recomendado cambiar). \\ \bottomrule
+\end{tabular}
+\caption{Variables de configuración principales.}
+\end{table}
+
+Ejemplo de archivo \texttt{.env} con todas las variables (necesarias y opcionales):
+\begin{lstlisting}
+# --- Email (Requerido para notificaciones) ---
+MAIL_USERNAME=ejemplo@gmail.com
+MAIL_PASSWORD=tu_password_secreto
+
+# --- Base de Datos (MySQL) ---
+MYSQL_ROOT_PASSWORD=password
+MYSQL_USER=user
+MYSQL_PASSWORD=password
+MYSQL_USERS_DB=usersdb
+MYSQL_APARTMENTS_DB=apartmentsdb
+MYSQL_BOOKINGS_DB=bookingsdb
+MYSQL_REVIEWS_DB=reviewsdb
+
+# --- Almacenamiento de imagenes (MinIO) ---
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+MINIO_BUCKET=apartments-images
+MINIO_EXTERNAL_URL=https://localhost:443/minio
+
+# --- Seguridad y JWT (Se recomienda cambiar en produccion) ---
+JWT_SECRET=Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
+
+# --- Configuracion SSL ---
+SSL_KEY_STORE=classpath:keystore.p12
+SSL_KEY_STORE_PASSWORD=changeit
+SSL_KEY_STORE_TYPE=PKCS12
+SSL_KEY_ALIAS=apartments
+
+# --- Perfil del Sistema ---
+SPRING_PROFILE=prod
+\end{lstlisting}
+
+\section{Acceso a la Aplicación y Datos de Prueba}
+
+\subsection{Interfaz Web}
+La interfaz web es accesible a través del navegador en:\newline \url{https://localhost}
+
+\subsection{Credenciales de acceso}
+La aplicación incluye datos preconfigurados para facilitar las pruebas.
+
+\subsubsection*{Acceso de Administrador}
+\begin{itemize}
+    \item \textbf{Usuario:} \texttt{admin@example.com}
+    \item \textbf{Contraseña:} \texttt{Password@1234}
+\end{itemize}
+La cuenta de administrador cuenta con acceso completo a la gestión de apartamentos (crear, editar, eliminar), gestión de usuarios y estadísticas del sistema.
+
+\subsubsection*{Cuentas de Usuario Estándar}
+Se pueden crear cuentas propias o utilizar la cuenta de prueba existente:
+\begin{itemize}
+    \item \textbf{Usuario:} \texttt{user@example.com}
+    \item \textbf{Contraseña:} \texttt{Password@1234}
+\end{itemize}
+
+\subsection{Datos de ejemplo incluidos}
+La base de datos arranca con los siguientes elementos preconfigurados:
+\begin{itemize}
+    \item \textbf{10 apartamentos:} Incluyen nombre, descripción, capacidad máxima, combinaciones de comodidades (terraza, parking, piscina, etc.), imágenes representativas y precio por noche.
+    \item \textbf{Reservas:} Muestra de reservas activas y pasadas.
+    \item \textbf{Reseñas:} Comentarios de ejemplo para ilustrar el sistema de valoraciones.
+\end{itemize}
+
+\section{Administración de la Aplicación}
+
+\subsubsection*{Detener la aplicación}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+docker compose down
+\end{lstlisting}
+Este comando detiene y elimina los contenedores, pero \textbf{conserva} los datos de la base de datos.
+
+\subsubsection*{Detener y eliminar todos los datos}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+docker compose down -v
+\end{lstlisting}
+\textit{\textbf{Advertencia:}} Esto eliminará todos los datos, incluida la base de datos. En el próximo arranque, se volverán a cargar los datos de prueba iniciales.
+
+\subsubsection*{Visualizar registros (Logs)}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# Todos los servicios
+docker compose logs
+
+# Seguir logs en tiempo real
+docker compose logs -f
+
+# Servicio especifico
+docker compose logs app
+docker compose logs db
+\end{lstlisting}
+
+\subsubsection*{Reiniciar y actualizar}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# Reiniciar la aplicacion
+docker compose restart
+
+# Actualizar a la ultima version
+docker compose pull
+docker compose up -d
+\end{lstlisting}
+
+\section{Resolución de Problemas}
+
+\subsection{Puerto ya en uso}
+Si los puertos 443 o 3306 ya están en uso, se mostrará un error. Posibles soluciones:
+\begin{enumerate}
+    \item \textbf{Detener servicios en conflicto:} Detener cualquier servidor web (Apache, Nginx) que use el puerto 443 o servicio MySQL/MariaDB en el puerto 3306.
+    \item \textbf{Modificar puertos en \texttt{docker-compose.yml}:}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+services:
+  app:
+    ports:
+      - "8443:443"  # Usar el puerto 8443 en su lugar
+\end{lstlisting}
+    Tras el cambio, se accederá a través de: \url{https://localhost:8443}
+\end{enumerate}
+
+\subsection{Problemas de conexión a la base de datos}
+Si la aplicación no logra conectar con la base de datos:
+\begin{enumerate}
+    \item Esperar unos segundos más (la base de datos necesita tiempo para inicializarse).
+    \item Comprobar los logs de la base de datos: \texttt{docker compose logs db}
+    \item Reiniciar los servicios: \texttt{docker compose restart}
+\end{enumerate}
+
+\subsection{La aplicación no carga}
+\begin{enumerate}
+    \item Comprobar si los contenedores están en ejecución: \texttt{docker compose ps}
+    \item Revisar los logs de la aplicación: \texttt{docker compose logs app}
+    \item Vaciar la caché del navegador o probar en modo incógnito.
+\end{enumerate}
+
+\section{Versión de Desarrollo}
+Para ejecutar la última versión de desarrollo (puede ser inestable):
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# Descargar docker-compose-dev.yml
+curl -o docker-compose-dev.yml \
+ https://raw.githubusercontent.com/codeurjc-students/\
+ 2025-sky-apartments/main/docker/docker-compose-dev.yml
+
+# Ejecutar version de desarrollo
+docker compose -f docker-compose-dev.yml up -d
+\end{lstlisting}
+Esta versión utiliza la etiqueta \texttt{dev} de DockerHub e incluye las últimas funcionalidades en pruebas.
+
+\section{Recursos Adicionales}
+\begin{itemize}
+    \item \textbf{Documentación de Docker:} \url{https://docs.docker.com}
+    \item \textbf{Documentación de Docker Compose:} \url{https://docs.docker.com/compose/}
+    \item \textbf{Repositorio del proyecto:} \url{https://github.com/codeurjc-students/2025-sky-apartments}
+\end{itemize}

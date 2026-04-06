@@ -1,0 +1,18 @@
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.1}Requisitos Previos}{\reset@font\mtcSfont 71}{section.B.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.1.1}Instalación de Docker}{\reset@font\mtcSSfont 71}{subsection.B.1.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.1.2}Verificación de la instalación}{\reset@font\mtcSSfont 72}{subsection.B.1.2}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.2}Ejecución de la Aplicación}{\reset@font\mtcSfont 72}{section.B.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.2.1}Opción 1: Mediante registro de DockerHub (Recomendada)}{\reset@font\mtcSSfont 72}{subsection.B.2.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.2.2}Opción 2: Mediante archivo docker-compose.yml}{\reset@font\mtcSSfont 73}{subsection.B.2.2}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.3}Variables de Entorno}{\reset@font\mtcSfont 73}{section.B.3}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.4}Acceso a la Aplicación y Datos de Prueba}{\reset@font\mtcSfont 74}{section.B.4}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.4.1}Interfaz Web}{\reset@font\mtcSSfont 74}{subsection.B.4.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.4.2}Credenciales de acceso}{\reset@font\mtcSSfont 74}{subsection.B.4.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.4.3}Datos de ejemplo incluidos}{\reset@font\mtcSSfont 75}{subsection.B.4.3}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.5}Administración de la Aplicación}{\reset@font\mtcSfont 75}{section.B.5}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.6}Resolución de Problemas}{\reset@font\mtcSfont 76}{section.B.6}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.6.1}Puerto ya en uso}{\reset@font\mtcSSfont 76}{subsection.B.6.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.6.2}Problemas de conexión a la base de datos}{\reset@font\mtcSSfont 77}{subsection.B.6.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {B.6.3}La aplicación no carga}{\reset@font\mtcSSfont 77}{subsection.B.6.3}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.7}Versión de Desarrollo}{\reset@font\mtcSfont 77}{section.B.7}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {B.8}Recursos Adicionales}{\reset@font\mtcSfont 77}{section.B.8}}

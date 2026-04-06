@@ -1,0 +1,73 @@
+Para la gestión y desarrollo de este proyecto se ha adoptado una metodología de trabajo a alto nivel basada en un enfoque iterativo e incremental. Este modelo permite estructurar el ciclo de vida del software en bloques manejables, garantizando la entrega de versiones funcionales (\textit{releases}) al final de cada ciclo y facilitando la adaptación flexible a los cambios.
+
+\section{Fases del Proyecto y Temporalidad}
+
+El desarrollo se ha planificado y ejecutado dividiendo el trabajo en las siguientes siete fases principales. A continuación se describe cada una de ellas junto con sus fechas de ejecución planificadas y reales:
+
+\begin{itemize}
+    \item \textbf{Fase 1: Definición de funcionalidades.} Durante esta etapa inicial se establecieron los requisitos del sistema. La descripción general y detallada de estas funcionalidades operativas se encuentra documentada en el capítulo \ref{cap:funcionalidades}.
+    
+    \item \textbf{Fase 2: Configuración de herramientas y entorno.} Esta fase se centró en la preparación del entorno de trabajo y el establecimiento de controles de calidad que se realizan de forma periódica para asegurar la estabilidad del producto. Las tecnologías concretas utilizadas en este proceso se detallan en la sección \ref{sec:tecnologias}.
+    
+    \item \textbf{Fases 3, 4 y 5: Desarrollo iterativo e incremental.} Constituyen el núcleo de la implementación. El sistema se ha construido progresivamente, publicando una versión (\textit{release}) operativa al final de cada iteración. El detalle exhaustivo del proceso de desarrollo empleado se explica en la sección \ref{sec:proceso_desarrollo}.
+    
+    \item \textbf{Fase 6: Escritura de la memoria.} Fase dedicada a la recopilación de información, estructuración y redacción final del presente documento académico.
+    
+    \item \textbf{Fase 7: Preparación de la presentación.} Última etapa del proyecto, enfocada en la síntesis del trabajo realizado y la elaboración del material de apoyo para la defensa oral ante el tribunal.
+\end{itemize}
+
+Para ilustrar gráficamente esta temporalidad, la Figura \ref{fig:gantt_fases} presenta el diagrama de Gantt asociado. Para cada fase se muestra la comparativa visual entre el periodo de tiempo estimado inicialmente (representado en color azul) y el periodo real de ejecución (representado en color naranja).
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{ganttchart}[
+        x unit=0.4mm,
+        time slot format=isodate,
+        y unit title=0.6cm,
+        y unit chart=0.6cm,
+        vgrid,
+        hgrid,
+        title label font=\bfseries\footnotesize,
+        bar label font=\footnotesize,
+        bar/.style={fill=blue!50}, 
+        bar1/.style={fill=orange!70}, 
+        bar height=0.3,
+        bar top shift=0.1
+    ]{2025-07-01}{2026-06-30}
+    
+    \gantttitlecalendar{year, month} \\
+
+    % Fase 1
+    \ganttbar{Fase 1 (Planificado)}{2025-07-18}{2025-09-15} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 1 (Real)}{2025-07-18}{2025-08-02} \\
+
+    % Fase 2
+    \ganttbar{Fase 2 (Planificado)}{2025-09-15}{2025-10-15} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 2 (Real)}{2025-08-02}{2025-09-18} \\
+
+    % Fase 3
+    \ganttbar{Fase 3 (Planificado)}{2025-10-15}{2025-12-15} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 3 (Real)}{2025-09-18}{2025-11-08} \\
+
+    % Fase 4
+    \ganttbar{Fase 4 (Planificado)}{2025-12-15}{2026-03-01} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 4 (Real)}{2025-11-08}{2025-12-24} \\
+
+    % Fase 5
+    \ganttbar{Fase 5 (Planificado)}{2026-03-01}{2026-04-15} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 5 (Real)}{2025-12-24}{2026-02-01} \\
+
+    % Fase 6
+    \ganttbar{Fase 6 (Planificado)}{2026-04-15}{2026-05-15} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 6 (Real)}{2026-02-01}{2026-04-06} \\
+
+    % Fase 7
+    \ganttbar{Fase 7 (Planificado)}{2026-05-15}{2026-06-15} \\
+    \ganttbar[bar/.style={fill=orange!70}]{Fase 7 (Real)}{2026-03-31}{2026-04-13}
+    
+    \end{ganttchart}
+    }
+    \caption{Diagrama de Gantt del proyecto. En azul figura la temporalidad planificada y en naranja la ejecución real.}
+    \label{fig:gantt_fases}
+\end{figure}

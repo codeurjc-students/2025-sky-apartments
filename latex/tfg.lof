@@ -1,0 +1,60 @@
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\contentsline {xchapter}{Introducción y objetivos}{1}{chapter.1}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Metodología}{7}{chapter.2}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Diagrama de Gantt del proyecto. En azul figura la temporalidad planificada y en naranja la ejecución real.}}{8}{figure.caption.6}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Descripción funcional}{10}{chapter.3}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Interfaz del motor de búsqueda con filtros avanzados combinados.}}{12}{figure.caption.7}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Interfaz del catálogo de apartamentos con filtro por fecha.}}{13}{figure.caption.8}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Página de detalle del apartamento mostrando la galería multimedia y el calendario dinámico con precios.}}{14}{figure.caption.9}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Ejemplo de notificación de confirmación de reserva enviada al usuario.}}{15}{figure.caption.10}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Sistema de valoraciones y reseñas integrado en la plataforma.}}{15}{figure.caption.11}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Dashboard analítico del panel de administración.}}{16}{figure.caption.12}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Interfaz de gestión y edición del catálogo de apartamentos.}}{17}{figure.caption.13}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Interfaz de gestión y edición de filtros dinámicos de precios.}}{18}{figure.caption.14}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Panel de control para la gestión y seguimiento de todas las reservas.}}{19}{figure.caption.15}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Descripción Informática}{21}{chapter.4}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Tecnologías del frontend empleadas en el proyecto.}}{24}{figure.caption.16}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Tecnologías de persistencia y almacenamiento de objetos.}}{26}{figure.caption.17}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Herramientas de desarrollo: Git y GitHub (arriba); Apache Maven y Visual Studio Code (abajo); con Postman en el centro.}}{29}{figure.caption.18}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Arquitectura de despliegue: procesos contenerizados, puertos y flujos de comunicación.}}{31}{figure.caption.19}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Modelo de dominio lógico del sistema Sky Apartments.}}{32}{figure.caption.20}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Arquitectura en capas del servidor backend y comunicación entre microservicios.}}{37}{figure.caption.27}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Arquitectura del cliente Angular: Componentes, Servicios e Interceptores.}}{38}{figure.caption.28}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Diagrama de secuencia del proceso de autenticación, validación y refresco de tokens.}}{40}{figure.caption.30}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Reporte de cobertura JaCoCo - Apartment Service}}{47}{figure.caption.43}%
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Reporte de cobertura JaCoCo - User Service}}{47}{figure.caption.44}%
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Reporte de cobertura JaCoCo - Booking Service}}{47}{figure.caption.45}%
+\contentsline {figure}{\numberline {4.12}{\ignorespaces Reporte de cobertura JaCoCo - Review Service}}{47}{figure.caption.46}%
+\contentsline {figure}{\numberline {4.13}{\ignorespaces Reporte de cobertura del frontend - Tests unitarios e integración}}{49}{figure.caption.49}%
+\contentsline {figure}{\numberline {4.14}{\ignorespaces Arquitectura de despliegue en Amazon EC2.}}{51}{figure.caption.51}%
+\contentsline {figure}{\numberline {4.15}{\ignorespaces Gráfico de Burn up del proyecto. La línea superior (verde) representa el total de tareas identificadas y la línea inferior (morada) las tareas completadas a lo largo del tiempo.}}{53}{figure.caption.54}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Conclusiones y trabajos futuros}{58}{chapter.5}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Funcionalidades detalladas}{68}{appendix.A}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Instrucciones para ejecutar la aplicación}{71}{appendix.B}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Ejecución y edición de código}{79}{appendix.C}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Manual de usuario}{86}{appendix.D}%
+\contentsline {figure}{\numberline {D.1}{\ignorespaces Página principal mostrando alojamientos destacados y formulario de contacto.}}{87}{figure.caption.83}%
+\contentsline {figure}{\numberline {D.2}{\ignorespaces Formulario de registro para nuevos usuarios (Sign Up).}}{88}{figure.caption.84}%
+\contentsline {figure}{\numberline {D.3}{\ignorespaces Pantalla de inicio de sesión seguro (Log In).}}{89}{figure.caption.85}%
+\contentsline {figure}{\numberline {D.4}{\ignorespaces Catálogo de apartamentos con filtros avanzados en la barra lateral.}}{90}{figure.caption.86}%
+\contentsline {figure}{\numberline {D.5}{\ignorespaces Interfaz de selección de fechas para comprobar disponibilidad y calcular precios.}}{92}{figure.caption.87}%
+\contentsline {figure}{\numberline {D.6}{\ignorespaces Vista detallada de un apartamento, calendario de reservas y sistema de reseñas.}}{94}{figure.caption.88}%
+\contentsline {figure}{\numberline {D.7}{\ignorespaces Área de gestión de datos personales del perfil de usuario.}}{95}{figure.caption.89}%
+\contentsline {figure}{\numberline {D.8}{\ignorespaces Historial de reservas del usuario y gestión de cancelaciones.}}{96}{figure.caption.90}%
+\contentsline {figure}{\numberline {D.9}{\ignorespaces Dashboard principal de administración con métricas y gráficas de rendimiento.}}{98}{figure.caption.91}%
+\contentsline {figure}{\numberline {D.10}{\ignorespaces Panel de gestión y visualización de todas las reservas del sistema.}}{99}{figure.caption.92}%
+\contentsline {figure}{\numberline {D.11}{\ignorespaces Vista general del catálogo de alojamientos desde el panel de administración.}}{100}{figure.caption.93}%
+\contentsline {figure}{\numberline {D.12}{\ignorespaces Formulario de alta de un nuevo apartamento y subida de imágenes.}}{101}{figure.caption.94}%
+\contentsline {figure}{\numberline {D.13}{\ignorespaces Listado de reglas y filtros de precios dinámicos configurados en el sistema.}}{103}{figure.caption.95}%
+\contentsline {figure}{\numberline {D.14}{\ignorespaces Modal de configuración avanzada para una nueva regla de precio dinámico.}}{104}{figure.caption.96}%
