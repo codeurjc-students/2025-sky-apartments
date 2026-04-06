@@ -1,17 +1,15 @@
-version: "3.9"
-
 services:
-  # BBDD MySQL for users
-  mysql-users:
+  # Single MySQL instance with 4 independent schemas (one per microservice)
+  mysql:
     image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
-      MYSQL_DATABASE: ${MYSQL_USERS_DB:-usersdb}
       MYSQL_USER: ${MYSQL_USER:-user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
-      - mysql_users_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     networks:
       - app-network
     healthcheck:
@@ -20,68 +18,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
-  # BBDD MySQL for apartments
-  mysql-apartments:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
-      MYSQL_DATABASE: ${MYSQL_APARTMENTS_DB:-apartmentsdb}
-      MYSQL_USER: ${MYSQL_USER:-user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
-    volumes:
-      - mysql_apartments_data:/var/lib/mysql
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # BBDD MySQL for bookings
-  mysql-bookings:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
-      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB:-bookingsdb}
-      MYSQL_USER: ${MYSQL_USER:-user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
-    volumes:
-      - mysql_bookings_data:/var/lib/mysql
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # BBDD MySQL for reviews
-  mysql-reviews:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
-      MYSQL_DATABASE: ${MYSQL_BOOKINGS_DB:-reviewsdb}
-      MYSQL_USER: ${MYSQL_USER:-user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
-    ports:
-      - "3304:3306"
-    volumes:
-      - mysql_reviews_data:/var/lib/mysql
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-user}", "-p${MYSQL_PASSWORD:-password}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s  
 
   # MinIO for file storage
   minio:
@@ -128,7 +64,7 @@ services:
     image: jaegertracing/all-in-one:latest
     restart: always
     ports:
-      - "16686:16686"  # UI of Jaeger
+      - "16686:16686"  # Jaeger UI
       - "4318:4318"    # OTLP HTTP
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
@@ -137,7 +73,7 @@ services:
 
   # Main application (Backend + Frontend)
   app:
-    image: ${DOCKER_USERNAME}/apartments-app:1.0
+    image: eloydsdlh/apartments-app:1.0
     pull_policy: always
     restart: always
     ports:
@@ -147,65 +83,59 @@ services:
       # General config
       JAVA_OPTS: "-Xmx1024m -Xms512m"
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-prod}
-      
-      # BBDD - Users
-      USER_DB_URL: jdbc:mysql://mysql-users:3306/${MYSQL_USERS_DB:-usersdb}
+
+      # DB - Users
+      USER_DB_URL: jdbc:mysql://mysql:3306/${MYSQL_USERS_DB:-usersdb}
       USER_DB_USERNAME: ${MYSQL_USER:-user}
       USER_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
       MYSQL_USERS_DB: ${MYSQL_USERS_DB:-usersdb}
       MYSQL_USER: ${MYSQL_USER:-user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
-      
-      # BBDD - Apartments
-      APARTMENT_DB_URL: jdbc:mysql://mysql-apartments:3306/${MYSQL_APARTMENTS_DB:-apartmentsdb}
+
+      # DB - Apartments
+      APARTMENT_DB_URL: jdbc:mysql://mysql:3306/${MYSQL_APARTMENTS_DB:-apartmentsdb}
       APARTMENT_DB_USERNAME: ${MYSQL_USER:-user}
       APARTMENT_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
       MYSQL_APARTMENTS_DB: ${MYSQL_APARTMENTS_DB:-apartmentsdb}
-      
-      # BBDD - Bookings
-      BOOKING_DB_URL: jdbc:mysql://mysql-bookings:3306/${MYSQL_BOOKINGS_DB:-bookingsdb}
+
+      # DB - Bookings
+      BOOKING_DB_URL: jdbc:mysql://mysql:3306/${MYSQL_BOOKINGS_DB:-bookingsdb}
       BOOKING_DB_USERNAME: ${MYSQL_USER:-user}
       BOOKING_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
       MYSQL_BOOKINGS_DB: ${MYSQL_BOOKINGS_DB:-bookingsdb}
 
-      # BBDD - Reviews
-      REVIEW_DB_URL: jdbc:mysql://mysql-reviews:3306/${MYSQL_REVIEWS_DB:-reviewsdb}
+      # DB - Reviews
+      REVIEW_DB_URL: jdbc:mysql://mysql:3306/${MYSQL_REVIEWS_DB:-reviewsdb}
       REVIEW_DB_USERNAME: ${MYSQL_USER:-user}
       REVIEW_DB_PASSWORD: ${MYSQL_PASSWORD:-password}
       MYSQL_REVIEWS_DB: ${MYSQL_REVIEWS_DB:-reviewsdb}
-      
+
       # MinIO
       MINIO_URL: http://minio:9000
       MINIO_EXTERNAL_URL: ${MINIO_EXTERNAL_URL:-https://localhost:443/minio}
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       MINIO_BUCKET: ${MINIO_BUCKET:-apartments-images}
-      
+
       # JWT
       JWT_SECRET: ${JWT_SECRET:-Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd}
-      
+
       # SSL/HTTPS
       SERVER_SSL_KEY_STORE: ${SSL_KEY_STORE:-classpath:keystore.p12}
       SERVER_SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD:-changeit}
       SERVER_SSL_KEY_STORE_TYPE: ${SSL_KEY_STORE_TYPE:-PKCS12}
       SERVER_SSL_KEY_ALIAS: ${SSL_KEY_ALIAS:-apartments}
-      
+
       # Jaeger/OTLP
       OTLP_ENDPOINT: http://jaeger:4318
 
-      # Email configuration
+      # Email
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
-      
+
     depends_on:
-      mysql-users:
+      mysql:
         condition: service_healthy
-      mysql-apartments:
-        condition: service_healthy
-      mysql-bookings:
-        condition: service_healthy
-      mysql-reviews:
-          condition: service_healthy
       minio:
         condition: service_healthy
       jaeger:
@@ -220,13 +150,7 @@ services:
       start_period: 90s
 
 volumes:
-  mysql_users_data:
-    driver: local
-  mysql_apartments_data:
-    driver: local
-  mysql_bookings_data:
-    driver: local
-  mysql_reviews_data:
+  mysql_data:
     driver: local
   minio_data:
     driver: local

@@ -1,6 +1,6 @@
 # Execution Guide
 
-This guide provides step-by-step instructions to run Sky Apartments version 0.1 using Docker Compose.
+This guide provides step-by-step instructions to run Sky Apartments using Docker Compose.
 
 ## Prerequisites
 
@@ -39,53 +39,57 @@ docker compose version
 
 ## Running the Application
 
-### Option 1: Using Docker Compose File (Recommended)
+### Option 1: Using DockerHub Registry (Recommended)
 
-1. **Download the docker-compose.yml file**
-
-   You can download it from the repository or create it manually:
+No additional tools required. Run the following command to start the application 
+directly from the published OCI artifact:
 ```bash
-   curl -o docker-compose.yml https://raw.githubusercontent.com/codeurjc-students/2025-sky-apartments/main/docker/docker-compose.yml
+docker compose -f oci://eloydsdlh/apartments-compose:1.0 up -d
 ```
 
-2. **Start the application**
+Replace `1.0` with the desired version tag. Available tags can be found on the 
+[DockerHub registry](https://hub.docker.com/r/eloydsdlh/apartments-compose/tags).
+
+### Option 2: Using a Local Docker Compose File
+
+If you prefer to inspect or modify the configuration before running, download the 
+`docker-compose.yml` file for the desired version from the repository:
+
+https://github.com/codeurjc-students/2025-sky-apartments/releases
+
+Then start the application:
 ```bash
-   docker compose up -d
+docker compose up -d
 ```
 
-   This command will:
-   - Download the Sky Apartments image from DockerHub (tag: `0.2`)
-   - Download the MySQL image
-   - Create and start containers
-   - Set up the network between them
+This command will:
+- Download the Sky Apartments image from DockerHub
+- Download the MySQL image
+- Create and start containers
+- Set up the network between them
 
-3. **Wait for the application to start**
+### Wait for the Application to Start
 
-   The first time you run the application, it may take a few minutes to:
-   - Download all required images
-   - Initialize the database
-   - Load sample data
+The first time you run the application, it may take a few minutes to:
+- Download all required images
+- Initialize the database
+- Load sample data
 
-   You can monitor the progress with:
+You can monitor the progress with:
 ```bash
-   docker compose logs -f
+docker compose logs -f
 ```
 
-4. **Access the application**
+### Access the Application
 
-   Once the logs show "Application started successfully", open your browser and navigate to:
+Once the logs show "Application started successfully", open your browser and navigate to:
 ```
-   https://localhost
+https://localhost
 ```
 
-   **Note:** You may see a security warning because the application uses a self-signed SSL certificate. This is expected in development. Click "Advanced" and "Proceed to localhost" to continue.
-
-### Option 2: Using Docker Compose from DockerHub Registry
-
-The docker-compose.yml file is also published as an OCI artifact:
-```bash
-docker compose -f oci://eloydsdlh/apartments-compose:0.2 up
-```
+**Note:** You may see a security warning because the application uses a self-signed 
+SSL certificate. This is expected in development. Click "Advanced" and 
+"Proceed to localhost" to continue.
 
 ## Accessing the Application
 
@@ -111,10 +115,9 @@ The administrator account has full access to:
 
 You can use these test accounts or create your own:
 
-**User :**
+**User:**
   - Email: `user@example.com`
   - Password: `Password@1234`
-
 
 #### Sample Apartments
 
@@ -132,10 +135,58 @@ Some sample bookings are preloaded to demonstrate:
 - Active reservations
 - Past reservations
 
-#### Sample reviews
+#### Sample Reviews
 
 Several reviews are included to showcase the review system.
 
+## Environment Variables
+
+The application runs out of the box with sensible defaults — no configuration is required 
+for a basic local setup. However, two variables have no default value and must be provided 
+for email notifications to work:
+
+| Variable         | Required | Default | Description                        |
+|------------------|----------|---------|------------------------------------|
+| `MAIL_USERNAME`  | **Yes**  | —       | Email account for notifications    |
+| `MAIL_PASSWORD`  | **Yes**  | —       | Email account password or app password |
+
+All other variables are optional and already have defaults. You can override any of them 
+by creating a `.env` file in the same directory as your compose file:
+```env
+# Email (required for notifications)
+MAIL_USERNAME=your@email.com
+MAIL_PASSWORD=yourAppPassword
+
+# Database
+MYSQL_ROOT_PASSWORD=password
+MYSQL_USER=user
+MYSQL_PASSWORD=password
+MYSQL_USERS_DB=usersdb
+MYSQL_APARTMENTS_DB=apartmentsdb
+MYSQL_BOOKINGS_DB=bookingsdb
+MYSQL_REVIEWS_DB=reviewsdb
+
+# MinIO storage
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+MINIO_BUCKET=apartments-images
+MINIO_EXTERNAL_URL=https://localhost:443/minio
+
+# JWT secret — recommended to change in production
+JWT_SECRET=Xv5s7JxGg9YhQwD8M1lA0VhG7yJrL6hE9F1N8KxV2bW3ZpQxUsyR7Cj4KsE8YfHd
+
+# SSL
+SSL_KEY_STORE=classpath:keystore.p12
+SSL_KEY_STORE_PASSWORD=changeit
+SSL_KEY_STORE_TYPE=PKCS12
+SSL_KEY_ALIAS=apartments
+
+# Spring profile
+SPRING_PROFILE=prod
+```
+
+Docker Compose loads the `.env` file automatically if it is placed in the same directory 
+as the compose file, with no extra flags needed.
 
 ## Managing the Application
 
@@ -151,7 +202,8 @@ This stops and removes the containers but preserves the database data.
 docker compose down -v
 ```
 
-**Warning:** This will delete all data including the database. The next time you start the application, it will reload the sample data.
+**Warning:** This will delete all data including the database. The next time you 
+start the application, it will reload the sample data.
 
 ### View Logs
 ```bash
@@ -171,10 +223,11 @@ docker compose logs db
 docker compose restart
 ```
 
-### Update to Latest Version
+### Update to a New Version
 ```bash
-docker compose pull
-docker compose up -d
+# Pull the desired version and restart
+docker compose -f oci://eloydsdlh/apartments-compose:1.0 pull
+docker compose -f oci://eloydsdlh/apartments-compose:1.0 up -d
 ```
 
 ## Troubleshooting
@@ -206,7 +259,8 @@ If the application can't connect to the database:
 
 ### SSL Certificate Warning
 
-This is normal in development. The application uses a self-signed certificate. In production, a proper SSL certificate from a Certificate Authority will be used.
+This is normal in development. The application uses a self-signed certificate. 
+In production, a proper SSL certificate from a Certificate Authority will be used.
 
 ### Application Not Loading
 
@@ -228,20 +282,18 @@ This is normal in development. The application uses a self-signed certificate. I
 
 ### Clear Browser Cache
 
-If you see old versions or styling issues, clear your browser cache or try incognito/private mode.
+If you see old versions or styling issues, clear your browser cache or try 
+incognito/private mode.
 
 ## Development Version
 
 To run the latest development version (may be unstable):
 ```bash
-# Download docker-compose-dev.yml
-curl -o docker-compose-dev.yml https://github.com/codeurjc-students/2025-sky-apartments/blob/main/docker/docker-compose-dev.yml
-
-# Run development version
-docker compose -f docker-compose-dev.yml up -d
+docker compose -f oci://eloydsdlh/apartments-compose:dev up -d
 ```
 
-The development version uses the `dev` tag from DockerHub and includes the latest features.
+The `dev` tag corresponds to the latest build from the `main` branch and 
+includes the most recent features.
 
 ## Additional Resources
 

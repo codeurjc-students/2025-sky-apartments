@@ -1,0 +1,18 @@
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.1}Configuración del Repositorio}{\reset@font\mtcSfont 79}{section.C.1}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.2}Ejecución con Docker Compose (Recomendado)}{\reset@font\mtcSfont 79}{section.C.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.2.1}Versión Estable}{\reset@font\mtcSSfont 79}{subsection.C.2.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.2.2}Versión de Desarrollo}{\reset@font\mtcSSfont 80}{subsection.C.2.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.2.3}Accesos a los servicios}{\reset@font\mtcSSfont 80}{subsection.C.2.3}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.3}Ejecución Manual (Entorno de Desarrollo Local)}{\reset@font\mtcSfont 81}{section.C.3}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.3.1}Requisitos Previos}{\reset@font\mtcSSfont 81}{subsection.C.3.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.3.2}Configuración de Bases de Datos}{\reset@font\mtcSSfont 81}{subsection.C.3.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.3.3}Configuración de MinIO}{\reset@font\mtcSSfont 81}{subsection.C.3.3}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.3.4}Ejecución del Backend (\textit {Microservicios})}{\reset@font\mtcSSfont 82}{subsection.C.3.4}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.3.5}Ejecución del Frontend (\textit {Angular})}{\reset@font\mtcSSfont 82}{subsection.C.3.5}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.4}Herramientas de Desarrollo Adicionales}{\reset@font\mtcSfont 82}{section.C.4}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.5}Ejecución de Pruebas Automáticas}{\reset@font\mtcSfont 83}{section.C.5}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.5.1}Pruebas del Backend}{\reset@font\mtcSSfont 83}{subsection.C.5.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {C.5.2}Pruebas del Frontend}{\reset@font\mtcSSfont 83}{subsection.C.5.2}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.6}Construcción de Imágenes Docker}{\reset@font\mtcSfont 84}{section.C.6}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.7}Publicación y Gestión de Versiones (\textit {Releases})}{\reset@font\mtcSfont 84}{section.C.7}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {C.8}Acceso a Imágenes Publicadas}{\reset@font\mtcSfont 84}{section.C.8}}

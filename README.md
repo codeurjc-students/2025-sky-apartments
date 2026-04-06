@@ -83,7 +83,7 @@ Version 1.0 of Sky Apartments delivers a complete, production-ready apartment ma
 
 ## 🎥 Demo
 
-[![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://youtu.be/3y74mSs_f9E)
+[![Sky Apartments v0.1 Demo Video](docs/images/video_thumbnail.jpg)](https://www.youtube.com/watch?v=wLvm_5JjNUs)
 
 *Video showcasing the main features of version 1.0*
 
@@ -153,6 +153,24 @@ While Version 1.0 delivers a complete and fully functional application, potentia
     - Third-party booking platform integrations
     - Property management system (PMS) connections
     - Booking reminders before check-in date
+
+---
+
+## 📚 Project Documentation (LaTeX)
+
+This project includes a comprehensive technical report (memoir) written in LaTeX. 
+
+If you want to read, edit, and compile the PDF yourself using **Visual Studio Code**, follow these steps:
+
+1. **Install a LaTeX distribution** on your computer if you don't have one already:
+   - **Windows:** [MiKTeX](https://miktex.org/) or TeX Live
+   - **macOS:** [MacTeX](https://www.tug.org/mactex/)
+   - **Linux:** TeX Live (e.g., `sudo apt install texlive-full`)
+2. **Install the VS Code Extension:** Search for and install the **"LaTeX Workshop"** extension (by James Yu) in VS Code.
+3. **Compile the PDF:**
+   - Open the main `.tex` file of the memoir in VS Code.
+   - Save the file (`Ctrl + S` / `Cmd + S`) to trigger the auto-build.
+   - Alternatively, you can click the green **"Build LaTeX project"** play button in the top right corner, or use the shortcut `Ctrl + Alt + B` (or `Cmd + Option + B` on macOS).
 
 ---
 

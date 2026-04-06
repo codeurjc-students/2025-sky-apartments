@@ -1,0 +1,61 @@
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.1}Tecnologías}{\reset@font\mtcSfont 23}{section.4.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.1.1}Tecnologías del frontend}{\reset@font\mtcSSfont 23}{subsection.4.1.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.1.2}Tecnologías del Backend}{\reset@font\mtcSSfont 24}{subsection.4.1.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.1.3}Persistencia y Comunicaciones}{\reset@font\mtcSSfont 25}{subsection.4.1.3}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.2}Herramientas}{\reset@font\mtcSfont 26}{section.4.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.2.1}Entorno de Desarrollo Integrado (IDE)}{\reset@font\mtcSSfont 26}{subsection.4.2.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.2.2}Control de Versiones y Trabajo Colaborativo}{\reset@font\mtcSSfont 27}{subsection.4.2.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.2.3}Gestión de Dependencias y Construcción}{\reset@font\mtcSSfont 28}{subsection.4.2.3}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.2.4}Pruebas de Integración y Documentación de API}{\reset@font\mtcSSfont 28}{subsection.4.2.4}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.3}Arquitectura}{\reset@font\mtcSfont 29}{section.4.3}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.3.1}Despliegue}{\reset@font\mtcSSfont 29}{subsection.4.3.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.3.2}Modelo del Dominio}{\reset@font\mtcSSfont 30}{subsection.4.3.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.3.3}API REST}{\reset@font\mtcSSfont 32}{subsection.4.3.3}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Recurso Apartments}{\reset@font\mtcSSSfont 32}{section*.21}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Recurso Bookings}{\reset@font\mtcSSSfont 33}{section*.22}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Recurso Filters}{\reset@font\mtcSSSfont 34}{section*.23}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Recurso Users y Auth}{\reset@font\mtcSSSfont 35}{section*.24}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Recurso Reviews}{\reset@font\mtcSSSfont 35}{section*.25}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Recurso Contact}{\reset@font\mtcSSSfont 36}{section*.26}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.3.4}Arquitectura del Servidor}{\reset@font\mtcSSfont 36}{subsection.4.3.4}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.3.5}Arquitectura del Cliente}{\reset@font\mtcSSfont 38}{subsection.4.3.5}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.4}Implementación}{\reset@font\mtcSfont 39}{section.4.4}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.4.1}Gestión de Autenticación y Seguridad con JWT}{\reset@font\mtcSSfont 39}{subsection.4.4.1}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Arquitectura de Seguridad y Flujo de Autenticación}{\reset@font\mtcSSSfont 39}{section*.29}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Generación de Tokens y Persistencia}{\reset@font\mtcSSSfont 40}{section*.31}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Validación y Refresco Silencioso (Silent Refresh)}{\reset@font\mtcSSSfont 41}{section*.32}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Seguridad de las Claves}{\reset@font\mtcSSSfont 41}{section*.33}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.4.2}Motor de Precios Dinámicos}{\reset@font\mtcSSfont 41}{subsection.4.4.2}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Concepto y Arquitectura}{\reset@font\mtcSSSfont 41}{section*.34}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Diseño Flexible de la Entidad Filter}{\reset@font\mtcSSSfont 42}{section*.35}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Consulta de Filtros Aplicables}{\reset@font\mtcSSSfont 43}{section*.36}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Cálculo del Precio Final}{\reset@font\mtcSSSfont 44}{section*.37}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Ventajas del Sistema}{\reset@font\mtcSSSfont 44}{section*.38}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.4.3}Envío de Emails con JavaMailSender}{\reset@font\mtcSSfont 45}{subsection.4.4.3}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Configuración del Servidor SMTP}{\reset@font\mtcSSSfont 45}{section*.39}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Servicio de Email}{\reset@font\mtcSSSfont 45}{section*.40}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.5}Control de calidad}{\reset@font\mtcSfont 45}{section.4.5}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.5.1}Estrategia de Testing}{\reset@font\mtcSSfont 45}{subsection.4.5.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.5.2}Pruebas del Backend}{\reset@font\mtcSSfont 46}{subsection.4.5.2}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Tipos de Pruebas Implementadas}{\reset@font\mtcSSSfont 46}{section*.41}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Cobertura de Código por Microservicio}{\reset@font\mtcSSSfont 46}{section*.42}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.5.3}Pruebas del frontend}{\reset@font\mtcSSfont 48}{subsection.4.5.3}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Tipos de Pruebas Implementadas}{\reset@font\mtcSSSfont 48}{section*.47}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Cobertura de Tests Unitarios e Integración}{\reset@font\mtcSSSfont 48}{section*.48}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Tests End-to-End con Playwright}{\reset@font\mtcSSSfont 48}{section*.50}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.5.4}Análisis de Resultados}{\reset@font\mtcSSfont 49}{subsection.4.5.4}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.6}Despliegue}{\reset@font\mtcSfont 49}{section.4.6}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.6.1}Empaquetado y Distribución}{\reset@font\mtcSSfont 49}{subsection.4.6.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.6.2}Despliegue en la Nube (AWS)}{\reset@font\mtcSSfont 50}{subsection.4.6.2}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Arquitectura de Infraestructura}{\reset@font\mtcSSSfont 50}{section*.52}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Procedimiento de Despliegue}{\reset@font\mtcSSSfont 51}{section*.53}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {4.7}Proceso de Desarrollo}{\reset@font\mtcSfont 52}{section.4.7}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.7.1}Gestión de Tareas}{\reset@font\mtcSSfont 52}{subsection.4.7.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.7.2}Control de Versiones con Git}{\reset@font\mtcSSfont 53}{subsection.4.7.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.7.3}Integración y Entrega Continua (CI)}{\reset@font\mtcSSfont 54}{subsection.4.7.3}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Basic Quality Check}{\reset@font\mtcSSSfont 54}{section*.55}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Full Quality Check}{\reset@font\mtcSSSfont 54}{section*.56}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {4.7.4}Entrega Continua y Versionado}{\reset@font\mtcSSfont 55}{subsection.4.7.4}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Gestión de Versiones y Publicación}{\reset@font\mtcSSSfont 55}{section*.57}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Historial de Lanzamientos}{\reset@font\mtcSSSfont 55}{section*.58}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Impacto en los usuarios durante el despliegue}{\reset@font\mtcSSSfont 56}{section*.59}}

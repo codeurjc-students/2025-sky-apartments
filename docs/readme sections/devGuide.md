@@ -564,6 +564,8 @@ The application is deployed using the **OCI Docker Compose artifact** published 
 ```bash
 # Set environment variables for the cloud environment
 export MINIO_EXTERNAL_URL=https://13.60.118.214:443/minio
+export MAIL_USERNAME=your_email@example.com
+export MAIL_PASSWORD=your_email_password
 
 # Run the application using the remote OCI Compose artifact
 docker compose -f oci://eloydsdlh/apartments-compose:1.0 up -d

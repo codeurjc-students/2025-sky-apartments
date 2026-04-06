@@ -1,0 +1,64 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: tfg.aux
+Reallocating 'name_of_file' (item size: 1) to 19 items.
+A level-1 auxiliary file: config/portada.aux
+Reallocating 'name_of_file' (item size: 1) to 20 items.
+A level-1 auxiliary file: config/licencia.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: IEEEtran.bst
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Database file #1: bibliografia.bib
+-- IEEEtran.bst version 1.12 (2007/01/11) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+Warning--empty journal in fowler2004
+
+Done.
+You've used 42 entries,
+            4024 wiz_defined-function locations,
+            1054 strings with 14218 characters,
+and the built_in function-call counts, 17185 in all, are:
+= -- 1504
+> -- 233
+< -- 21
++ -- 118
+- -- 53
+* -- 709
+:= -- 3364
+add.period$ -- 59
+call.type$ -- 42
+change.case$ -- 40
+chr.to.int$ -- 48
+cite$ -- 43
+duplicate$ -- 1359
+empty$ -- 1491
+format.name$ -- 59
+if$ -- 3667
+int.to.chr$ -- 0
+int.to.str$ -- 42
+missing$ -- 320
+newline$ -- 211
+num.names$ -- 42
+pop$ -- 678
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 1431
+stack$ -- 0
+substring$ -- 183
+swap$ -- 864
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 42
+warning$ -- 1
+while$ -- 50
+width$ -- 44
+write$ -- 454
+(There was 1 warning)

@@ -1,0 +1,71 @@
+El presente capítulo constituye el punto de partida de este Trabajo de Fin de Grado, estableciendo las bases que motivan e impulsan el desarrollo de la aplicación web \textbf{Sky Apartments}.
+
+En primer lugar, se expone el contexto actual del sector turístico y las necesidades de negocio que justifican la creación de este proyecto (Sección \ref{sec:contexto}). A continuación, se analiza el estado del arte (Sección \ref{sec:estado_del_arte}), examinando las alternativas y plataformas existentes en el mercado para destacar el valor diferencial de la solución propuesta. Finalmente, se definen de manera detallada los objetivos del proyecto (Sección \ref{sec:objetivos}), diferenciando claramente entre las metas funcionales orientadas al usuario y los hitos técnicos necesarios para su implementación.
+\section{Contexto}
+\label{sec:contexto}
+
+La industria turística se encuentra en un proceso de transformación digital acelerada, donde la autonomía del usuario y la eficiencia operativa son factores determinantes para el éxito. El Informe de Digitalización 2024 de SEGITTUR subraya que la transformación digital de las PYMES turísticas ya no es opcional, sino una necesidad crítica para mantener la competitividad en el mercado actual ~\cite{Segittur2024}.
+
+En este escenario nace \textbf{Sky Apartments}, una solución tecnológica integral diseñada específicamente para la gestión de apartamentos turísticos pertenecientes a un mismo arrendador. El proyecto consiste en una aplicación web que centraliza tanto la experiencia del cliente final (búsqueda y reserva) como la administración del negocio, automatizando el flujo completo desde la verificación de disponibilidad hasta el envío de correos de confirmación.
+
+La implementación de este sistema es altamente relevante y se justifica a través de los siguientes pilares del mercado actual:
+\begin{itemize}
+    \item \textbf{Independencia de intermediarios y mejora de la rentabilidad:} La dependencia exclusiva de Agencias de Viaje Online (OTAs) supone un coste elevado para los propietarios. Según datos recientes de la industria, las comisiones de estas plataformas oscilan entre el 15\% y el 30\% por reserva, reduciendo drásticamente el margen de beneficio del arrendador ~\cite{SmartOrder2025} ~\cite{SiteMinder2025} . Sky Apartments elimina estos intermediarios, permitiendo la venta directa y maximizando el retorno económico de cada estancia. Además, la venta directa no solo es más rentable, sino que ofrece mayor estabilidad: estudios del sector indican que las reservas directas tienen una tasa de cancelación del 18.2\%, frente a tasas cercanas al 50\% en las grandes OTAs ~\cite{DEdge2024} ~\cite{MiraiCancellations2016}.
+
+    \item \textbf{Eficiencia operativa:}  La gestión manual de reservas mediante llamadas o correos electrónicos es insostenible a medida que el negocio escala. La aplicación implementada automatiza el flujo completo: desde la verificación de disponibilidad en el calendario interactivo hasta el envío automático de correos de confirmación, modificación o cancelación. Esto libera al administrador de tareas repetitivas, permitiéndole centrarse en la calidad del servicio.
+
+    \item \textbf{Control de datos y fidelización:} A diferencia de las plataformas de terceros, este sistema otorga al propietario la plena soberanía sobre la información de sus usuarios, cumpliendo con el RGPD y facilitando estrategias de marketing y fidelización sin depender de algoritmos externos. Además, el sistema interno de reseñas y valoraciones genera confianza sin depender de algoritmos externos, fortaleciendo la relación directa propietario-cliente.
+\end{itemize}
+
+\section{Estado del arte}
+\label{sec:estado_del_arte}
+El mercado actual del alquiler vacacional está dominado por dos tipos principales de plataformas: las Agencias de Viaje Online (OTAs) y los Property Management Systems (PMS).
+
+Por un lado, plataformas globales como Airbnb\footnote{\url{https://www.airbnb.es/}} o Booking.com\footnote{\url{https://www.booking.com/}} ofrecen una visibilidad inmensa y un motor de búsqueda muy refinado para el usuario final. Sin embargo, desde la perspectiva del propietario individual, estas plataformas imponen altas comisiones, retienen la propiedad de los datos del cliente y diluyen la identidad de marca del arrendador, ya que el alojamiento compite en la misma pantalla con cientos de opciones rivales.
+
+Por otro lado, existen herramientas de gestión avanzada o PMS (\textit{Property Management Systems}) como \textbf{Guesty}\footnote{\url{https://www.guesty.com/es/}} o \textbf{Hostaway}\footnote{\url{https://www.hostaway.com/es/}}. Estas plataformas están diseñadas para sincronizar calendarios y gestionar múltiples canales (Channel Managers). Aunque son muy potentes a nivel administrativo, suelen ser complejas, tienen costes de suscripción elevados (a menudo inviables para pequeños propietarios) y no siempre ofrecen una página web de reservas directas (marca blanca) intuitiva para el cliente final.
+
+\textbf{Sky Apartments} se desmarca de estas alternativas al ofrecer un punto intermedio optimizado para propietarios únicos o pequeñas empresas de gestión patrimonial. A diferencia de las OTAs, elimina las comisiones y devuelve el control del dato y la marca al propietario. A diferencia de los PMS tradicionales, no busca ser un gestor multicanal complejo, sino una plataforma "todo en uno" que proporciona un escaparate de reservas propio, directo y atractivo para el usuario, integrado de forma nativa con un panel de administración a medida, sencillo y sin costes recurrentes por licencias de software de terceros.
+
+\section{Objetivos}
+\label{sec:objetivos}
+Esta sección recoge los objetivos que guían el desarrollo del proyecto, organizados en dos niveles complementarios: los \textbf{objetivos funcionales}, que describen las capacidades que el sistema debe ofrecer a sus usuarios, y los \textbf{objetivos técnicos}, que establecen los criterios de diseño, arquitectura y calidad que debe cumplir la solución desarrollada.
+\subsection{Objetivos funcionales} 
+El objetivo funcional principal de este proyecto es dotar al usuario final de una plataforma intuitiva y autónoma para la búsqueda y reserva de alojamientos, y proporcionar al administrador un panel de control centralizado para la gestión integral del negocio, prescindiendo por completo de intermediarios.
+
+Para alcanzar este propósito, se plantean las siguientes funcionalidades clave:
+\begin{enumerate}
+    \item \textbf{Búsqueda y filtrado avanzado:} Permitir a los clientes explorar el catálogo de apartamentos utilizando criterios personalizados (fechas, capacidad, precio, comodidades).
+
+    \item \textbf{Gestión de disponibilidad en tiempo real:} Implementar un calendario interactivo que refleje la ocupación instantánea y evite el solapamiento de reservas (overbooking).
+    
+    \item \textbf{Motor de reservas automatizado:} Facilitar el proceso de reserva con confirmación inmediata y notificaciones transaccionales automáticas vía correo electrónico (confirmación, modificación o cancelación).
+    
+    \item \textbf{Sistema de reseñas y valoraciones:} Habilitar un espacio donde los huéspedes puedan valorar su estancia, generando prueba social y confianza para futuros clientes.
+    
+    \item \textbf{Panel de control administrativo (CRUD):} Proveer al gestor de las herramientas necesarias para Crear, Leer, Actualizar y Borrar la información de los apartamentos y sus imágenes.
+    
+    \item \textbf{Dashboard de analítica y negocio:} Mostrar al administrador estadísticas clave en tiempo real, tales como ingresos generados, tasas de ocupación y valoraciones medias.
+\end{enumerate}
+\subsection{Objetivos técnicos}
+
+A nivel tecnológico, el objetivo de este proyecto es diseñar y construir una solución de software moderna, escalable y mantenible, aplicando las mejores prácticas de la ingeniería de software, patrones de diseño actuales y herramientas punteras tanto en el ecosistema de desarrollo web como en el despliegue en la nube.
+
+
+Los aspectos técnicos fundamentales definidos para el desarrollo son:
+
+\begin{enumerate}
+    \item \textbf{Arquitectura de Microservicios:} Diseñar un backend desacoplado (servicios de Usuario, Apartamento, Reserva y Reseñas) utilizando Spring Boot, gestionado mediante un API Gateway y un servidor Eureka para el descubrimiento de servicios.
+
+    \item \textbf{Desarrollo Frontend SPA:} Construir una interfaz de usuario dinámica, \textit{responsive} y de navegación fluida utilizando el framework Angular 19.
+    
+    \item \textbf{Seguridad y Autenticación:} Proteger las comunicaciones y los endpoints mediante Spring Security, implementando autenticación basada en tokens JWT y definiendo roles de acceso estrictos (anónimo, usuario registrado, administrador).
+    
+    \item \textbf{Empaquetado en contenedores:} Aislar los entornos de desarrollo y ejecución dockerizando todos los componentes del sistema y orquestándolos mediante Docker Compose.
+    
+    \item \textbf{Aseguramiento de la Calidad:} Implementar una estrategia de pruebas exhaustiva que incluya tests unitarios, de integración y End-to-End (E2E) para garantizar la robustez del código.
+    
+    \item \textbf{Metodología y Documentación:} Utilizar un enfoque de desarrollo iterativo, con control de versiones avanzado y generación automática de documentación técnica de la API basada en el estándar OpenAPI.
+    
+    \item \textbf{Despliegue Cloud:} Configurar el entorno de producción en la nube para alojar los microservicios, estableciendo las políticas de red necesarias y garantizando alta disponibilidad.
+\end{enumerate}

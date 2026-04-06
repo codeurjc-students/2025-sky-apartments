@@ -1,3 +1,6 @@
-
+# Ignore node modules and IDE configuration files
+node_modules
+.idea
+.vscode
 # Ignore environment files
 .env
